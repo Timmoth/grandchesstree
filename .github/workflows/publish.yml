@@ -57,7 +57,7 @@ jobs:
       - name: Build and Package for OSX ARM
         run: |
           dotnet restore
-          dotnet publish -c Release -r osx-arm64 --self-contained /p:PublishSingleFile=true -p:DefineConstants="ARM" -o ../output/osx-arm64
+          dotnet publish -r osx-arm64 /p:Release=true -p:DefineConstants="ARM" -o ../output/osx-arm64
 
       # Rename the output files for consistency
       - name: Rename output files
