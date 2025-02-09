@@ -32,5 +32,8 @@ public class PerftLeaderboardResponse
     public long TotalTimeSeconds { get; set; }
 
     [JsonPropertyName("completed_tasks")]
-    public long CompletedTasks { get; set; }
+    public long CompletedTasks { get; set; }   
+    
+    [JsonPropertyName("tpm")]
+    public float TasksPerMinute { get; set; }
 }

@@ -6,6 +6,7 @@ interface PerftLeaderboardResponse {
   total_nodes: number;
   compute_time_seconds: number;
   completed_tasks: number;
+  tpm: number;
 }
 
 interface LeaderboardProps {
@@ -77,46 +78,52 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
 
   return (
     <>
-      <div className="relative overflow-x-auto bg-gray-100 rounded-lg p-4 flex flex-col justify-between items-center">
+      <div className="relative bg-gray-100 rounded-lg p-4 flex flex-col justify-between items-center">
         <span className="text-md font-bold m-2 text-gray-700">
           Top contributors
         </span>
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Total Nodes
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Compute Time
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Completed Tasks
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboardData
-              .sort((a, b) => b.total_nodes - a.total_nodes) // Sort by total_nodes in descending order
-              .map((item, index) => (
-                <tr key={index} className="bg-white border-b border-gray-200">
-                  <td className="px-6 py-4">{item.account_name}</td>
-                  <td className="px-6 py-4">
-                    {formatBigNumber(item.total_nodes)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {formatTime(item.compute_time_seconds)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {formatBigNumber(item.completed_tasks)}
-                  </td>
-                </tr>
-              ))}
-          </tbody>
-        </table>
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-[1000px] text-sm text-left rtl:text-right text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Total Nodes
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Compute Time
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Completed Tasks
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  TPM
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {leaderboardData
+                .sort((a, b) => b.total_nodes - a.total_nodes) // Sort by total_nodes in descending order
+                .map((item, index) => (
+                  <tr key={index} className="bg-white border-b border-gray-200">
+                    <td className="px-6 py-4">{item.account_name}</td>
+                    <td className="px-6 py-4">
+                      {formatBigNumber(item.total_nodes)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {formatTime(item.compute_time_seconds)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {formatBigNumber(item.completed_tasks)}
+                    </td>
+                    <td className="px-6 py-4">{formatBigNumber(item.tpm)}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

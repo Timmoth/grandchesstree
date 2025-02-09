@@ -242,86 +242,88 @@ const leaderboardData: PerftData[] = [
 const PerftResults: React.FC = () => {
   return (
     <>
-      <div className="relative  overflow-x-auto bg-gray-100 rounded-lg p-4">
-        <span className="text-md font-bold m-2 text-gray-700 w-full ">
+      <div className="relative w-full bg-gray-100 rounded-lg p-4">
+        <span className="text-md font-bold m-2 text-gray-700 w-full block">
           Perft results
         </span>
-        <table className="text-sm text-left rtl:text-right text-gray-500">
-          <thead className="text-xs text-gray-700 uppercase">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Depth
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Nodes
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Captures
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Enpassants
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Castles
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Promotions
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Direct Checks
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Single Discovered Checks
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Direct Discovered Checks
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Double Discovered Check
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Total Checks
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Direct Mates
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Single Discovered Mates
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Direct Discovered Mates
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Double Discovered Mates
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Total Mates
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {leaderboardData.map((item, index) => (
-              <tr key={index} className="bg-white border-b border-gray-200">
-                <td className="px-6 py-4">{item.depth}</td>
-                <td className="px-6 py-4">{item.nodes}</td>
-                <td className="px-6 py-4">{item.captures}</td>
-                <td className="px-6 py-4">{item.enpassants}</td>
-                <td className="px-6 py-4">{item.castles}</td>
-                <td className="px-6 py-4">{item.promotions}</td>
-                <td className="px-6 py-4">{item.direct_checks}</td>
-                <td className="px-6 py-4">{item.single_discovered_checks}</td>
-                <td className="px-6 py-4">{item.direct_discovered_checks}</td>
-                <td className="px-6 py-4">{item.double_discovered_check}</td>
-                <td className="px-6 py-4">{item.total_checks}</td>
-                <td className="px-6 py-4">{item.direct_mates}</td>
-                <td className="px-6 py-4">{item.single_discovered_mates}</td>
-                <td className="px-6 py-4">{item.direct_discovered_mates}</td>
-                <td className="px-6 py-4">{item.double_discovered_mates}</td>
-                <td className="px-6 py-4">{item.total_mates}</td>
+        <div className="w-full overflow-x-auto">
+          <table className="min-w-[1000px] text-sm text-left rtl:text-right text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Depth
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Nodes
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Captures
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Enpassants
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Castles
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Promotions
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Direct Checks
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Single Discovered Checks
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Direct Discovered Checks
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Double Discovered Check
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Total Checks
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Direct Mates
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Single Discovered Mates
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Direct Discovered Mates
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Double Discovered Mates
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Total Mates
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {leaderboardData.map((item, index) => (
+                <tr key={index} className="bg-white border-b border-gray-200">
+                  <td className="px-6 py-4">{item.depth}</td>
+                  <td className="px-6 py-4">{item.nodes}</td>
+                  <td className="px-6 py-4">{item.captures}</td>
+                  <td className="px-6 py-4">{item.enpassants}</td>
+                  <td className="px-6 py-4">{item.castles}</td>
+                  <td className="px-6 py-4">{item.promotions}</td>
+                  <td className="px-6 py-4">{item.direct_checks}</td>
+                  <td className="px-6 py-4">{item.single_discovered_checks}</td>
+                  <td className="px-6 py-4">{item.direct_discovered_checks}</td>
+                  <td className="px-6 py-4">{item.double_discovered_check}</td>
+                  <td className="px-6 py-4">{item.total_checks}</td>
+                  <td className="px-6 py-4">{item.direct_mates}</td>
+                  <td className="px-6 py-4">{item.single_discovered_mates}</td>
+                  <td className="px-6 py-4">{item.direct_discovered_mates}</td>
+                  <td className="px-6 py-4">{item.double_discovered_mates}</td>
+                  <td className="px-6 py-4">{item.total_mates}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

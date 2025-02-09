@@ -203,6 +203,8 @@ namespace GrandChessTree.Api.Controllers
         [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "depth" })]
         public async Task<IActionResult> GetLeaderboard(int depth, CancellationToken cancellationToken)
         {
+            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+
             var stats = await _dbContext.PerftTasks
                 .AsNoTracking()
                 .Include(i => i.Account)
@@ -213,7 +215,9 @@ namespace GrandChessTree.Api.Controllers
                     AccountName = g.Select(i => i.Account != null ? i.Account.Name : "Unknown").FirstOrDefault(),
                     TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
                     TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
-                    CompletedTasks = g.Count()  // Number of tasks completed
+                    CompletedTasks = g.Count(),  // Number of tasks completed
+                    TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f  // Tasks completed in last hour / 60
+
                 })
                 .ToArrayAsync(cancellationToken);
 
