@@ -12,4 +12,9 @@
     <ProjectReference Include="..\GrandChessTree.Shared\GrandChessTree.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ILGPU" Version="1.5.1" />
+    <PackageReference Include="ILGPU.Algorithms" Version="1.5.1" />
+  </ItemGroup>
+
 </Project>

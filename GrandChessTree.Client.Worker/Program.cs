@@ -4,7 +4,9 @@ using System.Runtime.CompilerServices;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
-
+using ILGPU;
+using ILGPU.Runtime;
+using ILGPU.Runtime.CPU;
 
 
 try
@@ -18,114 +20,51 @@ try
 
     RuntimeHelpers.RunClassConstructor(typeof(AttackTables).TypeHandle);
     RuntimeHelpers.RunClassConstructor(typeof(Perft).TypeHandle);
-
-    //// test
-    ///
+    
     Console.WriteLine("loading position");
     var (board, whiteToMove) = FenParser.Parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
     Console.WriteLine("allocating hash table");
 
-    Summary summary = default;
     unsafe
     {
         Perft.HashTable = Perft.AllocateHashTable();
     }
+    
+    var context = Context.Create(b => { b.Default().EnableAlgorithms().Math(MathMode.Fast); });
+    var accelerator = context.CreateCPUAccelerator(0);
 
-    var sw = Stopwatch.StartNew();
+    var boardSizeBytes = 8 * 8;
+    
+    var inputBoards = new Board[5000];
+    var inputLength = 10_000;
+    
+    var input_boards = accelerator.Allocate1D<Board>(inputLength); 
+    var layer1_boards = accelerator.Allocate1D<Board>(inputLength * 100); 
+    var expandLayerKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, ArrayView<Board>, ArrayView<Board>>(ExpandLayer);
+    var countLayerKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, ArrayView<Board>>(CountLayer);
 
-    //var fens = LeafNodeGenerator.GenerateLeafNodes(ref board, 6, whiteToMove);
+    input_boards.View.CopyFromCPU(inputBoards);
+    expandLayerKernel(inputLength, input_boards.View, layer1_boards.View);
+    countLayerKernel(inputLength, layer1_boards.View);
+    
+    static void ExpandLayer(
+        Index1D index,
+        ArrayView<Board> input_layer,
+        ArrayView<Board> output_layer)
+    {
+        // This kernel takes a single board from the input array
+        // And adds each reachable board into the output array
+    }
+    
+    static void CountLayer(
+        Index1D index,
+        ArrayView<Board> input_layer)
+    {
+        // This kernel takes a single board from the input array
+        // And counts all possible nodes that can be reached
+    }
 
-    //var ordered = fens.OrderByDescending(f => f.occurrences);
-
-    //var top1000avg = ordered.Take(1000).Average(c => c.occurrences);
-    //var top10000avg = ordered.Take(10000).Average(c => c.occurrences);
-    //var top100000avg = ordered.Take(100000).Average(c => c.occurrences);
-
-    //Console.WriteLine("av1k: " + top1000avg);
-    //Console.WriteLine("av10k: " + top10000avg);
-    //Console.WriteLine("av100k: " + top100000avg);
-    Console.WriteLine("starting search");
-
-    Perft.PerftRoot(ref board, ref summary, 5, whiteToMove);
-    Console.WriteLine("search complete");
-
-    var ms = sw.ElapsedMilliseconds;
-    var s = (float)ms / 1000;
-
-    Console.WriteLine($"fen:{board.ToFen(whiteToMove, 0, 1)}");
-    Console.WriteLine($"nps:{(summary.Nodes / s).FormatBigNumber()}");
-    Console.WriteLine($"time:{s}");
-    summary.Print();
-
-    // test
-    return;
-    //
-    // ConcurrentQueue<string> commandQueue = new();
-    // using ManualResetEventSlim commandAvailable = new(false);
-    // var hasQuit = false;
-    //
-    //
-    // _ = Task.Run(ReadCommands);
-    //
-    // Console.WriteLine("ready");
-    // while (!hasQuit)
-    // {
-    //     commandAvailable.Wait(); // Wait until a command is available
-    //     commandAvailable.Reset(); // Reset the event for the next wait
-    //
-    //     while (commandQueue.TryDequeue(out var command))
-    //     {
-    //         if (command.StartsWith("reset"))
-    //         {
-    //             Perft.ClearTable();
-    //             Console.WriteLine("ready");
-    //         }
-    //         else if (command.StartsWith("begin"))
-    //         {
-    //             Console.WriteLine("processing");
-    //             var commandParts = command.Split(":");
-    //             if (int.TryParse(commandParts[1], out var depth))
-    //             {
-    //                 var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
-    //                 var sw = Stopwatch.StartNew();
-    //                 var summary = Perft.PerftRoot(ref board, depth, whiteToMove);
-    //                 var ms = sw.ElapsedMilliseconds;
-    //                 var s = (float)ms / 1000;
-    //                 Console.WriteLine($"fen:{board.ToFen(whiteToMove, 0, 1)}");
-    //                 Console.WriteLine($"hash:{Zobrist.CalculateZobristKey(ref board, whiteToMove)}");
-    //                 Console.WriteLine($"nps:{(summary.Nodes / s)}");
-    //                 summary.Print();
-    //                 Console.WriteLine("done");
-    //             }
-    //         }
-    //     }
-    // }
-    //
-    // return;
-    //
-    // void ReadCommands()
-    // {
-    //     while (true)
-    //     {
-    //         var command = Console.ReadLine();
-    //         if (string.IsNullOrEmpty(command))
-    //         {
-    //             continue; // Skip empty commands
-    //         }
-    //
-    //         command = command.Trim();
-    //         if (command.Contains("quit", StringComparison.OrdinalIgnoreCase))
-    //         {
-    //             hasQuit = true;
-    //             Environment.Exit(0);
-    //             break;
-    //         }
-    //
-    //         commandQueue.Enqueue(command);
-    //         commandAvailable.Set(); // Signal that a command is available
-    //     }
-    // }
-}
+    }
 catch (Exception ex)
 {
     Console.Error.WriteLine($"Error: {ex}");
