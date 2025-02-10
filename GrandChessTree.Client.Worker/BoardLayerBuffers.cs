@@ -1,4 +1,6 @@
-﻿using ILGPU;
+﻿using GrandChessTree.Shared.Precomputed;
+using System.ComponentModel;
+using ILGPU;
 using ILGPU.Runtime;
 
 namespace GrandChessTree.Client.Worker
@@ -30,7 +32,8 @@ namespace GrandChessTree.Client.Worker
             ArrayView1D<byte, Stride1D.Dense> castleRights,
             ArrayView1D<byte, Stride1D.Dense> enPassantFile,
             ArrayView1D<byte, Stride1D.Dense> whiteKingPos,
-            ArrayView1D<byte, Stride1D.Dense> blackKingPos)
+            ArrayView1D<byte, Stride1D.Dense> blackKingPos,
+            ArrayView1D<int, Stride1D.Dense> positionIndexes)
         {
             PawnOccupancy = pawnOccupancy;
             KnightOccupancy = knightOccupancy;
@@ -43,6 +46,23 @@ namespace GrandChessTree.Client.Worker
             EnPassantFile = enPassantFile;
             WhiteKingPos = whiteKingPos;
             BlackKingPos = blackKingPos;
+            PositionIndexes = positionIndexes;
+        }
+
+        internal void MemSetZero()
+        {
+            PawnOccupancy.MemSetToZero();
+            KnightOccupancy.MemSetToZero();
+            BishopOccupancy.MemSetToZero();
+            RookOccupancy.MemSetToZero();
+            QueenOccupancy.MemSetToZero();
+            WhiteOccupancy.MemSetToZero();
+            BlackOccupancy.MemSetToZero();
+            CastleRights.MemSetToZero();
+            EnPassantFile.MemSetToZero();
+            WhiteKingPos.MemSetToZero();
+            BlackKingPos.MemSetToZero();
+            PositionIndexes.MemSetToZero();
         }
     }
 }

@@ -172,7 +172,7 @@ public static unsafe class Perft
             while (positions != 0)
             {
                 var index = positions.PopLSB();
-                board.AccumulateBlackPawnMoves( ref summary, depth, index, AttackTables.GetRayToEdgeStraight(board.BlackKingPos, index), AttackTables.GetRayToEdgeDiagonal(board.BlackKingPos, index));
+                board.AccumulateBlackPawnMoves(ref summary, depth, index, AttackTables.GetRayToEdgeStraight(board.BlackKingPos, index), AttackTables.GetRayToEdgeDiagonal(board.BlackKingPos, index));
             }
         
             positions = board.Black & board.Pawn & ~pinMask;

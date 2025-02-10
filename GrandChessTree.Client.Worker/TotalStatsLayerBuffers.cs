@@ -50,5 +50,22 @@ namespace GrandChessTree.Client.Worker
             DirectDiscoverdCheckmate = directDiscoverdCheckmate;
             DoubleDiscoverdCheckmate = doubleDiscoverdCheckmate;
         }
+
+        internal void MemSetZero()
+        {
+            Nodes.MemSetToZero();
+            Captures.MemSetToZero();
+            Enpassant.MemSetToZero();
+            Castles.MemSetToZero();
+            Promotions.MemSetToZero();
+            DirectCheck.MemSetToZero();
+            SingleDiscoveredCheck.MemSetToZero();
+            DirectDiscoveredCheck.MemSetToZero();
+            DoubleDiscoveredCheck.MemSetToZero();
+            DirectCheckmate.MemSetToZero();
+            SingleDiscoveredCheckmate.MemSetToZero();
+            DirectDiscoverdCheckmate.MemSetToZero();
+            DoubleDiscoverdCheckmate.MemSetToZero();
+        }
     }
 }

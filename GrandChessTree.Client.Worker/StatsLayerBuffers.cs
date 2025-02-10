@@ -1,4 +1,5 @@
-﻿using ILGPU;
+﻿using GrandChessTree.Shared;
+using ILGPU;
 using ILGPU.Runtime;
 
 namespace GrandChessTree.Client.Worker
@@ -21,7 +22,7 @@ namespace GrandChessTree.Client.Worker
         public ArrayView1D<byte, Stride1D.Dense> DirectDiscoverdCheckmate;
         public ArrayView1D<byte, Stride1D.Dense> DoubleDiscoverdCheckmate;
 
-        public StatsLayerBuffers(
+        public StatsLayerBuffers(int boardCount,
             ArrayView1D<byte, Stride1D.Dense> nodes,
             ArrayView1D<byte, Stride1D.Dense> captures,
             ArrayView1D<byte, Stride1D.Dense> enpassant,
@@ -36,6 +37,7 @@ namespace GrandChessTree.Client.Worker
             ArrayView1D<byte, Stride1D.Dense> directDiscoverdCheckmate,
             ArrayView1D<byte, Stride1D.Dense> doubleDiscoverdCheckmate)
         {
+            BoardCount = boardCount;
             Nodes = nodes;
             Captures = captures;
             Enpassant = enpassant;
@@ -48,7 +50,24 @@ namespace GrandChessTree.Client.Worker
             DirectCheckmate = directCheckmate;
             SingleDiscoveredCheckmate = singleDiscoveredCheckmate;
             DirectDiscoverdCheckmate = directDiscoverdCheckmate;
-            DirectDiscoverdCheckmate = doubleDiscoverdCheckmate;
+            DoubleDiscoverdCheckmate = doubleDiscoverdCheckmate;
+        }
+
+        internal void MemSetZero()
+        {
+            Nodes.MemSetToZero();
+            Captures.MemSetToZero();
+            Enpassant.MemSetToZero();
+            Castles.MemSetToZero();
+            Promotions.MemSetToZero();
+            DirectCheck.MemSetToZero();
+            SingleDiscoveredCheck.MemSetToZero();
+            DirectDiscoveredCheck.MemSetToZero();
+            DoubleDiscoveredCheck.MemSetToZero();
+            DirectCheckmate.MemSetToZero();
+            SingleDiscoveredCheckmate.MemSetToZero();
+            DirectDiscoverdCheckmate.MemSetToZero();
+            DoubleDiscoverdCheckmate.MemSetToZero();
         }
     }
 }

@@ -19,6 +19,7 @@ namespace GrandChessTree.Client.Worker
         public readonly MemoryBuffer1D<byte, Stride1D.Dense> EnPassantFile;
         public readonly MemoryBuffer1D<byte, Stride1D.Dense> WhiteKingPos;
         public readonly MemoryBuffer1D<byte, Stride1D.Dense> BlackKingPos;
+        public readonly MemoryBuffer1D<int, Stride1D.Dense> PositionIndexes;
 
         public readonly BoardLayerBuffers Buffers;
 
@@ -35,8 +36,9 @@ namespace GrandChessTree.Client.Worker
             EnPassantFile = device.Allocate1D<byte>(boardCount);
             WhiteKingPos = device.Allocate1D<byte>(boardCount);
             BlackKingPos = device.Allocate1D<byte>(boardCount);
+            PositionIndexes = device.Allocate1D<int>(boardCount);
 
-            Buffers = new BoardLayerBuffers(PawnOccupancy, KnightOccupancy, BishopOccupancy, RookOccupancy, QueenOccupancy, WhiteOccupancy, BlackOccupancy, CastleRights, EnPassantFile, WhiteKingPos, BlackKingPos);
+            Buffers = new BoardLayerBuffers(PawnOccupancy, KnightOccupancy, BishopOccupancy, RookOccupancy, QueenOccupancy, WhiteOccupancy, BlackOccupancy, CastleRights, EnPassantFile, WhiteKingPos, BlackKingPos, PositionIndexes);
         }
 
         public void Dispose()
@@ -52,6 +54,7 @@ namespace GrandChessTree.Client.Worker
             EnPassantFile.Dispose();
             WhiteKingPos.Dispose();
             BlackKingPos.Dispose();
+            PositionIndexes.Dispose();
         }
     }
 }

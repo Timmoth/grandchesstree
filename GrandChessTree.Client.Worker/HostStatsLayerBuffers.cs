@@ -40,7 +40,7 @@ namespace GrandChessTree.Client.Worker
             DirectDiscoverdCheckmate = device.Allocate1D<byte>(boardCount);
             DoubleDiscoverdCheckmate = device.Allocate1D<byte>(boardCount);
 
-            Buffers = new StatsLayerBuffers(Nodes,
+            Buffers = new StatsLayerBuffers(boardCount, Nodes,
                 Captures,
                 Enpassant,
                 Castles,
