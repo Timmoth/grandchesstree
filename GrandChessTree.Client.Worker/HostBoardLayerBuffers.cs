@@ -15,15 +15,20 @@ namespace GrandChessTree.Client.Worker
         public readonly MemoryBuffer1D<ulong, Stride1D.Dense> QueenOccupancy;
         public readonly MemoryBuffer1D<ulong, Stride1D.Dense> WhiteOccupancy;
         public readonly MemoryBuffer1D<ulong, Stride1D.Dense> BlackOccupancy;
-        public readonly MemoryBuffer1D<byte, Stride1D.Dense> CastleRights;
-        public readonly MemoryBuffer1D<byte, Stride1D.Dense> EnPassantFile;
-        public readonly MemoryBuffer1D<byte, Stride1D.Dense> WhiteKingPos;
-        public readonly MemoryBuffer1D<byte, Stride1D.Dense> BlackKingPos;
-        public readonly MemoryBuffer1D<int, Stride1D.Dense> PositionIndexes;
+        public readonly MemoryBuffer1D<uint, Stride1D.Dense> NonOccupancyState;
+
 
         public readonly BoardLayerBuffers Buffers;
 
-        public HostBoardLayerBuffers(Accelerator device, int boardCount)
+        public MemoryBuffer1D<int, Stride1D.Dense> L1BoardIndexes;
+        public MemoryBuffer1D<int, Stride1D.Dense> L2BoardIndexes;
+        public MemoryBuffer1D<int, Stride1D.Dense> L3BoardIndexes;
+
+        public MemoryBuffer1D<int, Stride1D.Dense> L1MoveIndexes;
+        public MemoryBuffer1D<int, Stride1D.Dense> L2MoveIndexes;
+        public MemoryBuffer1D<int, Stride1D.Dense> L3MoveIndexes;
+
+        public HostBoardLayerBuffers(Accelerator device, int boardCount, int l1Size, int l2Size, int l3Size)
         {
             PawnOccupancy = device.Allocate1D<ulong>(boardCount);
             KnightOccupancy = device.Allocate1D<ulong>(boardCount);
@@ -32,13 +37,17 @@ namespace GrandChessTree.Client.Worker
             QueenOccupancy = device.Allocate1D<ulong>(boardCount);
             WhiteOccupancy = device.Allocate1D<ulong>(boardCount);
             BlackOccupancy = device.Allocate1D<ulong>(boardCount);
-            CastleRights = device.Allocate1D<byte>(boardCount);
-            EnPassantFile = device.Allocate1D<byte>(boardCount);
-            WhiteKingPos = device.Allocate1D<byte>(boardCount);
-            BlackKingPos = device.Allocate1D<byte>(boardCount);
-            PositionIndexes = device.Allocate1D<int>(boardCount);
+            NonOccupancyState = device.Allocate1D<uint>(boardCount);
+            L1BoardIndexes = device.Allocate1D<int>(l1Size);
+            L2BoardIndexes = device.Allocate1D<int>(l2Size);
+            L3BoardIndexes = device.Allocate1D<int>(l3Size);
+            L1MoveIndexes = device.Allocate1D<int>(l1Size);
+            L2MoveIndexes = device.Allocate1D<int>(l2Size);
+            L3MoveIndexes = device.Allocate1D<int>(l3Size);
 
-            Buffers = new BoardLayerBuffers(PawnOccupancy, KnightOccupancy, BishopOccupancy, RookOccupancy, QueenOccupancy, WhiteOccupancy, BlackOccupancy, CastleRights, EnPassantFile, WhiteKingPos, BlackKingPos, PositionIndexes);
+            Buffers = new BoardLayerBuffers(PawnOccupancy, KnightOccupancy, BishopOccupancy, RookOccupancy, QueenOccupancy, WhiteOccupancy,
+                BlackOccupancy, NonOccupancyState,
+                L1BoardIndexes, L2BoardIndexes, L3BoardIndexes, L1MoveIndexes, L2MoveIndexes, L3MoveIndexes);
         }
 
         public void Dispose()
@@ -50,11 +59,7 @@ namespace GrandChessTree.Client.Worker
             QueenOccupancy.Dispose();
             WhiteOccupancy.Dispose();
             BlackOccupancy.Dispose();
-            CastleRights.Dispose();
-            EnPassantFile.Dispose();
-            WhiteKingPos.Dispose();
-            BlackKingPos.Dispose();
-            PositionIndexes.Dispose();
+            NonOccupancyState.Dispose();
         }
     }
 }

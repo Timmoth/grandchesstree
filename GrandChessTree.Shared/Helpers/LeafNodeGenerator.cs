@@ -4,6 +4,52 @@ namespace GrandChessTree.Shared.Helpers;
 
 public static unsafe class LeafNodeGenerator
 {
+    public static List<Board> GenerateLeafNodesBoards(ref Board board, int depth, bool whiteToMove)
+    {
+        var boards = new List<Board>();
+
+        if (whiteToMove)
+        {
+            var positions = board.White & board.Pawn;
+            while (positions != 0) GenerateWhitePawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Knight;
+            while (positions != 0) GenerateWhiteKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Bishop;
+            while (positions != 0) GenerateWhiteBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Rook;
+            while (positions != 0) GenerateWhiteRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Queen;
+            while (positions != 0) GenerateWhiteQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateWhiteKingNodes(ref board, boards, depth, board.WhiteKingPos);
+        }
+        else
+        {
+            var positions = board.Black & board.Pawn;
+            while (positions != 0) GenerateBlackPawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Knight;
+            while (positions != 0) GenerateBlackKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Bishop;
+            while (positions != 0) GenerateBlackBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Rook;
+            while (positions != 0) GenerateBlackRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Queen;
+            while (positions != 0) GenerateBlackQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateBlackKingNodes(ref board, boards, depth, board.BlackKingPos);
+        }
+
+        return boards;
+    }
+
     public static List<(ulong hash, string fen, int occurrences)> GenerateLeafNodes(ref Board board, int depth, bool whiteToMove)
     {
         var boards = new List<Board>();

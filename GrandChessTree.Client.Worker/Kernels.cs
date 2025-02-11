@@ -3,16 +3,14 @@ using ILGPU;
 using ILGPU.Algorithms;
 using ILGPU.Algorithms.ScanReduceOperations;
 using ILGPU.Runtime;
-using ILGPU.Runtime.CPU;
 using System.Runtime.CompilerServices;
-using static ILGPU.IntrinsicMath;
 using GrandChessTree.Shared.Helpers;
 using System.Diagnostics;
 using ILGPU.Runtime.Cuda;
 
-namespace GrandChessTree.Client.Worker
+namespace GrandChessTree.Client.Worker.Kernels
 {
-    public static class Kernels
+    public static class Worker
     {
         public static void Run()
         {
@@ -40,33 +38,44 @@ namespace GrandChessTree.Client.Worker
             //var accelerator = context.CreateCPUAccelerator(0);
             var accelerator = context.CreateCudaAccelerator(0);
 
-            // count moves kernel is used to determine how many positions each input position generates
-            var countMovesKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, GpuAttackTable>(CountKernel.CountMovesKernel);
-            // expand layer kernel populates the output buffers with each position reachable from each input position
-            var expandLayerKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, BoardLayerBuffers, GpuAttackTable, TotalStatsLayerBuffers>(ExpandKernel.ExpandLayerKernel);
-            // classify node kernel populates the stats buffer with the node types of each position in the output buffer
-            var classifyNodeKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, TotalStatsLayerBuffers, GpuAttackTable>(Classify.ClassifyNodeKernel);
-            // accumulate stats kernel collects the counts in the stats buffer into ulongs to make the reduction more efficient
-            var accumulateStatsKernel = accelerator.LoadAutoGroupedStreamKernel<Index1D, StatsLayerBuffers, TotalStatsLayerBuffers>(AccumulateStatsKernel);
+            var countL1MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, GpuAttackTable>(CountMovesWhite.CountL1MovesKernel);
+            var countL1MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, GpuAttackTable>(CountMovesBlack.CountL1MovesKernel);
+            var countL2MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense>, GpuAttackTable>(CountMovesWhite.CountL2MovesKernel);
+            var countL2MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense>, GpuAttackTable>(CountMovesBlack.CountL2MovesKernel);
+            var countL3MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense>, GpuAttackTable>(CountMovesWhite.CountL3MovesKernel);
+            var countL3MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense>, GpuAttackTable>(CountMovesBlack.CountL3MovesKernel);
+
+            var generateL1MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesWhite.GenerateL1Moves);
+            var generateL1MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesBlack.GenerateL1Moves);
+            var generateL2MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D< ulong, Stride1D.Dense >,  GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesWhite.GenerateL2Moves);
+            var generateL2MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D< ulong, Stride1D.Dense >,  GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesBlack.GenerateL2Moves);
+            var generateL3MovesKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D< ulong, Stride1D.Dense >, GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesWhite.GenerateL3Moves);
+            var generateL3MovesKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D< ulong, Stride1D.Dense >, GpuAttackTable, ArrayView1D<ulong, Stride1D.Dense>>(GenerateMovesBlack.GenerateL3Moves);
+
+            var expandLayerKernelWhite = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense >, GpuAttackTable, TotalStatsLayerBuffers>(ExpandKernelWhite.ExpandLayerKernel);
+            var expandLayerKernelBlack = accelerator.LoadAutoGroupedStreamKernel<Index1D, BoardLayerBuffers, ArrayView1D<ulong, Stride1D.Dense >, GpuAttackTable, TotalStatsLayerBuffers>(ExpandKernelBlack.ExpandLayerKernel);
 
 
             var attackTables = GpuAttackTablesGenerator.Allocate(accelerator);
 
-            var inputLayerSize = 1000000;
-            var outputLayerSize = 50000000;
+            var inputLayerSize = 500;
+            var l1Size = 50000;
+            var l2Size = 1000000;
+            var l3Size = 1600_0000;
 
-            var input_layer = new HostBoardLayerBuffers(accelerator, inputLayerSize);
+            var input_layer = new HostBoardLayerBuffers(accelerator, inputLayerSize, l1Size, l2Size, l3Size);
             input_layer.Buffers.MemSetZero();
 
-            var output_layer = new HostBoardLayerBuffers(accelerator, outputLayerSize);
-            output_layer.Buffers.MemSetZero();
-            var stats_layer = new HostStatsLayerBuffers(accelerator, outputLayerSize);
-            stats_layer.Buffers.MemSetZero();
+            ArrayView1D<ulong, Stride1D.Dense> layer1Moves = accelerator.Allocate1D<ulong>(l1Size);
+            ArrayView1D<ulong, Stride1D.Dense> layer2Moves = accelerator.Allocate1D<ulong>(l2Size);
+            ArrayView1D<ulong, Stride1D.Dense> layer3Moves = accelerator.Allocate1D<ulong>(l3Size);
+            layer1Moves.MemSetToZero();
+            layer2Moves.MemSetToZero();
+            layer3Moves.MemSetToZero();
 
-            var total_stats_layer = new HostTotalStatsLayerBuffers(accelerator, outputLayerSize);
+            var total_stats_layer = new HostTotalStatsLayerBuffers(accelerator, l3Size);
             total_stats_layer.Buffers.MemSetZero();
 
-            var (board, whiteToMove) = FenParser.Parse("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - ");
             var pawnOccupancy = new ulong[inputLayerSize];
             var knightOccupancy =new ulong[inputLayerSize];
             var bishopOccupancy =new ulong[inputLayerSize];
@@ -74,14 +83,14 @@ namespace GrandChessTree.Client.Worker
             var queenOccupancy = new ulong[inputLayerSize];
             var whiteOccupancy = new ulong[inputLayerSize];
             var blackOccupancy = new ulong[inputLayerSize];
-            var castleRights = new byte[inputLayerSize];
-            var enPassantFile = new byte[inputLayerSize];
-            var whiteKingPos = new byte[inputLayerSize];
-            var blackKingPos = new byte[inputLayerSize];
-            var positionIndexes = new int[inputLayerSize];
-
-            for(int i = 0; i < inputLayerSize; i++)
+            var nonOccupancyState = new uint[inputLayerSize];
+  
+        //    var (initialBoard, whiteToMove) = FenParser.Parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            var (initialBoard, whiteToMove) = FenParser.Parse("r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -");
+            var boards = LeafNodeGenerator.GenerateLeafNodesBoards(ref initialBoard, 1, whiteToMove);
+            for (int i = 0; i < boards.Count; i++)
             {
+                var board = boards[i];
                 pawnOccupancy[i] = board.Pawn;
                 knightOccupancy[i] = board.Knight;
                 bishopOccupancy[i] = board.Bishop;
@@ -89,10 +98,10 @@ namespace GrandChessTree.Client.Worker
                 queenOccupancy[i] = board.Queen;
                 whiteOccupancy[i] = board.White;
                 blackOccupancy[i] = board.Black;
-                castleRights[i] = (byte)board.CastleRights;
-                enPassantFile[i] = board.EnPassantFile;
-                whiteKingPos[i] = board.WhiteKingPos;
-                blackKingPos[i] = board.BlackKingPos;
+                nonOccupancyState[i] = ((uint)board.CastleRights << 24) |
+                                   ((uint)board.EnPassantFile << 16) |
+                                   ((uint)board.WhiteKingPos << 8) |
+                                   ((uint)board.BlackKingPos);
             }
 
 
@@ -103,16 +112,30 @@ namespace GrandChessTree.Client.Worker
             input_layer.Buffers.QueenOccupancy.CopyFromCPU(queenOccupancy);
             input_layer.Buffers.WhiteOccupancy.CopyFromCPU(whiteOccupancy);
             input_layer.Buffers.BlackOccupancy.CopyFromCPU(blackOccupancy);
-            input_layer.Buffers.CastleRights.CopyFromCPU(castleRights);
-            input_layer.Buffers.EnPassantFile.CopyFromCPU(enPassantFile);
-            input_layer.Buffers.WhiteKingPos.CopyFromCPU(whiteKingPos);
-            input_layer.Buffers.BlackKingPos.CopyFromCPU(blackKingPos);
-            input_layer.Buffers.PositionIndexes.CopyFromCPU(positionIndexes);
+            input_layer.Buffers.NonOccupancyState.CopyFromCPU(nonOccupancyState);
 
-            var tempMemSize = accelerator.ComputeScanTempStorageSize<int>(input_layer.Buffers.PositionIndexes.Length);
-            var tempBuffer = accelerator.Allocate1D<int>(tempMemSize);
+            var tempMemSize = accelerator.ComputeScanTempStorageSize<int>(input_layer.Buffers.L1MoveIndexes.Length);
+            var tempBufferL1 = accelerator.Allocate1D<int>(tempMemSize);
             // Accumulate the number of moves for each position, producing the correct offset for each position in the output buffer
-            var scan = accelerator.CreateScan<
+            var scanL1 = accelerator.CreateScan<
+                       int,
+                       Stride1D.Dense,
+                       Stride1D.Dense,
+                       AddInt32>(ScanKind.Exclusive);
+
+            var tempMemSizel2 = accelerator.ComputeScanTempStorageSize<int>(input_layer.Buffers.L2MoveIndexes.Length);
+            var tempBufferL2 = accelerator.Allocate1D<int>(tempMemSizel2);
+            // Accumulate the number of moves for each position, producing the correct offset for each position in the output buffer
+            var scanL2 = accelerator.CreateScan<
+                       int,
+                       Stride1D.Dense,
+                       Stride1D.Dense,
+                       AddInt32>(ScanKind.Exclusive);
+
+            var tempMemSizel3 = accelerator.ComputeScanTempStorageSize<int>(input_layer.Buffers.L3MoveIndexes.Length);
+            var tempBufferL3 = accelerator.Allocate1D<int>(tempMemSizel3);
+            // Accumulate the number of moves for each position, producing the correct offset for each position in the output buffer
+            var scanL3 = accelerator.CreateScan<
                        int,
                        Stride1D.Dense,
                        Stride1D.Dense,
@@ -120,37 +143,95 @@ namespace GrandChessTree.Client.Worker
 
             for (int i = 0; i < 100; i++)
             {
+                tempBufferL1.MemSetToZero();
+                tempBufferL2.MemSetToZero();
+                tempBufferL3.MemSetToZero();
+                input_layer.Buffers.MemSetZero2();
+
                 var sw = Stopwatch.StartNew();
+                var swTotal = Stopwatch.StartNew();
                 // First step is to populate the PositionIndexes with the number of moves possible for each position in the input
-                countMovesKernel(inputLayerSize, input_layer.Buffers, attackTables);
+                countL1MovesKernelBlack(inputLayerSize, input_layer.Buffers, attackTables);
                 accelerator.Synchronize();
-                var outputPositionCount = accelerator.Reduce<int, AddInt32>(accelerator.DefaultStream, input_layer.Buffers.PositionIndexes);
-                Console.WriteLine($" count: {sw.ElapsedMilliseconds}ms {outputPositionCount} moves");
+                Console.WriteLine($"l1 count: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+                var layer1MoveCount = accelerator.Reduce<int, AddInt32>(accelerator.DefaultStream, input_layer.Buffers.L1MoveIndexes);
+                accelerator.Synchronize();
+                Console.WriteLine($"l1 reduce: {sw.ElapsedMilliseconds}ms {layer1MoveCount} moves");
                 sw.Restart();
                 // Count the number of positions that will be populated in the output buffer
 
-                scan(
+                scanL1(
                     accelerator.DefaultStream,
-                    input_layer.Buffers.PositionIndexes,
-                    input_layer.Buffers.PositionIndexes,
-                    tempBuffer.View);
+                    input_layer.Buffers.L1MoveIndexes,
+                    input_layer.Buffers.L1MoveIndexes,
+                    tempBufferL1.View);
                 accelerator.Synchronize();
-                Console.WriteLine($"scan: {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"l1 scan: {sw.ElapsedMilliseconds}ms");
                 sw.Restart();
                 // Generate each position reachable from the input position and insert into the output buffer at the correct offset
-                expandLayerKernel(inputLayerSize, input_layer.Buffers, output_layer.Buffers, attackTables, total_stats_layer.Buffers);
+                generateL1MovesKernelBlack(inputLayerSize, input_layer.Buffers, attackTables, layer1Moves);
                 accelerator.Synchronize();
-                Console.WriteLine($"expand {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"l1 generate: {sw.ElapsedMilliseconds}ms");
                 sw.Restart();
 
-                classifyNodeKernel(outputPositionCount, output_layer.Buffers, total_stats_layer.Buffers, attackTables);
+                // First step is to populate the PositionIndexes with the number of moves possible for each position in the input
+                countL2MovesKernelWhite(layer1MoveCount, input_layer.Buffers, layer1Moves, attackTables);
                 accelerator.Synchronize();
-                Console.WriteLine($"classify {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"l2 count: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+                var layer2MoveCount = accelerator.Reduce<int, AddInt32>(accelerator.DefaultStream, input_layer.Buffers.L2MoveIndexes);
+                accelerator.Synchronize();
+                Console.WriteLine($"l2 reduce: {sw.ElapsedMilliseconds}ms {layer2MoveCount} moves");
+                sw.Restart();
+                // Count the number of positions that will be populated in the output buffer
+
+                scanL2(
+                    accelerator.DefaultStream,
+                    input_layer.Buffers.L2MoveIndexes,
+                    input_layer.Buffers.L2MoveIndexes,
+                    tempBufferL2.View);
+                accelerator.Synchronize();
+                Console.WriteLine($"l2 scan: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+                // Generate each position reachable from the input position and insert into the output buffer at the correct offset
+                generateL2MovesKernelWhite(layer1MoveCount, input_layer.Buffers, layer1Moves, attackTables, layer2Moves);
+                accelerator.Synchronize();
+                Console.WriteLine($"l2 generate: {sw.ElapsedMilliseconds}ms");
                 sw.Restart();
 
-                //// Accumulate the stats buffer into a condensed ulong buffer for each type of move that can be reduced easily into the total sum
-                //accumulateStatsKernel(outputPositionCount, stats_layer.Buffers, total_stats_layer.Buffers);
-      
+                // First step is to populate the PositionIndexes with the number of moves possible for each position in the input
+                countL3MovesKernelBlack(layer2MoveCount, input_layer.Buffers, layer2Moves, attackTables);
+                accelerator.Synchronize();
+                Console.WriteLine($"l3 count: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+                var layer3MoveCount = accelerator.Reduce<int, AddInt32>(accelerator.DefaultStream, input_layer.Buffers.L3MoveIndexes);
+                accelerator.Synchronize();
+                Console.WriteLine($"l3 reduce: {sw.ElapsedMilliseconds}ms {layer3MoveCount} moves");
+                sw.Restart();
+                // Count the number of positions that will be populated in the output buffer
+
+                scanL3(
+                    accelerator.DefaultStream,
+                    input_layer.Buffers.L3MoveIndexes,
+                    input_layer.Buffers.L3MoveIndexes,
+                    tempBufferL3.View);
+                accelerator.Synchronize();
+                Console.WriteLine($"l3 scan: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+                // Generate each position reachable from the input position and insert into the output buffer at the correct offset
+                generateL3MovesKernelBlack(layer2MoveCount, input_layer.Buffers, layer2Moves, attackTables, layer3Moves);
+                accelerator.Synchronize();
+                Console.WriteLine($"l3 generate: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+
+
+                expandLayerKernelWhite(layer3MoveCount, input_layer.Buffers, layer3Moves, attackTables, total_stats_layer.Buffers);
+                accelerator.Synchronize();
+                Console.WriteLine($"l3 expand: {sw.ElapsedMilliseconds}ms");
+                sw.Restart();
+
+ 
                 // Reduce the accumulated stats buffer into a single value for each node type
                 ulong totalNodes = accelerator.Reduce<ulong, AddUInt64>(accelerator.DefaultStream, total_stats_layer.Buffers.Nodes);
                 ulong totalCaptures = accelerator.Reduce<ulong, AddUInt64>(accelerator.DefaultStream, total_stats_layer.Buffers.Captures);
@@ -165,10 +246,12 @@ namespace GrandChessTree.Client.Worker
                 ulong totalSingleDiscoveredCheckmate = accelerator.Reduce<ulong, AddUInt64>(accelerator.DefaultStream, total_stats_layer.Buffers.SingleDiscoveredCheckmate);
                 ulong totalDirectDiscoverdCheckmate = accelerator.Reduce<ulong, AddUInt64>(accelerator.DefaultStream, total_stats_layer.Buffers.DirectDiscoverdCheckmate);
                 ulong totalDoubleDiscoverdCheckmate = accelerator.Reduce<ulong, AddUInt64>(accelerator.DefaultStream, total_stats_layer.Buffers.DoubleDiscoverdCheckmate);
-                Console.WriteLine($"final {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"combine {sw.ElapsedMilliseconds}ms");
+                Console.WriteLine($"total: {swTotal.ElapsedMilliseconds}ms");
                 sw.Restart();
                 Console.WriteLine($"nodes: {totalNodes} captures: {totalCaptures} promotions: {totalPromotions} castles: {totalCastles}");
                 Console.WriteLine($"totalEnpassant: {totalEnpassant} totalDirectCheck: {totalDirectCheck}");
+
             }
         }
 
@@ -181,59 +264,5 @@ namespace GrandChessTree.Client.Worker
             return i;
         }
 
-        static void AccumulateStatsKernel(
-                    Index1D idx,
-                    StatsLayerBuffers inputStats,
-                    TotalStatsLayerBuffers outputStats)
-        {
-            // Each thread processes 64 bytes at a time
-            int baseIdx = idx * 64;
-
-            ulong nodesPackedValue = 0;
-            ulong capturesPackedValue = 0;
-            ulong enpassantPackedValue = 0;
-            ulong castlesPackedValue = 0;
-            ulong promotionsPackedValue = 0;
-            ulong directCheckPackedValue = 0;
-            ulong singleDiscoveredCheckPackedValue = 0;
-            ulong directDiscoveredCheckPackedValue = 0;
-            ulong doubleDiscoveredCheckPackedValue = 0;
-            ulong directCheckmatePackedValue = 0;
-            ulong singleDiscoveredCheckmatePackedValue = 0;
-            ulong directDiscoverdCheckmatePackedValue = 0;
-            ulong doubleDiscoverdCheckmatePackedValue = 0;
-           
-            for (int i = 0; i < 64 && (baseIdx + i) < inputStats.BoardCount; i++)
-            {
-                nodesPackedValue |= (ulong)(inputStats.Nodes[baseIdx + i] & 1) << i;
-                capturesPackedValue |= (ulong)(inputStats.Captures[baseIdx + i] & 1) << i;
-                enpassantPackedValue |= (ulong)(inputStats.Enpassant[baseIdx + i] & 1) << i;
-                castlesPackedValue |= (ulong)(inputStats.Castles[baseIdx + i] & 1) << i;
-                promotionsPackedValue |= (ulong)(inputStats.Promotions[baseIdx + i] & 1) << i;
-                directCheckPackedValue |= (ulong)(inputStats.DirectCheck[baseIdx + i] & 1) << i;
-                singleDiscoveredCheckPackedValue |= (ulong)(inputStats.SingleDiscoveredCheck[baseIdx + i] & 1) << i;
-                directDiscoveredCheckPackedValue |= (ulong)(inputStats.DirectDiscoveredCheck[baseIdx + i] & 1) << i;
-                doubleDiscoveredCheckPackedValue |= (ulong)(inputStats.DoubleDiscoveredCheck[baseIdx + i] & 1) << i;
-                directCheckmatePackedValue |= (ulong)(inputStats.DirectCheckmate[baseIdx + i] & 1) << i;
-                singleDiscoveredCheckmatePackedValue |= (ulong)(inputStats.SingleDiscoveredCheckmate[baseIdx + i] & 1) << i;
-                directDiscoverdCheckmatePackedValue |= (ulong)(inputStats.DirectDiscoverdCheckmate[baseIdx + i] & 1) << i;
-                doubleDiscoverdCheckmatePackedValue |= (ulong)(inputStats.DoubleDiscoverdCheckmate[baseIdx + i] & 1) << i;
-            }
-
-            // Store packed value (each ulong represents 64 bytes)
-            outputStats.Nodes[idx] = (ulong)IntrinsicMath.PopCount(nodesPackedValue);
-            outputStats.Captures[idx] = (ulong)IntrinsicMath.PopCount(capturesPackedValue);
-            outputStats.Enpassant[idx] = (ulong)IntrinsicMath.PopCount(enpassantPackedValue);
-            outputStats.Castles[idx] = (ulong)IntrinsicMath.PopCount(castlesPackedValue);
-            outputStats.Promotions[idx] = (ulong)IntrinsicMath.PopCount(promotionsPackedValue);
-            outputStats.DirectCheck[idx] = (ulong)IntrinsicMath.PopCount(directCheckPackedValue);
-            outputStats.SingleDiscoveredCheck[idx] = (ulong)IntrinsicMath.PopCount(singleDiscoveredCheckPackedValue);
-            outputStats.DirectDiscoveredCheck[idx] = (ulong)IntrinsicMath.PopCount(directDiscoveredCheckPackedValue);
-            outputStats.DoubleDiscoveredCheck[idx] = (ulong)IntrinsicMath.PopCount(doubleDiscoveredCheckPackedValue);
-            outputStats.DirectCheckmate[idx] = (ulong)IntrinsicMath.PopCount(directCheckmatePackedValue);
-            outputStats.SingleDiscoveredCheckmate[idx] = (ulong)IntrinsicMath.PopCount(singleDiscoveredCheckmatePackedValue);
-            outputStats.DirectDiscoverdCheckmate[idx] = (ulong)IntrinsicMath.PopCount(directDiscoverdCheckmatePackedValue);
-            outputStats.DoubleDiscoverdCheckmate[idx] = (ulong)IntrinsicMath.PopCount(doubleDiscoverdCheckmatePackedValue);
-        }
     }
 }

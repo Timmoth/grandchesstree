@@ -1,9 +1,10 @@
 ﻿using GrandChessTree.Client.Worker;
+using GrandChessTree.Client.Worker.Kernels;
 
 
 try
 {
-    Kernels.Run();
+    Worker.Run();
 }
 catch (Exception ex)
 {

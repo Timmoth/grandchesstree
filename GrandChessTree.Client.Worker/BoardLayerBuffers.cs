@@ -15,11 +15,16 @@ namespace GrandChessTree.Client.Worker
         public ArrayView1D<ulong, Stride1D.Dense> QueenOccupancy;
         public ArrayView1D<ulong, Stride1D.Dense> WhiteOccupancy;
         public ArrayView1D<ulong, Stride1D.Dense> BlackOccupancy;
-        public ArrayView1D<byte, Stride1D.Dense> CastleRights;
-        public ArrayView1D<byte, Stride1D.Dense> EnPassantFile;
-        public ArrayView1D<byte, Stride1D.Dense> WhiteKingPos;
-        public ArrayView1D<byte, Stride1D.Dense> BlackKingPos;
-        public ArrayView1D<int, Stride1D.Dense> PositionIndexes;
+        public ArrayView1D<uint, Stride1D.Dense> NonOccupancyState;
+
+
+        public ArrayView1D<int, Stride1D.Dense> L1BoardIndexes;
+        public ArrayView1D<int, Stride1D.Dense> L2BoardIndexes;
+        public ArrayView1D<int, Stride1D.Dense> L3BoardIndexes;
+
+        public ArrayView1D<int, Stride1D.Dense> L1MoveIndexes;
+        public ArrayView1D<int, Stride1D.Dense> L2MoveIndexes;
+        public ArrayView1D<int, Stride1D.Dense> L3MoveIndexes;
 
         public BoardLayerBuffers(
             ArrayView1D<ulong, Stride1D.Dense> pawnOccupancy,
@@ -29,11 +34,14 @@ namespace GrandChessTree.Client.Worker
             ArrayView1D<ulong, Stride1D.Dense> queenOccupancy,
             ArrayView1D<ulong, Stride1D.Dense> whiteOccupancy,
             ArrayView1D<ulong, Stride1D.Dense> blackOccupancy,
-            ArrayView1D<byte, Stride1D.Dense> castleRights,
-            ArrayView1D<byte, Stride1D.Dense> enPassantFile,
-            ArrayView1D<byte, Stride1D.Dense> whiteKingPos,
-            ArrayView1D<byte, Stride1D.Dense> blackKingPos,
-            ArrayView1D<int, Stride1D.Dense> positionIndexes)
+            ArrayView1D<uint, Stride1D.Dense> nonOccupancyState,
+            ArrayView1D<int, Stride1D.Dense> l1BoardIndexes,
+            ArrayView1D<int, Stride1D.Dense> l2BoardIndexes,
+            ArrayView1D<int, Stride1D.Dense> l3BoardIndexes,
+            ArrayView1D<int, Stride1D.Dense> l1MoveIndexes,
+            ArrayView1D<int, Stride1D.Dense> l2MoveIndexes,
+            ArrayView1D<int, Stride1D.Dense> l3MoveIndexes
+            )
         {
             PawnOccupancy = pawnOccupancy;
             KnightOccupancy = knightOccupancy;
@@ -42,11 +50,13 @@ namespace GrandChessTree.Client.Worker
             QueenOccupancy = queenOccupancy;
             WhiteOccupancy = whiteOccupancy;
             BlackOccupancy = blackOccupancy;
-            CastleRights = castleRights;
-            EnPassantFile = enPassantFile;
-            WhiteKingPos = whiteKingPos;
-            BlackKingPos = blackKingPos;
-            PositionIndexes = positionIndexes;
+            NonOccupancyState = nonOccupancyState;
+            L1BoardIndexes = l1BoardIndexes;
+            L2BoardIndexes = l2BoardIndexes;
+            L3BoardIndexes = l3BoardIndexes;
+            L1MoveIndexes = l1MoveIndexes;
+            L2MoveIndexes = l2MoveIndexes;
+            L3MoveIndexes = l3MoveIndexes;
         }
 
         internal void MemSetZero()
@@ -58,11 +68,23 @@ namespace GrandChessTree.Client.Worker
             QueenOccupancy.MemSetToZero();
             WhiteOccupancy.MemSetToZero();
             BlackOccupancy.MemSetToZero();
-            CastleRights.MemSetToZero();
-            EnPassantFile.MemSetToZero();
-            WhiteKingPos.MemSetToZero();
-            BlackKingPos.MemSetToZero();
-            PositionIndexes.MemSetToZero();
+            NonOccupancyState.MemSetToZero();
+            L1BoardIndexes.MemSetToZero();
+            L2BoardIndexes.MemSetToZero();
+            L3BoardIndexes.MemSetToZero();
+            L1MoveIndexes.MemSetToZero();
+            L2MoveIndexes.MemSetToZero();
+            L3MoveIndexes.MemSetToZero();
+        }
+
+        internal void MemSetZero2()
+        {
+            L1BoardIndexes.MemSetToZero();
+            L2BoardIndexes.MemSetToZero();
+            L3BoardIndexes.MemSetToZero();
+            L1MoveIndexes.MemSetToZero();
+            L2MoveIndexes.MemSetToZero();
+            L3MoveIndexes.MemSetToZero();
         }
     }
 }

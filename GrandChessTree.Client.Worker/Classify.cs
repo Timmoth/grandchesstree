@@ -1,28 +1,25 @@
-﻿using GrandChessTree.Shared.Precomputed;
+﻿using GrandChessTree.Client.Worker.Kernels;
+using GrandChessTree.Shared.Precomputed;
 using ILGPU;
+using ILGPU.Backends.OpenCL;
 using static ILGPU.IntrinsicMath;
 
 namespace GrandChessTree.Client.Worker
 {
     public static class Classify
     {
-        public static void ClassifyNodeKernel(Index1D index, BoardLayerBuffers layer, TotalStatsLayerBuffers stats, GpuAttackTable gpuAttackTables)
+        public static void ClassifyNodeKernel(ulong pawn, ulong knight, ulong bishop, ulong rook, ulong queen,
+           ulong white, ulong black, byte whitKing, byte blackKing, byte castleRights, byte EnpassantFile,
+           GpuAttackTable gpuAttackTables,
+           ref ulong DirectCheck,
+           ref ulong SingleDiscoveredCheck,
+           ref ulong DirectDiscoveredCheck
+            , ref ulong DoubleDiscoveredCheck
+            , ref ulong DirectCheckmate
+            , ref ulong SingleDiscoveredCheckmate
+            , ref ulong DirectDiscoverdCheckmate
+            , ref ulong DoubleDiscoverdCheckmate)
         {
-            // Determine the node type and increment the board for each.
-            int outputIndex = layer.PositionIndexes[index];
-
-            ulong pawn = layer.PawnOccupancy[index];
-            ulong knight = layer.KnightOccupancy[index];
-            ulong bishop = layer.BishopOccupancy[index];
-            ulong rook = layer.RookOccupancy[index];
-            ulong queen = layer.QueenOccupancy[index];
-            ulong white = layer.WhiteOccupancy[index];
-            ulong black = layer.BlackOccupancy[index];
-            byte whitKing = layer.WhiteKingPos[index];
-            byte blackKing = layer.BlackKingPos[index];
-            byte castleRights = layer.CastleRights[index];
-            byte enPassantFile = layer.EnPassantFile[index];
-
             var occupancy = white | black;
             var diagonalSliders = (bishop | queen);
             var straightSliders = (rook | queen);
@@ -33,7 +30,6 @@ namespace GrandChessTree.Client.Worker
                (gpuAttackTables.WhitePawnAttackTable[whitKing] & black & pawn);
 
             var numCheckers = IntrinsicMath.PopCount(checkers);
-            stats.Nodes[index] = 1;
 
             if (numCheckers == 0)
             {
@@ -70,12 +66,12 @@ namespace GrandChessTree.Client.Worker
                 if ((potentialMoves & ~white) == 0)
                 {
                     // mate - king can't move
-                    stats.DirectCheckmate[index] = 1;
+                    DirectCheckmate++;
                 }
                 else
                 {
                     // check king can move
-                    stats.DirectCheck[index] = 1;
+                    DirectCheck++;
                 }
             }
             else
@@ -91,12 +87,12 @@ namespace GrandChessTree.Client.Worker
                 if (canEvadeCheck)
                 {
                     // Check
-                    stats.DirectCheck[index] = 1;
+                    DirectCheck++;
                 }
                 else
                 {
                     // Mate
-                    stats.DirectCheckmate[index] = 1;
+                    DirectCheckmate++;
                 }
             }
         }
