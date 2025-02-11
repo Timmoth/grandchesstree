@@ -8,15 +8,14 @@ namespace GrandChessTree.Shared;
 public static unsafe class Perft
 {
     #region HashTable
-    public static readonly uint HashTableMask;   
-    public static readonly int HashTableSize;
+    public static uint HashTableMask;   
+    public static int HashTableSize;
 
     [ThreadStatic] public static Summary* HashTable;
 
     static Perft()
     {
-        HashTableSize = (int)CalculateHashTableEntries(512);
-        HashTableMask = (uint)HashTableSize - 1;
+
     }
     private static uint CalculateHashTableEntries(int sizeInMb)
     {
@@ -34,8 +33,11 @@ public static unsafe class Perft
         return (uint)transpositionCount;
     }
 
-    public static Summary* AllocateHashTable()
+    public static Summary* AllocateHashTable(int sizeInMb = 512)
     {
+        HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        HashTableMask = (uint)HashTableSize - 1;
+
         const nuint alignment = 64;
 
         var bytes = ((nuint)sizeof(Summary) * (nuint)HashTableSize);
@@ -57,7 +59,10 @@ public static unsafe class Perft
 
     public static void ClearTable(Summary* HashTable)
     {
-        Unsafe.InitBlock(HashTable, 0, (uint)(sizeof(Summary) * (HashTableMask + 1)));
+        if (HashTable != null)
+        {
+            Unsafe.InitBlock(HashTable, 0, (uint)(sizeof(Summary) * (HashTableMask + 1)));
+        }
     }
 
     #endregion
