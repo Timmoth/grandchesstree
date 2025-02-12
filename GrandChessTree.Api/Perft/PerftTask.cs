@@ -17,6 +17,12 @@ namespace GrandChessTree.Api.D10Search
         [Column("depth")]
         public required int Depth { get; set; }
 
+        [Column("root_position_id")]
+        public int RootPositionId { get; set; } = 0;
+
+        [Column("worker_id")]
+        public int WorkerId { get; set; } = 0;
+
         [ForeignKey("PerftItem")]
         [Column("perft_item_id")]
         public required long PerftItemId { get; set; }

@@ -46,7 +46,6 @@ namespace GrandChessTree.Client
             File.WriteAllText(ConfigFilePath, json);
         }
 
-
         public static PerftTask[]? LoadPartiallyCompletedTasks()
         {
             if (!File.Exists(PartiallyCompletedTasksFilePath))
@@ -64,7 +63,6 @@ namespace GrandChessTree.Client
             File.WriteAllBytes(PartiallyCompletedTasksFilePath, data);
         }
 
-
         public static PerftTaskResponse[]? LoadPendingTasks()
         {
             try
@@ -73,7 +71,6 @@ namespace GrandChessTree.Client
                 {
                     return null;
                 }
-
 
                 byte[] data = File.ReadAllBytes(PendingTasksFilePath);
                 return JsonSerializer.Deserialize(Encoding.UTF8.GetString(data), SourceGenerationContext.Default.PerftTaskResponseArray);

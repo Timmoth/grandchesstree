@@ -1,7 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
 namespace GrandChessTree.Shared.Api;
-
 public class PerftStatsResponse
 {
     [JsonPropertyName("nps")]

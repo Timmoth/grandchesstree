@@ -12,6 +12,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("workers")]
         public int Workers { get; set; } = 4;
+
+        [JsonPropertyName("worker_id")]
+        public int WorkerId { get; set; } = 0;
     }
 
     public static class ConfigManager
@@ -40,6 +43,12 @@ namespace GrandChessTree.Client
             if (config.Workers <= 0)
             {
                 Console.WriteLine("Error: Workers must be greater than zero.");
+                isValid = false;
+            }
+
+            if (config.WorkerId < 0)
+            {
+                Console.WriteLine("Error: Worker Id must be >= 0.");
                 isValid = false;
             }
 
@@ -73,6 +82,12 @@ namespace GrandChessTree.Client
             if (int.TryParse(Console.ReadLine(), out int workers))
             {
                 config.Workers = workers;
+            }
+
+            Console.Write("Enter number the worker id: ");
+            if (int.TryParse(Console.ReadLine(), out int workerId))
+            {
+                config.WorkerId = workerId;
             }
 
             WorkerPersistence.SaveConfig(config);

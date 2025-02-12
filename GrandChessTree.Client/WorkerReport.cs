@@ -18,14 +18,14 @@ namespace GrandChessTree.Client
 
         public bool IsRunning { get; set; }
 
-        public void BeginTask(PerftTask task, int workItemOccurrences)
+        public void BeginTask(PerftTask task)
         {
             Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks += task.CachedSubTaskCount;
             TotalCachedSubTasks += task.CachedSubTaskCount;
-            TotalNodes += (ulong)workItemOccurrences * (ulong)task.CompletedSubTaskResults.Sum(t => (float)t.Results[0] * t.Occurrences);
+            TotalNodes += (ulong)task.CompletedSubTaskResults.Sum(t => (float)t.Results[0] * t.Occurrences);
             WorkerComputedNodes = 0;
         }
 
@@ -36,26 +36,24 @@ namespace GrandChessTree.Client
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
         }
 
-        public void EndSubTaskWorkCompleted(PerftTask task, ulong nodes, int workItemOccurrences, int subTaskOccurrences)
+        public void EndSubTaskWorkCompleted(PerftTask task, ulong nodes, int subTaskOccurrences)
         {
             Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks++;
-            TotalNodes += nodes * (ulong)workItemOccurrences * (ulong)subTaskOccurrences;
             TotalComputedNodes += nodes;
             WorkerComputedNodes += nodes;
 
         }
 
-        public void EndSubTaskFoundInCache(PerftTask task, ulong nodes, int workItemOccurrences, int subTaskOccurrences)
+        public void EndSubTaskFoundInCache(PerftTask task, ulong nodes, int subTaskOccurrences)
         {
             Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks++;
             TotalCachedSubTasks++;
-            TotalNodes += nodes * (ulong)workItemOccurrences * (ulong)subTaskOccurrences;
         }
 
         public void CompleteTask(PerftTask task, long duration)

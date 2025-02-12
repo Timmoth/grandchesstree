@@ -149,7 +149,6 @@ namespace GrandChessTree.Client
                     try
                     {
                         await _searchItemOrchistrator.TryLoadNewTasks();
-                        await Task.Delay(100);
                     }
                     catch (Exception ex)
                     {
@@ -198,15 +197,9 @@ namespace GrandChessTree.Client
                     Thread.Sleep(10);
                     continue;
                 }
-
-                // Check how many times this position occurs at depth 4
-                if(!OccurrencesD4.Dict.TryGetValue(currentTask.PerftItemHash, out var taskOccurrences))
-                {
-                    taskOccurrences = 1;
-                }
                 
                 // Report that work on this task has begun
-                workerReport.BeginTask(currentTask, taskOccurrences);
+                workerReport.BeginTask(currentTask);
 
                 long taskStartTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
                 while (!ShouldSaveAndQuit && currentTask.RemainingSubTasks.Any())
@@ -238,7 +231,7 @@ namespace GrandChessTree.Client
                         {
                             // This position has been found in the global cache! Use the cached summary
                             // And report the subtask as completed
-                            workerReport.EndSubTaskFoundInCache(currentTask, summary.Nodes, taskOccurrences, subTaskOccurrences);
+                            workerReport.EndSubTaskFoundInCache(currentTask, summary.Nodes, subTaskOccurrences);
                         }
                         else
                         {
@@ -251,7 +244,7 @@ namespace GrandChessTree.Client
                             _searchItemOrchistrator.CacheCompletedSubtask(board.Hash, summary);
 
                             // Report the subtask as completed
-                            workerReport.EndSubTaskWorkCompleted(currentTask, summary.Nodes, taskOccurrences, subTaskOccurrences);
+                            workerReport.EndSubTaskWorkCompleted(currentTask, summary.Nodes, subTaskOccurrences);
                             var subTaskDurationSeconds = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - subtaskStart) / 1000.0f;
 
                             // Calculate the NPS

@@ -60,7 +60,8 @@ namespace GrandChessTree.Api.Controllers
                 PerftItemId = perftItem.Id,
                 StartedAt = currentTimestamp,
                 Depth = perftItem.Depth,
-                AccountId = apiKey.AccountId
+                AccountId = apiKey.AccountId,
+                RootPositionId = perftItem.RootPositionId,
             }).ToList();
 
             await _dbContext.PerftTasks.AddRangeAsync(searchTasks, cancellationToken);
@@ -81,6 +82,8 @@ namespace GrandChessTree.Api.Controllers
             {
                 PerftTaskId = task.Id,
                 PerftItemHash = task.PerftItem.Hash,
+                PerftItemFen = task.PerftItem.Fen,
+                LaunchDepth = task.PerftItem.LaunchDepth,
                 Depth = task.Depth,
             }).ToArray();
 

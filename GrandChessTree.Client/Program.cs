@@ -3,7 +3,6 @@
 Console.WriteLine("-----TheGreatChessTree-----");
 var containerized = Environment.GetEnvironmentVariable("containerized");
 
-int depth = 0;
 Config config;
 // Check if it's set and print it out (or use it in your logic)
 if (containerized != null && containerized == "true")
@@ -17,10 +16,10 @@ if (containerized != null && containerized == "true")
         return;
     }
 
-    var depthEnvVar = Environment.GetEnvironmentVariable("depth");
-    if (!int.TryParse(depthEnvVar, out depth))
+    var workerIdEnvVar = Environment.GetEnvironmentVariable("worker_id");
+    if (!int.TryParse(workerEnvVar, out var workerId))
     {
-        Console.WriteLine("'depth' environment variable must be an integer > 0");
+        Console.WriteLine("'worker_id' environment variable must be an integer >= 0");
         return;
     }
 
@@ -29,16 +28,12 @@ if (containerized != null && containerized == "true")
         ApiKey = Environment.GetEnvironmentVariable("api_key") ?? "",
         ApiUrl = Environment.GetEnvironmentVariable("api_url") ?? "",
         Workers = workerCount,
+        WorkerId = workerId,
     };
 }
 else
 {
     config = ConfigManager.LoadOrCreateConfig();
-    Console.WriteLine("Enter the perft depth to start:");
-    if (!int.TryParse(Console.ReadLine(), out depth))
-    {
-        Console.WriteLine("Invalid search depth");
-    }
 }
 
 
@@ -48,7 +43,7 @@ if (!ConfigManager.IsValidConfig(config))
 }
 
 
-var searchOrchastrator = new SearchItemOrchistrator(depth, config);
+var searchOrchastrator = new SearchItemOrchistrator(config);
 var networkClient = new WorkProcessor(searchOrchastrator, config);
 AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
 _ = Task.Run(ReadCommands);
