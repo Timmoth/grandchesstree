@@ -1,6 +1,11 @@
-### Quick start
+### Linux install instructions
 - Get in touch, you'll need an apikey in order to connect to the server. The easiest way is to [join the discord group](https://discord.gg/cTu3aeCZVe)
 - Download the [latest client](https://github.com/Timmoth/grandchesstree/releases) (windows, linux, mac are all supported (including ARM builds!))
+```
+    wget https://github.com/Timmoth/grandchesstree/releases/download/GrandChessTree-0.0.5/GrandChessTree_linux_x64
+    chmod 755 GrandChessTree_linux_x64
+    ./GrandChessTree_linux_x64
+```
 - Run the client and answer the questions with the following:
 ```
   api_url: https://api.grandchesstree.com/
@@ -13,6 +18,13 @@
 **Note that you should pick a number of workers that corrosponds to less then the number of threads in your system since they will all be running in parrallel. **
 
 **You can close the program at any time, but do note that any progress on incomplete tasks will be lost.**
+
+**To exit the program use the following**
+
+- q+ENTER: This will wait until each subtask is completed then save progress to be resumed next time
+- qg+ENTER: This will stop requesting new tasks, finish the current ones then exit
+- ctrl+c: or any other abrupt close will cause all progress on current tasks to be lost.
+
 
 If you want to run from source (for apple silicon you may need to)
 ```
