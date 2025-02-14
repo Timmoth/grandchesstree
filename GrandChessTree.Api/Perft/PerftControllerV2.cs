@@ -256,7 +256,7 @@ namespace GrandChessTree.Api.Controllers
                     WITH time_buckets AS (
                         SELECT generate_series(
                             EXTRACT(EPOCH FROM NOW()) - 43200,  -- 3 hours ago
-                            EXTRACT(EPOCH FROM NOW()),         -- Now
+                            EXTRACT(EPOCH FROM NOW()) - 900,    -- Slightly in the past
                             900                                -- 15-minute intervals (900 seconds)
                         ) AS bucket_start
                     )
