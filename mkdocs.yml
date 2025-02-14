@@ -14,6 +14,9 @@ nav:
   - Results: results.md
   - Technical overview: technical.md
   - Linux Installation: linuxInstall.md
+  - Advanced Configuration:
+    - Memory Configuration: memoryConf.md
+     
 
 markdown_extensions:
   - tables
