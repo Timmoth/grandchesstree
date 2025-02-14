@@ -32,6 +32,6 @@ dotnet run -c Release --no-launch-profile --property:DefineConstants="ARM"
   api_url: https://api.grandchesstree.com/
   api_key: <your_api_key>
   workers: <number_of_threads>
-  desired_depth: 12
+  worker_id: 0
 ```
 - That's it! 
