@@ -51,11 +51,18 @@ namespace GrandChessTree.Api.Database
                 .HasIndex(p => new { p.Hash, p.Depth })
                 .IsUnique();
 
+
+            modelBuilder.Entity<PerftItem>()
+                .HasIndex(p => p.RootPositionId);
+
             modelBuilder.Entity<PerftItem>()
                 .HasIndex(p => p.Depth);
 
             modelBuilder.Entity<PerftTask>()
-                 .HasIndex(p => p.Depth);
+                 .HasIndex(p => p.RootPositionId);
+
+            modelBuilder.Entity<PerftTask>()
+                .HasIndex(p => p.Depth);
         }
 
     }

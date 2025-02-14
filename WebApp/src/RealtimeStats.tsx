@@ -7,11 +7,13 @@ interface PerftStatsResponse {
   completed_tasks: number;
   total_nodes: number;
   percent_completed_tasks: number;
+  total_tasks: number;
 }
 interface RealtimeStatsProps {
-  id: number; // The integer you want to pass as a prop
+  positionId: number,
+  depth: number,
 }
-const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
+const RealtimeStats: React.FC<RealtimeStatsProps> = ({ positionId, depth }) => {
   const [leaderboardData, setLeaderboardData] = useState<PerftStatsResponse>();
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +23,7 @@ const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
     const fetchLeaderboard = async () => {
       try {
         const resp = await fetch(
-          `https://api.grandchesstree.com/api/v1/perft/${id}/stats`
+          `https://api.grandchesstree.com/api/v2/perft/${positionId}/${depth}/stats`
         );
         if (!resp.ok) {
           throw new Error("Failed to fetch data");
@@ -36,7 +38,7 @@ const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
     };
 
     fetchLeaderboard();
-  }, [id]); // Empty dependency array ensures this effect runs only once when the component mounts
+  }, [positionId, depth]); // Empty dependency array ensures this effect runs only once when the component mounts
 
   // Format large numbers (e.g., 1000 -> 1k, 1000000 -> 1m)
   const formatBigNumber = (num: number): string => {
@@ -79,7 +81,7 @@ const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
       <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700">
         <div className="flex justify-between items-center space-x-4">
           <span className="text-md font-semibold">Perft Depth</span>
-          <span className="text-xl font-bold">{id}</span>
+          <span className="text-xl font-bold">{depth}</span>
         </div>
 
         <div className="flex justify-between items-center space-x-4">
@@ -98,7 +100,7 @@ const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
         <div className="flex justify-between items-center space-x-4">
           <span className="text-md font-semibold">Completed Tasks</span>
           <span className="text-xl font-bold">
-            {leaderboardData && leaderboardData?.completed_tasks} / 101240
+            {leaderboardData && leaderboardData?.completed_tasks} / {leaderboardData?.total_tasks}
           </span>
         </div>
 
@@ -115,7 +117,7 @@ const RealtimeStats: React.FC<RealtimeStatsProps> = ({ id }) => {
               ? "Completed"
               : leaderboardData &&
                 formatTime(
-                  ((101240 - leaderboardData?.completed_tasks) /
+                  ((leaderboardData?.total_tasks - leaderboardData?.completed_tasks) /
                     leaderboardData?.tpm) *
                     60
                 )}

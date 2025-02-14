@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
@@ -87,7 +89,7 @@ namespace GrandChessTree.Api.Controllers
 
             return Ok(response);
         }
-      
+
         [ApiKeyAuthorize]
         [HttpPost("results")]
         public async Task<IActionResult> SubmitResults(
@@ -156,6 +158,183 @@ namespace GrandChessTree.Api.Controllers
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Ok();
+        }
+
+        public class ProgressStatsModel
+        {
+            [Column("total_nodes")]
+            [JsonPropertyName("total_nodes")]
+            public ulong total_nodes { get; set; }
+        }
+
+        public class RealTimeStatsModel
+        {
+            [Column("nps")]
+            [JsonPropertyName("nps")]
+            public float nps { get; set; }
+        }
+        public class PerftStatsResponse
+        {
+            [JsonPropertyName("nps")]
+            public float Nps { get; set; }
+
+            [JsonPropertyName("total_nodes")]
+            public ulong TotalNodes { get; set; }
+        }
+
+        public class PerftLeaderboardResponse
+        {
+            [JsonPropertyName("account_name")]
+            public string AccountName { get; set; } = "Unknown";
+
+            [JsonPropertyName("total_nodes")]
+            public long TotalNodes { get; set; }
+
+            [JsonPropertyName("compute_time_seconds")]
+            public long TotalTimeSeconds { get; set; }
+
+            [JsonPropertyName("nps")]
+            public float NodesPerSecond { get; set; }
+        }
+
+
+        [HttpGet("stats")]
+        [ResponseCache(Duration = 10)]
+        public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
+        {
+            var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+            var pastMinuteTimestamp = currentTimestamp - 60;
+
+
+            var realTimeStatsResult = await _dbContext.Database
+                .SqlQueryRaw<RealTimeStatsModel>(@"
+        SELECT
+        COALESCE(SUM(t.nodes * i.occurrences), 0) / 3600.0 AS nps
+        FROM public.perft_tasks t
+        JOIN public.perft_items i ON t.perft_item_id = i.id
+        WHERE t.finished_at >= EXTRACT(EPOCH FROM NOW()) - 3600")
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+
+            var progressStatsResult = await _dbContext.Database
+           .SqlQueryRaw<ProgressStatsModel>(@"
+        SELECT
+        COALESCE(SUM(t.nodes * i.occurrences), 0) AS total_nodes
+        FROM public.perft_tasks t
+        JOIN public.perft_items i ON t.perft_item_id = i.id
+        WHERE t.finished_at > 0")
+           .AsNoTracking()
+           .FirstOrDefaultAsync(cancellationToken);
+
+
+            var response = new PerftStatsResponse()
+            {
+                Nps = realTimeStatsResult?.nps ?? 0,
+                TotalNodes = progressStatsResult?.total_nodes ?? 0ul,
+            };
+            return Ok(response);
+        }
+
+        public class PerformanceChartEntry
+        {
+            [Column("timestamp")]
+            [JsonPropertyName("timestamp")]
+            public long timestamp { get; set; }
+            [Column("nps")]
+            [JsonPropertyName("nps")]
+            public float nps { get; set; }
+        }
+
+
+        [HttpGet("stats/charts/performance")]
+        [ResponseCache(Duration = 300)]
+        public async Task<IActionResult> GetPerformanceChart(CancellationToken cancellationToken)
+        {
+            var result = await _dbContext.Database
+                .SqlQueryRaw<PerformanceChartEntry>(@"
+                    WITH time_buckets AS (
+                        SELECT generate_series(
+                            EXTRACT(EPOCH FROM NOW()) - 43200,  -- 3 hours ago
+                            EXTRACT(EPOCH FROM NOW()),         -- Now
+                            900                                -- 15-minute intervals (900 seconds)
+                        ) AS bucket_start
+                    )
+                    SELECT 
+                        tb.bucket_start AS timestamp,
+                        COALESCE(SUM(t.nodes * i.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
+                    FROM time_buckets tb
+                    LEFT JOIN public.perft_tasks t 
+                        ON t.finished_at >= tb.bucket_start 
+                        AND t.finished_at < tb.bucket_start + 900  -- 15-minute window
+                    LEFT JOIN public.perft_items i 
+                        ON t.perft_item_id = i.id
+                    GROUP BY tb.bucket_start
+                    ORDER BY timestamp
+                    ")
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+
+            return Ok(result);
+        }
+
+        [HttpGet("leaderboard")]
+        [ResponseCache(Duration = 120)]
+        public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
+        {
+            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+
+            var stats = await _dbContext.PerftTasks
+                .AsNoTracking()
+                .Include(i => i.Account)
+                .Where(i => i.FinishedAt > 0)
+                .GroupBy(i => i.AccountId)
+                .Select(g => new PerftLeaderboardResponse()
+                {
+                    AccountName = g.Select(i => i.Account != null ? i.Account.Name : "Unknown").FirstOrDefault(),
+                    TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
+                    TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
+                    NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f
+                })
+                .ToArrayAsync(cancellationToken);
+
+
+            return Ok(stats);
+        }
+
+
+        [HttpGet("results")]
+        [ResponseCache(Duration = 120)]
+        public async Task<IActionResult> GetResults(CancellationToken cancellationToken)
+        {
+            var result = await _dbContext.Database
+                .SqlQueryRaw<PerftResult>(@"
+            SELECT 
+                SUM(t.nodes * i.occurrences) AS nodes,
+                SUM(t.captures * i.occurrences) AS captures,
+                SUM(t.enpassants * i.occurrences) AS enpassants,
+                SUM(t.castles * i.occurrences) AS castles,
+                SUM(t.promotions * i.occurrences) AS promotions,
+                SUM(t.direct_checks * i.occurrences) AS direct_checks,
+                SUM(t.single_discovered_check * i.occurrences) AS single_discovered_check,
+                SUM(t.direct_discovered_check * i.occurrences) AS direct_discovered_check,
+                SUM(t.double_discovered_check * i.occurrences) AS double_discovered_check,
+                SUM(t.direct_checkmate * i.occurrences) AS direct_checkmate,
+                SUM(t.single_discovered_checkmate * i.occurrences) AS single_discovered_checkmate,
+                SUM(t.direct_discoverd_checkmate * i.occurrences) AS direct_discoverd_checkmate,
+                SUM(t.double_discoverd_checkmate * i.occurrences) AS double_discoverd_checkmate
+            FROM public.perft_tasks t
+            JOIN public.perft_items i ON t.perft_item_id = i.id")
+                .AsNoTracking()
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(result);
         }
 
     }

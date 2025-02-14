@@ -149,7 +149,8 @@ namespace GrandChessTree.Api.Controllers
                 Tpm = realTimeStatsResult?.tpm ?? 0,
                 CompletedTasks = progressStatsResult?.completed_tasks ?? 0ul,
                 TotalNodes = progressStatsResult?.total_nodes ?? 0ul,
-                PercentCompletedTasks = (float)(progressStatsResult?.completed_tasks ?? 0ul) / 101240 * 100
+                PercentCompletedTasks = (float)(progressStatsResult?.completed_tasks ?? 0ul) / 101240 * 100,
+                TotalTasks = 101240,
             };
             return Ok(response);
         }
@@ -219,8 +220,8 @@ namespace GrandChessTree.Api.Controllers
                     TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
                     TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
                     CompletedTasks = g.Count(),  // Number of tasks completed
-                    TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f  // Tasks completed in last hour / 60
-
+                    TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
+                    NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f 
                 })
                 .ToArrayAsync(cancellationToken);
 

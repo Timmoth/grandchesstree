@@ -17,6 +17,9 @@ public class PerftStatsResponse
 
     [JsonPropertyName("percent_completed_tasks")]
     public float PercentCompletedTasks { get; set; }
+
+    [JsonPropertyName("total_tasks")]
+    public int TotalTasks { get; set; }
 }
 
 public class PerftLeaderboardResponse
@@ -35,4 +38,7 @@ public class PerftLeaderboardResponse
     
     [JsonPropertyName("tpm")]
     public float TasksPerMinute { get; set; }
+
+    [JsonPropertyName("nps")]
+    public float NodesPerSecond { get; set; }
 }

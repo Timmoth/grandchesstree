@@ -7,11 +7,14 @@ import AboutCard from "./AboutCard";
 import PerformanceChart from "./PerformanceChart";
 
 const Perft: React.FC = () => {
-  const { id } = useParams<{ id: string }>(); // Get id as string from URL
+  const { positionId } = useParams<{ positionId: string }>();
+  const { depthId } = useParams<{ depthId: string }>();
 
   // Convert the id to an integer
-  const idInt = id ? parseInt(id, 10) : NaN;
-  if (isNaN(idInt)) {
+  const positionIdInt = positionId ? parseInt(positionId, 10) : NaN;
+  const depthIdInt = depthId ? parseInt(depthId, 10) : NaN;
+
+  if (isNaN(positionIdInt) || isNaN(depthIdInt)) {
     return (
       <>
         <div>
@@ -49,13 +52,13 @@ const Perft: React.FC = () => {
           {/* Conditionally render content based on whether idInt is valid */}
           <div className="flex flex-col space-x-4 space-y-4">
             <div className="flex flex-col md:flex-row space-x-4 space-y-4">
-              <RealtimeStats id={idInt} />
+              <RealtimeStats positionId={positionIdInt} depth={depthIdInt} />
               <div className="flex-1">
-                <Leaderboard id={idInt} />
+                <Leaderboard positionId={positionIdInt} depth={depthIdInt} />
               </div>
             </div>
             <div className="flex-1">
-              <PerformanceChart id={idInt} />
+              <PerformanceChart positionId={positionIdInt} depth={depthIdInt} />
             </div>
           </div>
         </div>

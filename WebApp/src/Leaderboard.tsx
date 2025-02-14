@@ -7,12 +7,14 @@ interface PerftLeaderboardResponse {
   compute_time_seconds: number;
   completed_tasks: number;
   tpm: number;
+  nps: number;
 }
 
 interface LeaderboardProps {
-  id: number; // The integer you want to pass as a prop
+  positionId: number,
+  depth: number,
 }
-const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
+const Leaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  }) => {
   const [leaderboardData, setLeaderboardData] = useState<
     PerftLeaderboardResponse[]
   >([]);
@@ -24,7 +26,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
     const fetchLeaderboard = async () => {
       try {
         const resp = await fetch(
-          `https://api.grandchesstree.com/api/v1/perft/${id}/leaderboard`
+          `https://api.grandchesstree.com/api/v2/perft/${positionId}/${depth}/leaderboard`
         );
         if (!resp.ok) {
           throw new Error("Failed to fetch data");
@@ -39,7 +41,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
     };
 
     fetchLeaderboard();
-  }, [id]); // Empty dependency array ensures this effect runs only once when the component mounts
+  }, [positionId, depth]); // Empty dependency array ensures this effect runs only once when the component mounts
 
   // Format time to human-readable form (hours, minutes, seconds)
   const formatTime = (seconds: number): string => {
@@ -101,6 +103,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
                 <th scope="col" className="px-6 py-3">
                   TPM
                 </th>
+                <th scope="col" className="px-6 py-3">
+                  NPS
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -119,6 +124,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ id }) => {
                       {formatBigNumber(item.completed_tasks)}
                     </td>
                     <td className="px-6 py-4">{formatBigNumber(item.tpm)}</td>
+                    <td className="px-6 py-4">{formatBigNumber(item.nps)}</td>
+
                   </tr>
                 ))}
             </tbody>

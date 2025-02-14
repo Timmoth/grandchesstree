@@ -30,16 +30,17 @@ const formatTime = (timestamp: number): string => {
 };
 
 interface PerformanceChartProps {
-  id: number;
+  positionId: number,
+  depth: number,
 }
-const PerformanceChart: React.FC<PerformanceChartProps> = ({ id }) => {
+const PerformanceChart: React.FC<PerformanceChartProps> = ({ positionId, depth }) => {
   const [data, setData] = useState<DataPoint[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://api.grandchesstree.com/api/v1/perft/${id}/stats/charts/performance`
+          `https://api.grandchesstree.com/api/v2/perft/${positionId}/${depth}/stats/charts/performance`
         );
         const rawData: DataPoint[] = await response.json();
         setData(rawData);
@@ -49,7 +50,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ id }) => {
     };
 
     fetchData();
-  }, [id]);
+  }, [positionId, depth]);
 
   return (
     <div className="w-full h-96 p-4 bg-gray-100 rounded-lg flex flex-col items-center">

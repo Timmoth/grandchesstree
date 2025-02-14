@@ -14,8 +14,8 @@ docker buildx imagetools inspect aptacode/grand-chess-tree-worker:latest
 ```
 
 ```
- docker build -t aptacode/grand-chess-tree-api:0.0.7 .   
- docker push aptacode/grand-chess-tree-api:0.0.7
+ docker build -t aptacode/grand-chess-tree-api:0.0.12 .   
+ docker push aptacode/grand-chess-tree-api:0.0.12
 
  docker-compose down && docker-compose up -d
 ```

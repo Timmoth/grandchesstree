@@ -152,6 +152,8 @@ namespace GrandChessTree.Api.Migrations
 
                     b.HasIndex("Depth");
 
+                    b.HasIndex("RootPositionId");
+
                     b.HasIndex("Hash", "Depth")
                         .IsUnique();
 
@@ -259,6 +261,8 @@ namespace GrandChessTree.Api.Migrations
                     b.HasIndex("Depth");
 
                     b.HasIndex("PerftItemId");
+
+                    b.HasIndex("RootPositionId");
 
                     b.ToTable("perft_tasks");
                 });
