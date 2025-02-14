@@ -13,6 +13,7 @@ nav:
   - Quick start : quickstart.md
   - Results: results.md
   - Technical overview: technical.md
+  - Linux Installation: linuxInstall.md
 
 markdown_extensions:
   - tables
