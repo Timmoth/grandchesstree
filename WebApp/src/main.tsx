@@ -4,7 +4,7 @@ import "./index.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./Home";
 import PerftPage from "./Perft";
-import CompletedPerft from "./CompletedPerft";
+import PerftResults from "./Results/PerftResults";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")!).render(
         {/* Define your routes here */}
         <Route path="/" element={<Home />} /> {/* Home page route */}
         <Route path="/perft/:positionId/:depthId" element={<PerftPage />} />{" "}
-        <Route path="/perft/:positionId/:depthId/results" element={<CompletedPerft />} />{" "}
+        <Route path="/perft/:positionId/results" element={<PerftResults />} />{" "}
 
         {/* Perft page with dynamic id */}
       </Routes>

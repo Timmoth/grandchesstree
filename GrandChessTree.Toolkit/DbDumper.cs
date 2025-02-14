@@ -1,4 +1,5 @@
-﻿using System.Formats.Asn1;
+﻿using System.Diagnostics;
+using System.Formats.Asn1;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -6,6 +7,7 @@ using System.Text.Json.Serialization;
 using ConsoleTables;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
+using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 using Npgsql;
 
@@ -58,31 +60,31 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
         public class PerfTask
         {
             [Name("nodes")]
-            public long Nodes { get; set; }
+            public ulong Nodes { get; set; }
             [Name("captures")]
-            public long Captures { get; set; }
+            public ulong Captures { get; set; }
             [Name("enpassants")]
-            public long Enpassants { get; set; }
+            public ulong Enpassants { get; set; }
             [Name("castles")]
-            public long Castles { get; set; }
+            public ulong Castles { get; set; }
             [Name("promotions")]
-            public long Promotions { get; set; }
+            public ulong Promotions { get; set; }
             [Name("direct_checks")]
-            public long DirectChecks { get; set; }
+            public ulong DirectChecks { get; set; }
             [Name("single_discovered_check")]
-            public long SingleDiscoveredCheck { get; set; }
+            public ulong SingleDiscoveredCheck { get; set; }
             [Name("direct_discovered_check")]
-            public long DirectDiscoveredCheck { get; set; }
+            public ulong DirectDiscoveredCheck { get; set; }
             [Name("double_discovered_check")]
-            public long DoubleDiscoveredCheck { get; set; }
+            public ulong DoubleDiscoveredCheck { get; set; }
             [Name("direct_checkmate")]
-            public long DirectCheckmate { get; set; }
+            public ulong DirectCheckmate { get; set; }
             [Name("single_discovered_checkmate")]
-            public long SingleDiscoveredCheckmate { get; set; }
+            public ulong SingleDiscoveredCheckmate { get; set; }
             [Name("direct_discoverd_checkmate")]
-            public long DirectDiscoverdCheckmate { get; set; }
+            public ulong DirectDiscoverdCheckmate { get; set; }
             [Name("double_discoverd_checkmate")]
-            public long DoubleDiscoverdCheckmate { get; set; }
+            public ulong DoubleDiscoverdCheckmate { get; set; }
             [Name("started_at")]
             public long StartedAt { get; set; }
             [Name("finished_at")]
@@ -107,49 +109,49 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
         {
             [Name("nodes")]
             [JsonPropertyName("nodes")]
-            public long Nodes { get; set; } 
+            public ulong Nodes { get; set; } 
             [Name("captures")]
             [JsonPropertyName("captures")]
-            public long Captures { get; set; }
+            public ulong Captures { get; set; }
             [Name("enpassants")]
             [JsonPropertyName("enpassants")]
-            public long Enpassants { get; set; }
+            public ulong Enpassants { get; set; }
             [Name("castles")]
             [JsonPropertyName("castles")]
-            public long Castles { get; set; }
+            public ulong Castles { get; set; }
             [Name("promotions")]
             [JsonPropertyName("promotions")]
-            public long Promotions { get; set; }
+            public ulong Promotions { get; set; }
             [Name("direct_checks")]
             [JsonPropertyName("direct_checks")]
-            public long DirectChecks { get; set; }
+            public ulong DirectChecks { get; set; }
             [Name("single_discovered_check")]
             [JsonPropertyName("single_discovered_check")]
-            public long SingleDiscoveredCheck { get; set; }
+            public ulong SingleDiscoveredCheck { get; set; }
             [Name("direct_discovered_check")]
             [JsonPropertyName("direct_discovered_check")]
-            public long DirectDiscoveredCheck { get; set; }
+            public ulong DirectDiscoveredCheck { get; set; }
             [Name("double_discovered_check")]
             [JsonPropertyName("double_discovered_check")]
-            public long DoubleDiscoveredCheck { get; set; }
+            public ulong DoubleDiscoveredCheck { get; set; }
             [Name("total_checks")]
             [JsonPropertyName("total_checks")]
-            public long TotalChecks { get; set; }
+            public ulong TotalChecks { get; set; }
             [Name("direct_checkmate")]
             [JsonPropertyName("direct_checkmate")]
-            public long DirectCheckmate { get; set; }
+            public ulong DirectCheckmate { get; set; }
             [Name("single_discovered_checkmate")]
             [JsonPropertyName("single_discovered_checkmate")]
-            public long SingleDiscoveredCheckmate { get; set; }
+            public ulong SingleDiscoveredCheckmate { get; set; }
             [Name("direct_discoverd_checkmate")]
             [JsonPropertyName("direct_discoverd_checkmate")]
-            public long DirectDiscoverdCheckmate { get; set; }
+            public ulong DirectDiscoverdCheckmate { get; set; }
             [Name("double_discoverd_checkmate")]
             [JsonPropertyName("double_discoverd_checkmate")]
-            public long DoubleDiscoverdCheckmate { get; set; }
+            public ulong DoubleDiscoverdCheckmate { get; set; }
             [Name("total_mates")]
             [JsonPropertyName("total_mates")]
-            public long TotalMates { get; set; }
+            public ulong TotalMates { get; set; }
             public void Add(PerfTaskSummary other)
             {
                 Nodes += other.Nodes;
@@ -207,51 +209,59 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
 
         public class PerfTaskTotalSummary
         {
+            [Name("position")]
+            [JsonPropertyName("position")]
+            public int Position { get; set; }
+
+            [Name("depth")]
+            [JsonPropertyName("depth")]
+            public int Depth { get; set; }
+
             [Name("nodes")]
             [JsonPropertyName("nodes")]
-            public long Nodes { get; set; }
+            public ulong Nodes { get; set; }
             [Name("captures")]
             [JsonPropertyName("captures")]
-            public long Captures { get; set; }
+            public ulong Captures { get; set; }
             [Name("enpassants")]
             [JsonPropertyName("enpassants")]
-            public long Enpassants { get; set; }
+            public ulong Enpassants { get; set; }
             [Name("castles")]
             [JsonPropertyName("castles")]
-            public long Castles { get; set; }
+            public ulong Castles { get; set; }
             [Name("promotions")]
             [JsonPropertyName("promotions")]
-            public long Promotions { get; set; }
+            public ulong Promotions { get; set; }
             [Name("direct_checks")]
             [JsonPropertyName("direct_checks")]
-            public long DirectChecks { get; set; }
+            public ulong DirectChecks { get; set; }
             [Name("single_discovered_check")]
             [JsonPropertyName("single_discovered_check")]
-            public long SingleDiscoveredCheck { get; set; }
+            public ulong SingleDiscoveredCheck { get; set; }
             [Name("direct_discovered_check")]
             [JsonPropertyName("direct_discovered_check")]
-            public long DirectDiscoveredCheck { get; set; }
+            public ulong DirectDiscoveredCheck { get; set; }
             [Name("double_discovered_check")]
             [JsonPropertyName("double_discovered_check")]
-            public long DoubleDiscoveredCheck { get; set; }
+            public ulong DoubleDiscoveredCheck { get; set; }
             [Name("total_checks")]
             [JsonPropertyName("total_checks")]
-            public long TotalChecks { get; set; }
-            [Name("direct_checkmate")]
-            [JsonPropertyName("direct_checkmate")]
-            public long DirectCheckmate { get; set; }
-            [Name("single_discovered_checkmate")]
-            [JsonPropertyName("single_discovered_checkmate")]
-            public long SingleDiscoveredCheckmate { get; set; }
-            [Name("direct_discoverd_checkmate")]
-            [JsonPropertyName("direct_discoverd_checkmate")]
-            public long DirectDiscoverdCheckmate { get; set; }
-            [Name("double_discoverd_checkmate")]
-            [JsonPropertyName("double_discoverd_checkmate")]
-            public long DoubleDiscoverdCheckmate { get; set; }
+            public ulong TotalChecks { get; set; }
+            [Name("direct_mates")]
+            [JsonPropertyName("direct_mates")]
+            public ulong DirectMates { get; set; }
+            [Name("single_discovered_mates")]
+            [JsonPropertyName("single_discovered_mates")]
+            public ulong SingleDiscoveredMates { get; set; }
+            [Name("direct_discovered_mates")]
+            [JsonPropertyName("direct_discovered_mates")]
+            public ulong DirectDiscoverdMates { get; set; }
+            [Name("double_discovered_mates")]
+            [JsonPropertyName("double_discovered_mates")]
+            public ulong DoubleDiscoverdMates { get; set; }
             [Name("total_mates")]
             [JsonPropertyName("total_mates")]
-            public long TotalMates { get; set; }
+            public ulong TotalMates { get; set; }
 
             public void Add(PerfTaskSummary other)
             {
@@ -264,12 +274,39 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 SingleDiscoveredCheck += other.SingleDiscoveredCheck;
                 DirectDiscoveredCheck += other.DirectDiscoveredCheck;
                 DoubleDiscoveredCheck += other.DoubleDiscoveredCheck;
-                DirectCheckmate += other.DirectCheckmate;
-                SingleDiscoveredCheckmate += other.SingleDiscoveredCheckmate;
-                DirectDiscoverdCheckmate += other.DirectDiscoverdCheckmate;
-                DoubleDiscoverdCheckmate += other.DoubleDiscoverdCheckmate;
+                DirectMates += other.DirectCheckmate;
+                SingleDiscoveredMates += other.SingleDiscoveredCheckmate;
+                DirectDiscoverdMates += other.DirectDiscoverdCheckmate;
+                DoubleDiscoverdMates += other.DoubleDiscoverdCheckmate;
 
                 TotalChecks += other.DirectChecks;
+                TotalChecks += other.SingleDiscoveredCheck;
+                TotalChecks += other.DirectDiscoveredCheck;
+                TotalChecks += other.DoubleDiscoveredCheck;
+
+                TotalMates += other.DirectCheckmate;
+                TotalMates += other.SingleDiscoveredCheckmate;
+                TotalMates += other.DirectDiscoverdCheckmate;
+                TotalMates += other.DoubleDiscoverdCheckmate;
+            }
+
+            public void Add(Summary other)
+            {
+                Nodes += other.Nodes;
+                Captures += other.Captures;
+                Enpassants += other.Enpassant;
+                Castles += other.Castles;
+                Promotions += other.Promotions;
+                DirectChecks += other.DirectCheck;
+                SingleDiscoveredCheck += other.SingleDiscoveredCheck;
+                DirectDiscoveredCheck += other.DirectDiscoveredCheck;
+                DoubleDiscoveredCheck += other.DoubleDiscoveredCheck;
+                DirectMates += other.DirectCheckmate;
+                SingleDiscoveredMates += other.SingleDiscoveredCheckmate;
+                DirectDiscoverdMates += other.DirectDiscoverdCheckmate;
+                DoubleDiscoverdMates += other.DoubleDiscoverdCheckmate;
+
+                TotalChecks += other.DirectCheck;
                 TotalChecks += other.SingleDiscoveredCheck;
                 TotalChecks += other.DirectDiscoveredCheck;
                 TotalChecks += other.DoubleDiscoveredCheck;
@@ -310,7 +347,7 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
 
             [Name("nodes")]
             [JsonPropertyName("nodes")]
-            public long Nodes { get; set; }
+            public ulong Nodes { get; set; }
 
             [Name("tasks")]
             [JsonPropertyName("tasks")]
@@ -343,6 +380,9 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                     var divideResults = LeafNodeGenerator.GenerateLeafNodesIncludeDuplicates(ref initialBoard, 1, whiteToMove);
 
                     var totalSummary = new PerfTaskTotalSummary();
+                    totalSummary.Position = positionId;
+                    totalSummary.Depth = depth;
+
                     var divideSummaries = new List<PerfTaskSummary>();
                     foreach (var (d_hash, d_fen) in divideResults)
                     {
@@ -362,13 +402,12 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                     totalSummary.StartedAt = results.Values.MinBy(t => t.StartedAt)!.StartedAt;
                     totalSummary.FinishedAt = results.Values.MaxBy(t => t.FinishedAt)!.FinishedAt;
 
-
                     totalSummary.Contributors = results.Values.GroupBy(v => v.AccountId).Select(g => {
                         return new ContributorSummary()
                         {
                             Id = g.Key,
                             Name = g.First().Name,
-                            Nodes = g.Sum(g => g.Nodes),
+                            Nodes = (ulong)g.Sum(g => (decimal)g.Nodes),
                             Tasks = g.Count(),
                             ComputeTime = g.Sum(g => g.FinishedAt - g.StartedAt)
                         };
@@ -391,6 +430,63 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 {
                     Console.WriteLine("Error reading CSV: " + ex.Message);
                 }
+            }
+        }
+
+        public static async Task QuickSearch(int positionId, int depth, string fen)
+        {
+            try
+            {
+                var (initialBoard, whiteToMove) = FenParser.Parse(fen);
+
+                Summary summary = default;
+                unsafe
+                {
+                    Perft.HashTable = Perft.AllocateHashTable(256);
+                }
+
+                var startedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+                var sw = Stopwatch.StartNew();
+                Perft.PerftRoot(ref initialBoard, ref summary, depth, whiteToMove);
+
+                var ms = sw.ElapsedMilliseconds;
+                var finishedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+                var s = (float)ms / 1000;
+                var nps = summary.Nodes / s;
+
+                var totalSummary = new PerfTaskTotalSummary()
+                {
+                    Position = positionId,
+                    Depth = depth,
+                    Tasks = 1,
+                    StartedAt = startedAt,
+                    FinishedAt = finishedAt,
+                    Contributors = new List<ContributorSummary>()
+                    {
+                        new ContributorSummary()
+                        {
+                            Id = 1,
+                            Name = "Timmoth",
+                            Nodes = summary.Nodes,
+                            Tasks = 1,
+                            ComputeTime = finishedAt - startedAt
+                        }
+                    }
+                };
+                totalSummary.Add(summary);
+
+
+                Console.WriteLine($"final: {totalSummary.Nodes}");
+
+                File.WriteAllText($"./perft_p{positionId}_d{depth}_total.json", JsonSerializer.Serialize(totalSummary, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                }));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error reading CSV: " + ex.Message);
             }
         }
     }

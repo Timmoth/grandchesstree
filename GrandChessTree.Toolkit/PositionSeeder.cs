@@ -86,6 +86,52 @@ namespace GrandChessTree.Toolkit
                 Console.WriteLine($"Error during bulk insert: {ex.Message}");
             }
         }
+
+        public static async Task SeedSJE(int depth, int itemDepth)
+        {
+
+            Console.WriteLine("Generating positions");
+
+            var (initialBoard, whiteToMove) = FenParser.Parse("r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10");
+
+            var boards = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, itemDepth, whiteToMove);
+
+            var total = boards.Sum(b => b.occurrences);
+            var unique = boards.Count();
+            Console.WriteLine($"total positions: {total}");
+            Console.WriteLine($"uniques {unique}");
+
+
+            Console.WriteLine("Enter pgsql connection string...");
+            var connectionString = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
+            }
+            // Open a connection to PostgreSQL
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+            Console.WriteLine($"Starting bulk insert of {boards.Count} rows...");
+
+            // Use COPY for bulk insert
+            await using var writer = await conn.BeginTextImportAsync("COPY perft_items (hash, fen, depth, available_at, pass_count, confirmed, occurrences, root_position_id, launch_depth) FROM STDIN (FORMAT csv)");
+
+            try
+            {
+                // Iterate over the dictionary and write each row to the COPY stream
+                foreach (var (hash, fen, occurrences) in boards)
+                {
+                    await writer.WriteLineAsync($"{hash},{fen},{depth},0,0,false,{occurrences},2,{depth - itemDepth}");
+                }
+
+                Console.WriteLine("Bulk insert completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during bulk insert: {ex.Message}");
+            }
+        }
     }
 
 

@@ -1,7 +1,6 @@
 import React from "react";
 import NavBar from "./NavBar";
 import AboutCard from "./AboutCard";
-import PerftResults from "./PerftResults";
 import { Link } from "react-router-dom";
 import GlobalPerformanceChart from "./GlobalPerformanceChart";
 import GlobalLeaderboard from "./GlobalLeaderboard";
@@ -34,138 +33,103 @@ const Home: React.FC = () => {
             </div>
           </div>
           <div className="flex flex-col md:flex-row space-x-4 space-y-4">
-
-          <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
-            <span className="text-md font-bold">Startpos</span>
-            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-              <span className="text-sm font-semibold">
-                rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
-              </span>
-
-              <ul className="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-green-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+            <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
+              <span className="text-md font-bold">Startpos</span>
+              <div className="flex-1 flex flex-col items-center space-y-4">
+                <span className="text-xs">
+                  A popular perft position discovered by Peter McKenzie known to
+                  have a large branching factor.
+                </span>
+                <span className="text-sm font-semibold">
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                    to="/perft/0/11/results"
+                    className="font-medium text-blue-600 hover:underline"
+                    to="/perft/0/results"
                   >
-                    perft(11)
+                    Results table / summary
                   </Link>
-                </li>
+                </span>
 
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-gray-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+                <div className="flex flex-col text-sm font-medium space-y-1">
+                  <span className="text-sm font-semibold">In Progress:</span>
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
+                    className=" text-blue-600 hover:underline"
                     to="/perft/0/12"
-                  >
-                    perft(12)
+                    >
+                      perft(12)
                   </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-     
-          <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
-            <span className="text-md font-bold">Kiwipete</span>
-            <div className="flex-1 flex flex-col items-center justify-center space-y-4">
-              <span className="text-sm font-semibold">
-                r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -
-              </span>
 
-              <ul className="max-w-md space-y-1 text-gray-500 list-inside dark:text-gray-400">
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-green-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+                </div>
+
+
+              </div>
+            </div>
+
+            <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
+              <span className="text-md font-bold">Kiwipete</span>
+              <div className="flex-1 flex flex-col items-center space-y-4">
+                <span className="text-xs">
+                  The initial position of a standard game of chess.
+                </span>
+
+                <span className="text-sm font-semibold">
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                    to="/perft/1/6/results"
+                    className="font-medium text-blue-600 hover:underline"
+                    to="/perft/1/results"
                   >
-                    perft(6)
+                    Results table / summary
                   </Link>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-green-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+                </span>
+
+                
+              </div>
+            </div>
+            <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
+              <span className="text-md font-bold">
+                SJE's Symmetric Alternative
+              </span>
+              <div className="flex-1 flex flex-col items-center space-y-4">
+                <span className="text-xs">
+                  In 2013, Steven James Edwards identified this position, noting
+                  that it offers a greater variety of moves while maintaining
+                  color symmetry.
+                </span>
+                <span className="text-sm font-semibold">
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                    to="/perft/1/7/results"
+                    className="font-medium text-blue-600 hover:underline"
+                    to="/perft/2/results"
+                  >
+                    Results table / summary
+                  </Link>
+                </span>
+
+                <div className="flex flex-col text-sm font-medium space-y-1">
+                  <span className="text-sm font-semibold">In Progress:</span>
+                  <Link
+                    className=" text-blue-600 hover:underline"
+                    to="/perft/2/7"
                   >
                     perft(7)
                   </Link>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-green-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                    to="/perft/1/8/results"
+                    className="text-blue-600 hover:underline"
+                    to="/perft/2/8"
                   >
                     perft(8)
                   </Link>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="w-3.5 h-3.5 me-2 text-green-500  shrink-0"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm3.707 8.207-4 4a1 1 0 0 1-1.414 0l-2-2a1 1 0 0 1 1.414-1.414L9 10.586l3.293-3.293a1 1 0 0 1 1.414 1.414Z" />
-                  </svg>
+
                   <Link
-                    className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                    to="/perft/1/9/results"
+                    className="text-blue-600 hover:underline"
+                    to="/perft/2/9"
                   >
                     perft(9)
                   </Link>
-                </li>
-              </ul>
+                </div>
+              </div>
             </div>
-            </div>
-
           </div>
-          <GlobalPerformanceChart/>
-          <GlobalLeaderboard/>
-          <PerftResults />
+          <GlobalPerformanceChart />
+          <GlobalLeaderboard />
         </div>
       </div>
     </>

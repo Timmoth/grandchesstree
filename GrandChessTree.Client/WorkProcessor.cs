@@ -227,7 +227,7 @@ namespace GrandChessTree.Client
                         // Clear the summary struct
                         summary = default;
 
-                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(board.Hash, out summary))
+                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(board.Hash, out summary) && summary.Depth == currentTask.SubTaskDepth)
                         {
                             // This position has been found in the global cache! Use the cached summary
                             // And report the subtask as completed
@@ -236,6 +236,7 @@ namespace GrandChessTree.Client
                         else
                         {
                             long subtaskStart = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                            summary.Depth = (byte)currentTask.SubTaskDepth;
 
                             // Recursive perft
                             Perft.PerftRoot(ref board, ref summary, currentTask.SubTaskDepth, whiteToMove);

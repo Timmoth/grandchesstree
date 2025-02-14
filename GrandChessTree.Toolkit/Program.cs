@@ -41,6 +41,16 @@ while ((input = Console.ReadLine()) != "quit"){
         }
         await PositionSeeder.SeedKiwipete(depth, itemDepth);
     }
+    else if (command == "seed_sje")
+    {
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+            || !int.TryParse(commandParts[2], out var itemDepth))
+        {
+            Console.WriteLine("Invalid seed command format is 'seed_sje:<depth>:<item_depth>'.");
+            return;
+        }
+        await PositionSeeder.SeedSJE(depth, itemDepth);
+    }
     else if (command == "seed_account")
     {
         await AccountSeeder.Seed();
@@ -317,6 +327,18 @@ while ((input = Console.ReadLine()) != "quit"){
             return;
         }
         await DbDumper.ConstructSummary(rootPositionId, depth, launchDepth, commandParts[4]);
+    }
+    else if (command == "quick_perft_summary")
+    {
+        if (commandParts.Length != 4 ||
+            !int.TryParse(commandParts[1], out var depth)
+            || !int.TryParse(commandParts[2], out var rootPositionId)
+            )
+        {
+            Console.WriteLine("Invalid command format is 'quick_perft_summary:<depth>:<root_position_id>:<fen>'.");
+            return;
+        }
+        await DbDumper.QuickSearch(rootPositionId, depth, commandParts[3]);
     }
     else
     {

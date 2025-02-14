@@ -1,4 +1,8 @@
-[
+{
+  "position_name": "start position",
+  "position_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  "position_description": "The initial position of a standard game of chess.",
+  "results":[
   {
     "position": 0,
     "depth": 0,
@@ -10,7 +14,7 @@
     "direct_checks": 0,
     "single_discovered_checks": 0,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 0,
     "direct_mates": 0,
     "single_discovered_mates": 0,
@@ -20,7 +24,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 1,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -33,7 +45,7 @@
     "direct_checks": 0,
     "single_discovered_checks": 0,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 0,
     "direct_mates": 0,
     "single_discovered_mates": 0,
@@ -43,7 +55,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 20,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -56,7 +76,7 @@
     "direct_checks": 0,
     "single_discovered_checks": 0,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 0,
     "direct_mates": 0,
     "single_discovered_mates": 0,
@@ -66,7 +86,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 400,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -79,7 +107,7 @@
     "direct_checks": 12,
     "single_discovered_checks": 0,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 12,
     "direct_mates": 0,
     "single_discovered_mates": 0,
@@ -89,7 +117,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 8902,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -102,7 +138,7 @@
     "direct_checks": 461,
     "single_discovered_checks": 0,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 461,
     "direct_mates": 8,
     "single_discovered_mates": 0,
@@ -112,7 +148,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 197281,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -125,7 +169,7 @@
     "direct_checks": 26998,
     "single_discovered_checks": 6,
     "direct_discovered_checks": 0,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 27004,
     "direct_mates": 347,
     "single_discovered_mates": 0,
@@ -135,7 +179,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 4865609,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -148,7 +200,7 @@
     "direct_checks": 797896,
     "single_discovered_checks": 329,
     "direct_discovered_checks": 46,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 798271,
     "direct_mates": 10828,
     "single_discovered_mates": 0,
@@ -158,7 +210,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 119060324,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -171,7 +231,7 @@
     "direct_checks": 32648427,
     "single_discovered_checks": 18026,
     "direct_discovered_checks": 1628,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 32668081,
     "direct_mates": 435767,
     "single_discovered_mates": 0,
@@ -181,7 +241,15 @@
     "total_tasks": 1,
     "started_at": 1738592773,
     "finished_at": 1738592773,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 3195901860,
+        "tasks": 1,
+        "compute_time": 0
+      }
+    ]
   },
   {
     "position": 0,
@@ -194,7 +262,7 @@
     "direct_checks": 958135303,
     "single_discovered_checks": 847039,
     "direct_discovered_checks": 147215,
-    "double_discovered_check": 0,
+    "double_discovered_checks": 0,
     "total_checks": 959129557,
     "direct_mates": 9852032,
     "single_discovered_mates": 4,
@@ -204,7 +272,15 @@
     "total_tasks": 20,
     "started_at": 1738592773,
     "finished_at": 1738592782,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 84998978956,
+        "tasks": 20,
+        "compute_time": 9
+      }
+    ]
   },
   {
     "position": 0,
@@ -217,7 +293,7 @@
     "direct_checks": 35653060996,
     "single_discovered_checks": 37101713,
     "direct_discovered_checks": 5547221,
-    "double_discovered_check": 10,
+    "double_discovered_checks": 10,
     "total_checks": 35695709940,
     "direct_mates": 399421379,
     "single_discovered_mates": 1869,
@@ -227,7 +303,15 @@
     "total_tasks": 101240,
     "started_at": 1738592782,
     "finished_at": 1738593021,
-    "contributors": []
+    "contributors": [
+      {
+        "id": 1,
+        "name": "Timmoth",
+        "nodes": 2439530234167,
+        "tasks": 101240,
+        "compute_time": 239
+      }
+    ]
   },
   {
     "position": 0,
@@ -240,7 +324,7 @@
     "direct_checks": 1077020493859,
     "single_discovered_checks": 1531274015,
     "direct_discovered_checks": 302900733,
-    "double_discovered_check": 879,
+    "double_discovered_checks": 879,
     "total_checks": 1078854669486,
     "direct_mates": 8771693969,
     "single_discovered_mates": 598058,
@@ -271,7 +355,7 @@
     "direct_checks": 39068470901662,
     "single_discovered_checks": 67494850305,
     "direct_discovered_checks": 11721852393,
-    "double_discovered_check": 57443,
+    "double_discovered_checks": 57443,
     "total_checks": 39147687661803,
     "direct_mates": 360675926605,
     "single_discovered_mates": 60344676,
@@ -306,3 +390,4 @@
     ]
   }
 ]
+}
