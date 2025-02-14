@@ -19,10 +19,12 @@
 
 **You can close the program at any time, but do note that any progress on incomplete tasks will be lost.**
 
-**To exit the program correctly use the following**
-```
-    qg+ENTER
-```
+**To exit the program use the following**
+
+- q+ENTER: This will wait until each subtask is completed then save progress to be resumed next time
+- qg+ENTER: This will stop requesting new tasks, finish the current ones then exit
+- ctrl+c: or any other abrupt close will cause all progress on current tasks to be lost.
+
 
 If you want to run from source (for apple silicon you may need to)
 ```
