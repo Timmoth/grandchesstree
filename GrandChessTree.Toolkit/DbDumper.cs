@@ -235,15 +235,15 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
             [Name("direct_checks")]
             [JsonPropertyName("direct_checks")]
             public ulong DirectChecks { get; set; }
-            [Name("single_discovered_check")]
-            [JsonPropertyName("single_discovered_check")]
-            public ulong SingleDiscoveredCheck { get; set; }
-            [Name("direct_discovered_check")]
-            [JsonPropertyName("direct_discovered_check")]
-            public ulong DirectDiscoveredCheck { get; set; }
-            [Name("double_discovered_check")]
-            [JsonPropertyName("double_discovered_check")]
-            public ulong DoubleDiscoveredCheck { get; set; }
+            [Name("single_discovered_checks")]
+            [JsonPropertyName("single_discovered_checks")]
+            public ulong SingleDiscoveredChecks { get; set; }
+            [Name("direct_discovered_checks")]
+            [JsonPropertyName("direct_discovered_checks")]
+            public ulong DirectDiscoveredChecks { get; set; }
+            [Name("double_discovered_checks")]
+            [JsonPropertyName("double_discovered_checks")]
+            public ulong DoubleDiscoveredChecks { get; set; }
             [Name("total_checks")]
             [JsonPropertyName("total_checks")]
             public ulong TotalChecks { get; set; }
@@ -271,9 +271,9 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 Castles += other.Castles;
                 Promotions += other.Promotions;
                 DirectChecks += other.DirectChecks;
-                SingleDiscoveredCheck += other.SingleDiscoveredCheck;
-                DirectDiscoveredCheck += other.DirectDiscoveredCheck;
-                DoubleDiscoveredCheck += other.DoubleDiscoveredCheck;
+                SingleDiscoveredChecks += other.SingleDiscoveredCheck;
+                DirectDiscoveredChecks += other.DirectDiscoveredCheck;
+                DoubleDiscoveredChecks += other.DoubleDiscoveredCheck;
                 DirectMates += other.DirectCheckmate;
                 SingleDiscoveredMates += other.SingleDiscoveredCheckmate;
                 DirectDiscoverdMates += other.DirectDiscoverdCheckmate;
@@ -298,9 +298,9 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 Castles += other.Castles;
                 Promotions += other.Promotions;
                 DirectChecks += other.DirectCheck;
-                SingleDiscoveredCheck += other.SingleDiscoveredCheck;
-                DirectDiscoveredCheck += other.DirectDiscoveredCheck;
-                DoubleDiscoveredCheck += other.DoubleDiscoveredCheck;
+                SingleDiscoveredChecks += other.SingleDiscoveredCheck;
+                DirectDiscoveredChecks += other.DirectDiscoveredCheck;
+                DoubleDiscoveredChecks += other.DoubleDiscoveredCheck;
                 DirectMates += other.DirectCheckmate;
                 SingleDiscoveredMates += other.SingleDiscoveredCheckmate;
                 DirectDiscoverdMates += other.DirectDiscoverdCheckmate;

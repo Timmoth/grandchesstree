@@ -37,8 +37,7 @@ const Home: React.FC = () => {
               <span className="text-md font-bold">Startpos</span>
               <div className="flex-1 flex flex-col items-center space-y-4">
                 <span className="text-xs">
-                  A popular perft position discovered by Peter McKenzie known to
-                  have a large branching factor.
+                  The initial position of a standard game of chess.
                 </span>
                 <span className="text-sm font-semibold">
                   <Link
@@ -48,19 +47,17 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
+                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9,10,11]</span>
 
                 <div className="flex flex-col text-sm font-medium space-y-1">
                   <span className="text-sm font-semibold">In Progress:</span>
                   <Link
                     className=" text-blue-600 hover:underline"
                     to="/perft/0/12"
-                    >
-                      perft(12)
+                  >
+                    perft(12)
                   </Link>
-
                 </div>
-
-
               </div>
             </div>
 
@@ -68,9 +65,9 @@ const Home: React.FC = () => {
               <span className="text-md font-bold">Kiwipete</span>
               <div className="flex-1 flex flex-col items-center space-y-4">
                 <span className="text-xs">
-                  The initial position of a standard game of chess.
+                  A popular perft position discovered by Peter McKenzie known to
+                  have a large branching factor.
                 </span>
-
                 <span className="text-sm font-semibold">
                   <Link
                     className="font-medium text-blue-600 hover:underline"
@@ -79,8 +76,7 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
-
-                
+                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9]</span>
               </div>
             </div>
             <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
@@ -101,30 +97,7 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
-
-                <div className="flex flex-col text-sm font-medium space-y-1">
-                  <span className="text-sm font-semibold">In Progress:</span>
-                  <Link
-                    className=" text-blue-600 hover:underline"
-                    to="/perft/2/7"
-                  >
-                    perft(7)
-                  </Link>
-
-                  <Link
-                    className="text-blue-600 hover:underline"
-                    to="/perft/2/8"
-                  >
-                    perft(8)
-                  </Link>
-
-                  <Link
-                    className="text-blue-600 hover:underline"
-                    to="/perft/2/9"
-                  >
-                    perft(9)
-                  </Link>
-                </div>
+                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9]</span>
               </div>
             </div>
           </div>

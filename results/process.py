@@ -83,10 +83,9 @@ def main():
 
         if bad_hashes:
             hash_list_str = ", ".join(map(str, bad_hashes))  # Convert list to comma-separated string
-            sql_query = f"SELECT * FROM public.perft_tasks t
-                            JOIN public.perft_items i
-                            ON t.perft_item_id = i.id
-                            WHERE t.depth = 9 and i.hash IN ({hash_list_str});"
+
+            sql_query = f"SELECT * FROM public.perft_tasks t JOIN public.perft_items i ON t.perft_item_id = i.id WHERE t.depth = 9 and i.hash IN ({hash_list_str});"
+        
             print("\nGenerated SQL Query:")
             print(sql_query)
 

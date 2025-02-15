@@ -191,7 +191,7 @@ while ((input = Console.ReadLine()) != "quit"){
                 {
                     unsafe
                     {
-                        PerftBulk.HashTable = PerftBulk.AllocateHashTable(2046);
+                        PerftBulk.HashTable = PerftBulk.AllocateHashTable(1024);
                     }
 
                     var count = 0;
@@ -339,6 +339,21 @@ while ((input = Console.ReadLine()) != "quit"){
             return;
         }
         await DbDumper.QuickSearch(rootPositionId, depth, commandParts[3]);
+    }
+    else if (command == "unique_positions")
+    {
+        if (commandParts.Length != 3 ||
+            !int.TryParse(commandParts[1], out var depth)
+            )
+        {
+            Console.WriteLine("Invalid command format is 'quick_perft_summary:<depth>:<fen>'.");
+            return;
+        }
+        var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+        var sw = Stopwatch.StartNew();
+        var count = UniqueLeafNodeCounter.CountUniqueLeafNodes(ref board, depth, whiteToMove);
+        var ms = sw.ElapsedMilliseconds;
+        Console.WriteLine($"unique: {count.ToString()} in {ms}ms");
     }
     else
     {
