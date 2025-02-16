@@ -346,14 +346,89 @@ while ((input = Console.ReadLine()) != "quit"){
             !int.TryParse(commandParts[1], out var depth)
             )
         {
-            Console.WriteLine("Invalid command format is 'quick_perft_summary:<depth>:<fen>'.");
+            Console.WriteLine("Invalid command format is 'unique_positions:<depth>:<fen>'.");
             return;
         }
-        var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+
+        unsafe
+        {
+            PerftUnique.HashTable = PerftUnique.AllocateHashTable(1024);
+            var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+            var sw = Stopwatch.StartNew();
+            PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
+            var ms = sw.ElapsedMilliseconds;
+            Console.WriteLine($"unique: {(ulong)PerftUnique.UniquePositions.Count()} in {ms}ms");
+            UniqueLeafNodeCounter.FreeHashTable();
+            PerftUnique.UniquePositions.Clear();
+        }
+
+
+
+    }
+    else if (command == "unique_positions_mt")
+    {
+        if (commandParts.Length != 3 ||
+            !int.TryParse(commandParts[1], out var depth)
+            )
+        {
+            Console.WriteLine("Invalid command format is 'unique_positions:<depth>:<fen>'.");
+            return;
+        }
+
+        var (initialBoard, whiteToMove) = FenParser.Parse(commandParts[2]);
+        var launchDepth = 3;
+        var divideResults = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, launchDepth, whiteToMove);
         var sw = Stopwatch.StartNew();
-        var count = UniqueLeafNodeCounter.CountUniqueLeafNodes(ref board, depth, whiteToMove);
+
+        Thread[] threads = new Thread[28];
+
+        var queue = new ConcurrentQueue<(ulong hash, string fen, int occurrences)>(divideResults);
+
+        object lockObj = new();
+        var total = new HashSet<ulong>();
+
+        for (int i = 0; i < threads.Length; i++)
+        {
+            var index = i;
+
+            threads[index] = new Thread(() =>
+            {
+                unsafe
+                {
+                    UniqueLeafNodeCounter.HashTable = UniqueLeafNodeCounter.AllocateHashTable(512);
+                }
+                var hyperLogLog = new HashSet<ulong>();
+
+                while (queue.TryDequeue(out var item))
+                {
+                    var (board, wtm) = FenParser.Parse(item.fen);
+
+                    UniqueLeafNodeCounter.CountUniqueLeafNodes(hyperLogLog, ref board, depth - launchDepth, wtm);
+                }
+
+                lock (lockObj)
+                {
+                    foreach(var p in hyperLogLog)
+                    {
+                        total.Add(p);
+                    }
+                }
+
+                UniqueLeafNodeCounter.FreeHashTable();
+            });
+            threads[index].Start();
+        }
+
+        // Wait for all threads to complete
+        foreach (Thread thread in threads)
+        {
+            thread.Join();
+        }
+
         var ms = sw.ElapsedMilliseconds;
-        Console.WriteLine($"unique: {count.ToString()} in {ms}ms");
+        var s = (float)ms / 1000;
+        Console.WriteLine($"nodes:{(ulong)total.Count()} in {s}s");
+
     }
     else
     {

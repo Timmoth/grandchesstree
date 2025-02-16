@@ -309,6 +309,19 @@ public partial struct Board
 
 
         EnPassantFile = (byte)(fromSquare % 8);
+
+        //var oldEnpassant = EnPassantFile;
+
+        //if (CanWhitePawnEnpassant((byte)(fromSquare % 8)))
+        //{
+        //    EnPassantFile = (byte)(fromSquare % 8);
+        //    Hash ^= *(Zobrist.DeltaEnpassant + oldEnpassant * 9 + (byte)(fromSquare % 8));
+        //}
+        //else
+        //{
+        //    Hash ^= *(Zobrist.DeltaEnpassant + oldEnpassant * 9 + 8);
+        //    EnPassantFile = 8;
+        //}
     }
 
     internal unsafe void BlackKnight_Capture(int fromSquare, int toSquare)

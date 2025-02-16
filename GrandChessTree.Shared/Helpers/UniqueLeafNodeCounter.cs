@@ -1,63 +1,146 @@
-﻿using System.Collections.Generic;
+﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared.Helpers;
 
+using System;
+using System.ComponentModel;
+using System.Numerics;
+using System.Reflection;
+
+
 public static unsafe class UniqueLeafNodeCounter
 {
-    public static int CountUniqueLeafNodes(ref Board board, int depth, bool whiteToMove)
-    {
-        var boards = new HashSet<ulong>();
 
+    public struct UniqueLeafNodeHashEntry
+    {
+        public ulong FullHash;
+        public byte Depth;
+    }
+    #region HashTable
+    public static uint HashTableMask;
+    public static int HashTableSize;
+
+    [ThreadStatic] public static UniqueLeafNodeHashEntry* HashTable;
+
+    static UniqueLeafNodeCounter()
+    {
+
+    }
+    private static uint CalculateHashTableEntries(int sizeInMb)
+    {
+        var transpositionCount = (ulong)sizeInMb * 1024ul * 1024ul / (ulong)sizeof(UniqueLeafNodeHashEntry);
+        if (!BitOperations.IsPow2(transpositionCount))
+        {
+            transpositionCount = BitOperations.RoundUpToPowerOf2(transpositionCount) >> 1;
+        }
+
+        if (transpositionCount > int.MaxValue)
+        {
+            throw new ArgumentException("Hash table too large");
+        }
+
+        return (uint)transpositionCount;
+    }
+
+    public static UniqueLeafNodeHashEntry* AllocateHashTable(int sizeInMb = 512)
+    {
+        HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        HashTableMask = (uint)HashTableSize - 1;
+
+        const nuint alignment = 64;
+
+        var bytes = ((nuint)sizeof(UniqueLeafNodeHashEntry) * (nuint)HashTableSize);
+        var block = NativeMemory.AlignedAlloc(bytes, alignment);
+        NativeMemory.Clear(block, bytes);
+
+        return (UniqueLeafNodeHashEntry*)block;
+    }
+
+    public static void FreeHashTable()
+    {
+        if (HashTable != null)
+        {
+            NativeMemory.AlignedFree(HashTable);
+            HashTable = null;
+        }
+    }
+    #endregion
+
+    public static void CountUniqueLeafNodes(HashSet<ulong> hyperLogLog, ref Board board, int depth, bool whiteToMove)
+    {
         if (whiteToMove)
         {
             var positions = board.White & board.Pawn;
-            while (positions != 0) GenerateWhitePawnNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateWhitePawnNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.White & board.Knight;
-            while (positions != 0) GenerateWhiteKnightNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateWhiteKnightNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.White & board.Bishop;
-            while (positions != 0) GenerateWhiteBishopNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateWhiteBishopNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.White & board.Rook;
-            while (positions != 0) GenerateWhiteRookNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateWhiteRookNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.White & board.Queen;
-            while (positions != 0) GenerateWhiteQueenNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateWhiteQueenNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
-            GenerateWhiteKingNodes(ref board, boards,  depth, board.WhiteKingPos);
+            GenerateWhiteKingNodes(ref board, hyperLogLog,  depth, board.WhiteKingPos);
         }
         else
         {
             var positions = board.Black & board.Pawn;
-            while (positions != 0) GenerateBlackPawnNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateBlackPawnNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.Black & board.Knight;
-            while (positions != 0) GenerateBlackKnightNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateBlackKnightNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.Black & board.Bishop;
-            while (positions != 0) GenerateBlackBishopNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateBlackBishopNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.Black & board.Rook;
-            while (positions != 0) GenerateBlackRookNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateBlackRookNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
             positions = board.Black & board.Queen;
-            while (positions != 0) GenerateBlackQueenNodes(ref board, boards,  depth, positions.PopLSB());
+            while (positions != 0) GenerateBlackQueenNodes(ref board, hyperLogLog,  depth, positions.PopLSB());
 
-            GenerateBlackKingNodes(ref board, boards,  depth, board.BlackKingPos);
+            GenerateBlackKingNodes(ref board, hyperLogLog,  depth, board.BlackKingPos);
         }
-
-        return boards.Count;
     }
 
     private static void GenerateWhiteNodes(ref Board board, HashSet<ulong> boards, int depth)
     {
         if (depth == 0)
         {
-            boards.Add(board.Hash);
+            var hash = board.Hash;
+  
+            if (board.EnPassantFile < 8 && !CanWhitePawnEnpassant(ref board))
+            {
+                // Is move possible? If not remove possibility from hash
+                hash ^= Zobrist.EnPassantFile[board.EnPassantFile];
+            }
+
+            boards.Add(hash);
+            //if (hash == 11926642270410332418ul)
+            //{
+            //    Console.WriteLine(board.ToFen(true, 0, 1));
+            //    Console.WriteLine("wrooong");
+            //}
             return;
         }
+
+        var ptr = (UniqueLeafNodeCounter.HashTable + (board.Hash & UniqueLeafNodeCounter.HashTableMask));
+        var hashEntry = Unsafe.Read<UniqueLeafNodeHashEntry>(ptr);
+        if (hashEntry.FullHash == (board.Hash ^ (board.White | board.Black)) && depth <= hashEntry.Depth)
+        {
+          //  return;
+        }
+
+        hashEntry = default;
+        hashEntry.FullHash = board.Hash ^ (board.White | board.Black);
+        hashEntry.Depth = (byte)depth;
 
         var positions = board.White & board.Pawn;
         while (positions != 0) GenerateWhitePawnNodes(ref board, boards,  depth, positions.PopLSB());
@@ -75,15 +158,41 @@ public static unsafe class UniqueLeafNodeCounter
         while (positions != 0) GenerateWhiteQueenNodes(ref board, boards,  depth, positions.PopLSB());
 
         GenerateWhiteKingNodes(ref board, boards,  depth, board.WhiteKingPos);
+      //  *ptr = hashEntry;
+
     }
 
     private static void GenerateBlackNodes(ref Board board, HashSet<ulong> boards,  int depth)
     {
         if (depth == 0)
         {
-            boards.Add(board.Hash);
+            var hash = board.Hash;
+            if (board.EnPassantFile < 8 && !CanBlackPawnEnpassant(ref board))
+            {
+                // Is move possible? If not remove possibility from hash
+                hash ^= Zobrist.EnPassantFile[board.EnPassantFile];
+            }
+
+            boards.Add(hash);
+            if (hash == 11926642270410332418ul)
+            {
+                Console.WriteLine(board.ToFen(true, 0, 1));
+                Console.WriteLine("wrooong");
+            }
+
             return;
         }
+
+        var ptr = (UniqueLeafNodeCounter.HashTable + (board.Hash & UniqueLeafNodeCounter.HashTableMask));
+        var hashEntry = Unsafe.Read<UniqueLeafNodeHashEntry>(ptr);
+        if (hashEntry.FullHash == (board.Hash ^ (board.White | board.Black)) && depth <= hashEntry.Depth)
+        {
+          //  return;
+        }
+
+        hashEntry = default;
+        hashEntry.FullHash = board.Hash ^ (board.White | board.Black);
+        hashEntry.Depth = (byte)depth;
 
         var positions = board.Black & board.Pawn;
         while (positions != 0) GenerateBlackPawnNodes(ref board, boards,  depth, positions.PopLSB());
@@ -101,6 +210,33 @@ public static unsafe class UniqueLeafNodeCounter
         while (positions != 0) GenerateBlackQueenNodes(ref board, boards,  depth, positions.PopLSB());
 
        GenerateBlackKingNodes(ref board, boards,  depth, board.BlackKingPos);
+
+        //*ptr = hashEntry;
+    }
+
+    private static bool CanWhitePawnEnpassant(ref Board board)
+    {
+        var toSquare = Constants.WhiteEnpassantOffset + board.EnPassantFile;
+        Board newBoard = default;
+        var pawns = board.White & board.Pawn;
+        while (pawns != 0)
+        {
+            var fromSquare = pawns.PopLSB();
+
+            if (fromSquare.GetRankIndex().IsWhiteEnPassantRankIndex() &&
+                Math.Abs(fromSquare.GetFileIndex() - board.EnPassantFile) == 1)
+            {
+                newBoard = Unsafe.As<Board, Board>(ref board);
+
+                newBoard.WhitePawn_Enpassant(fromSquare, toSquare);
+                if (!newBoard.IsAttackedByBlack(newBoard.WhiteKingPos))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static void GenerateWhitePawnNodes(ref Board board, HashSet<ulong> boards,  int depth, int index)
@@ -386,6 +522,40 @@ public static unsafe class UniqueLeafNodeCounter
         }
     }
 
+
+
+    private static bool CanBlackPawnEnpassant(ref Board board)
+    {
+        var toSquare = Constants.BlackEnpassantOffset + board.EnPassantFile;
+
+
+        Board newBoard = default;
+        var positions = board.Black & board.Pawn;
+        while (positions != 0)
+        {
+            var index = positions.PopLSB();
+            var rankIndex = index.GetRankIndex();
+            var posEncoded = 1UL << index;
+
+            var captureSquare = 1UL << (index.GetRankIndex() * 8 + board.EnPassantFile);
+
+            if ((board.Pawn & board.White & captureSquare) != 0 && 
+                rankIndex.IsBlackEnPassantRankIndex() &&
+                Math.Abs(index.GetFileIndex() - board.EnPassantFile) == 1)
+            {
+                newBoard = Unsafe.As<Board, Board>(ref board);
+
+                newBoard.BlackPawn_Enpassant(index, toSquare);
+                if (!newBoard.IsAttackedByWhite(newBoard.BlackKingPos))
+                {
+                    return true;
+                }
+            }
+        }
+
+
+        return false;
+    }
 
     private static void GenerateBlackPawnNodes(ref Board board, HashSet<ulong> boards,  int depth, int index)
     {
