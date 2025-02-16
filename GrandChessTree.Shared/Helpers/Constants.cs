@@ -19,5 +19,17 @@ public static class Constants
     
     public const ulong NotAFile = 0xFEFEFEFEFEFEFEFE; // All squares except column 'A'
     public const ulong NotHFile = 0x7F7F7F7F7F7F7F7F; // All squares except column 'H'
-
+    
+    public static readonly ulong[] RankMasks =
+    {
+        0x00000000000000FF, // Rank 0 (1st rank, Black's back rank)
+        0x000000000000FF00, // Rank 1
+        0x0000000000FF0000, // Rank 2
+        0x00000000FF000000, // Rank 3
+        0x000000FF00000000, // Rank 4
+        0x0000FF0000000000, // Rank 5
+        0x00FF000000000000, // Rank 6
+        0xFF00000000000000  // Rank 7 (8th rank, White's back rank)
+    };
+    
 }

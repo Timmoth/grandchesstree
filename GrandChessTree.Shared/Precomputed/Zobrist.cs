@@ -244,6 +244,7 @@ public static unsafe class Zobrist
         EnPassantFile[5] = zobrisKeys[777];
         EnPassantFile[6] = zobrisKeys[778];
         EnPassantFile[7] = zobrisKeys[779];
+        EnPassantFile[8] = zobrisKeys[0];
 
 
         DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);

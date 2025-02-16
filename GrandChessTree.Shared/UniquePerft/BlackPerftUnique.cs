@@ -8,62 +8,67 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 public partial struct Board
 {
-    public bool CanBlackPawnEnpassant(int file)
+    public bool CanBlackPawnEnpassant()
     {
-        Board newBoard;
-        var positions = Black & Pawn;
+        // Black captures en passant when a White pawn double-pushed from rank 1 to rank 3.
+        // The White pawn passed over rank 2. So, the Black pawn lands on rank 2.
+        ulong targetSquare = 1UL << (2 * 8 + EnPassantFile);  // Landing square (rank 2, given file)
+        // The White pawn that moved is on rank 3 (one rank above target)
+        ulong captureSquare = targetSquare << 8;       // White pawn’s square (rank 3)
 
-        while (positions != 0)
+        // Black pawn must be on rank 3 to capture en passant.
+        ulong validBlackPawns = Black & Pawn & Constants.RankMasks[3];
+
+        // Black moves downward. To "reverse" a downward diagonal:
+        // - For a capture coming from the left (from Black’s perspective, that means the pawn comes from the right), origin = targetSquare << 9.
+        // - For a capture coming from the right, origin = targetSquare << 7.
+        ulong leftCandidate  = (EnPassantFile != 7) ? (targetSquare << 9) : 0UL; // only if target not in file H
+        ulong rightCandidate = (EnPassantFile != 0) ? (targetSquare << 7) : 0UL; // only if target not in file A
+
+        ulong enPassantCandidates = (validBlackPawns & leftCandidate) | (validBlackPawns & rightCandidate);
+
+        while (enPassantCandidates != 0)
         {
-            var index = positions.PopLSB();
-            var rankIndex = index.GetRankIndex();
-            int toSquare;
+            int fromSquare = enPassantCandidates.PopLSB();
+            var black = Black ^ (1UL << fromSquare) | targetSquare;
+            var white = White & ~captureSquare;
 
-            if (rankIndex.IsBlackEnPassantRankIndex() &&
-                 Math.Abs(index.GetFileIndex() - file) == 1)
+            var occupancy = white | black;
+            var slidingAttackers = (AttackTables.PextBishopAttacks(occupancy, BlackKingPos) & (white & (Bishop | Queen))) |
+                                   (AttackTables.PextRookAttacks(occupancy, BlackKingPos) & (white & (Rook | Queen)));
+            if (slidingAttackers == 0)
             {
-                newBoard = Unsafe.As<Board, Board>(ref this);
-
-                toSquare = Constants.BlackEnpassantOffset + file;
-
-                newBoard.BlackPawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByWhite(newBoard.BlackKingPos))
-                {
-                    return true;
-                }
+                return true; // Found a legal en passant capture.
             }
         }
-
         return false;
     }
+
+
     public unsafe void AccumulateBlackMovesUnique(int depth)
     {
         var ptr = (PerftUnique.HashTable + (Hash & PerftUnique.HashTableMask));
         var hashEntry = Unsafe.Read<PerftUniqueHashEntry>(ptr);
         if (hashEntry.FullHash == (Hash ^  (White | Black)) && depth == hashEntry.Depth)
         {
-           // return;
+           return;
         }
-
+        
         hashEntry = default;
         hashEntry.FullHash = Hash ^ (White | Black);
         hashEntry.Depth = (byte)depth;
 
         if (depth == 0)
         {
-
             var hash = Hash;
-            if (EnPassantFile < 8 && !CanBlackPawnEnpassant(EnPassantFile))
+            if (EnPassantFile < 8 && !CanBlackPawnEnpassant())
             {
                 // Is move possible? If not remove possibility from hash
-                hash ^= *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
-
+                hash ^= Zobrist.EnPassantFile[EnPassantFile];
             }
 
             PerftUnique.UniquePositions.Add(hash);
-
-            //*ptr = hashEntry;
-            // bulk count
+            
             return;
         }
 
@@ -150,8 +155,6 @@ public partial struct Board
         }
 
         *ptr = hashEntry;
-
-        return;
     }
     public unsafe void AccumulateBlackPawnMovesUnique(int depth, int index, ulong pushPinMask, ulong capturePinMask)
     {

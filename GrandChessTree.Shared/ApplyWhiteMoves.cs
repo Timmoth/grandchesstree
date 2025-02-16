@@ -306,26 +306,15 @@ public partial struct Board
         var moveMask = (1UL << fromSquare) | (1UL << toSquare);
         Pawn ^= moveMask;
         White ^= moveMask;
+        byte enPassantFile = (byte)(fromSquare % 8);
 
         Hash ^= *(Zobrist.PiecesArray + Zobrist.WhitePawn + fromSquare) ^
                 *(Zobrist.PiecesArray + Zobrist.WhitePawn + toSquare) ^
-                Zobrist.SideToMove ^
-                *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + (byte)(fromSquare % 8));
-
-        
-        EnPassantFile = (byte)(fromSquare % 8);
-
-        //if (CanBlackPawnEnpassant((byte)(fromSquare % 8)))
-        //{
-        //    Hash ^= *(Zobrist.DeltaEnpassant + oldEnpassant * 9 + (byte)(fromSquare % 8));
-        //    EnPassantFile = (byte)(fromSquare % 8);
-        //}
-        //else
-        //{
-        //    Hash ^= *(Zobrist.DeltaEnpassant + oldEnpassant * 9 + 8);
-        //    EnPassantFile = 8;
-        //}
+                 *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + enPassantFile)^
+                Zobrist.SideToMove;
+        EnPassantFile = enPassantFile;
     }
+
 
     internal unsafe void WhiteKnight_Capture(int fromSquare, int toSquare)
     {

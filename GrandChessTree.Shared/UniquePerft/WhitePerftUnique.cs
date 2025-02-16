@@ -6,34 +6,45 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 public partial struct Board
 {
-    public bool CanWhitePawnEnpassant(int file)
+public bool CanWhitePawnEnpassant()
+{
+    // White captures en passant when a Black pawn double-pushed from rank 6 to rank 4.
+    // The Black pawn passed over rank 5. So, the white pawn lands on rank 5.
+    ulong targetSquare = 1UL << (5 * 8 + EnPassantFile);  // Landing square (rank 5, given file)
+    // The Black pawn that moved is on rank 4 (one rank below target)
+    ulong captureSquare = targetSquare >> 8;       // Black pawn’s square (rank 4)
+
+    // White pawn must be on rank 4 to capture (i.e. adjacent to the black pawn)
+    ulong validWhitePawns = White & Pawn & Constants.RankMasks[4];
+
+    // A white pawn capturing en passant will move diagonally upward.
+    // To determine its origin, we “reverse” the move:
+    // - For a capture coming from the left (white pawn is to the right of target), origin = targetSquare >> 9.
+    // - For a capture coming from the right, origin = targetSquare >> 7.
+    ulong leftCandidate  = (EnPassantFile != 0) ? (targetSquare >> 9) : 0UL; // only if target not in file A
+    ulong rightCandidate = (EnPassantFile != 7) ? (targetSquare >> 7) : 0UL; // only if target not in file H
+
+    ulong enPassantCandidates = (validWhitePawns & leftCandidate) | (validWhitePawns & rightCandidate);
+
+    while (enPassantCandidates != 0)
     {
-        Board newBoard;
-        var positions = White & Pawn;
-
-        while (positions != 0)
+        int fromSquare = enPassantCandidates.PopLSB();
+        // Simulate the move:
+        // Remove white pawn from its original square and add it on target.
+        var white = (White ^ (1UL << fromSquare)) | targetSquare;
+        var black = Black & ~captureSquare;
+        var occupancy = white | black;
+        
+        var slidingAttackers = (AttackTables.PextBishopAttacks(occupancy, WhiteKingPos) & (black & (Bishop | Queen))) |
+                               (AttackTables.PextRookAttacks(occupancy, WhiteKingPos) & (black & (Rook | Queen)));
+        if (slidingAttackers == 0)
         {
-            var index = positions.PopLSB();
-            var rankIndex = index.GetRankIndex();
-            int toSquare;
-
-            if (rankIndex.IsWhiteEnPassantRankIndex() &&
-                 Math.Abs(index.GetFileIndex() - file) == 1)
-            {
-                newBoard = Unsafe.As<Board, Board>(ref this);
-
-                toSquare = Constants.WhiteEnpassantOffset + file;
-
-                newBoard.WhitePawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByBlack(newBoard.WhiteKingPos))
-                {
-                    return true;
-                }
-            }
+            return true; // Found a legal en passant capture.
         }
-
-        return false;
     }
+    return false; // No legal en passant capture found.
+}
+
 
     private unsafe void AccumulateWhiteMovesUnique(int depth)
     {
@@ -41,7 +52,7 @@ public partial struct Board
         var hashEntry = Unsafe.Read<PerftUniqueHashEntry>(ptr);
         if (hashEntry.FullHash == (Hash ^ (White | Black)) && depth == hashEntry.Depth)
         {
-           // return;
+           return;
         }
         hashEntry = default;
         hashEntry.FullHash = Hash ^ (White | Black);
@@ -50,14 +61,13 @@ public partial struct Board
         if (depth == 0)
         {
             var hash = Hash;
-            if (EnPassantFile < 8 && !CanWhitePawnEnpassant(EnPassantFile))
+            if (EnPassantFile < 8 && !CanWhitePawnEnpassant())
             {
                 // Is move possible? If not remove possibility from hash
-                hash ^= *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
+                hash ^= Zobrist.EnPassantFile[EnPassantFile];
             }
 
             PerftUnique.UniquePositions.Add(hash);
-            //*ptr = hashEntry;
             return;
         }
 
@@ -142,8 +152,6 @@ public partial struct Board
         }
 
         *ptr = hashEntry;
-
-        return;
     }
 
     public unsafe void AccumulateWhitePawnMovesUnique(int depth, int index, ulong pushPinMask, ulong capturePinMask)
@@ -232,8 +240,7 @@ public partial struct Board
             {
                 toSquare = validMoves.PopLSB();
                 newBoard = Unsafe.As<Board, Board>(ref this);
-
-
+                
                 if (rankIndex.IsSecondRank() && toSquare.GetRankIndex() == 3)
                 {
                     // Double push: Check intermediate square
@@ -242,6 +249,7 @@ public partial struct Board
                     {
                         continue; // Intermediate square is blocked, skip this move
                     }
+                    
                     newBoard.WhitePawn_DoublePush(index, toSquare);
                 }
                 else
@@ -250,7 +258,7 @@ public partial struct Board
                     newBoard.WhitePawn_Move(index, toSquare);
                 }
 
-                 newBoard.AccumulateBlackMovesUnique( depth - 1);
+                newBoard.AccumulateBlackMovesUnique( depth - 1);
             }
         }
              return;
