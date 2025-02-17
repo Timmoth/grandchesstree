@@ -48,31 +48,30 @@ public bool CanWhitePawnEnpassant()
 
     private unsafe void AccumulateWhiteMovesUnique(int depth)
     {
+        if (depth == 0)
+        {
+            var hash = Hash;
+            if (EnPassantFile < 8 && !CanWhitePawnEnpassant())
+            {
+                // Is ep move possible? If not remove possibility from hash
+                hash ^= Zobrist.EnPassantFile[EnPassantFile];
+            }
+
+            PerftUnique.UniquePositions.Add(hash);
+            return;
+        }
+
         var ptr = (PerftUnique.HashTable + (Hash & PerftUnique.HashTableMask));
         var hashEntry = Unsafe.Read<PerftUniqueHashEntry>(ptr);
         if (hashEntry.FullHash == (Hash ^ (White | Black)) && depth == hashEntry.Depth)
         {
            return;
         }
+
         hashEntry = default;
         hashEntry.FullHash = Hash ^ (White | Black);
         hashEntry.Depth = (byte)depth;
 
-        if (depth == 0)
-        {
-            var hash = Hash;
-            if (EnPassantFile < 8 && !CanWhitePawnEnpassant())
-            {
-                // Is move possible? If not remove possibility from hash
-                //hash ^= Zobrist.EnPassantFile[EnPassantFile];
-                EnPassantFile = 8;
-            }
-            PerftUnique.UniquePositions.Add(this.ToFen(true, 0, 1));
-
-            //hash = Zobrist.CalculateZobristKey(ref this, true);
-            //PerftUnique.UniquePositions.Add(hash);
-            return;
-        }
 
         var checkers = BlackCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);

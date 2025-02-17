@@ -1,4 +1,5 @@
-﻿using GrandChessTree.Shared.Helpers;
+﻿using System.ComponentModel.Design;
+using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared;
@@ -41,6 +42,16 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7){
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -81,6 +92,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -119,6 +141,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -159,6 +192,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -204,6 +248,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -334,6 +389,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -393,6 +459,17 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.WhiteRook;
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -472,6 +549,16 @@ public partial struct Board
         }
         else if ((Rook & captureMask) != 0)
         {
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+
             Rook &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.BlackRook + fromSquare) ^
                     *(Zobrist.PiecesArray + Zobrist.BlackRook + toSquare) ^
@@ -506,9 +593,13 @@ public partial struct Board
         var prevCastleRights = CastleRights;
 
         if (fromSquare == 56)
+        {
             CastleRights &= ~CastleRights.BlackQueenSide;
+        }
         else if (fromSquare == 63)
+        {
             CastleRights &= ~CastleRights.BlackKingSide;
+        }
 
         Hash ^= *(Zobrist.PiecesArray + Zobrist.BlackRook + fromSquare) ^
                 *(Zobrist.PiecesArray + Zobrist.BlackRook + toSquare) ^
@@ -559,6 +650,18 @@ public partial struct Board
                     *(Zobrist.PiecesArray + Zobrist.WhiteRook + toSquare) ^
                     Zobrist.SideToMove ^
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
+
+            var prevCastleRights = CastleRights;
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -633,6 +736,15 @@ public partial struct Board
         }
         else if ((Rook & captureMask) != 0)
         {
+            if (toSquare == 0)
+            {
+                CastleRights &= ~CastleRights.WhiteQueenSide;
+            }
+            else if (toSquare == 7)
+            {
+                CastleRights &= ~CastleRights.WhiteKingSide;
+            }
+
             Rook &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.BlackKing + fromSquare) ^
                     *(Zobrist.PiecesArray + Zobrist.BlackKing + toSquare) ^

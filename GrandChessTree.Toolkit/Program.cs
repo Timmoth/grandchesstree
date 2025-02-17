@@ -172,7 +172,7 @@ while ((input = Console.ReadLine()) != "quit"){
             !int.TryParse(commandParts[1], out var depth) ||
             !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid command format is 'perft:<depth>:<launch_depth>:<fen>'.");
+            Console.WriteLine("Invalid command format is 'perft_mt_bulk:<depth>:<launch_depth>:<fen>'.");
             return;
         }
         var (initialBoard, whiteToMove) = FenParser.Parse(commandParts[3]);
@@ -367,14 +367,14 @@ while ((input = Console.ReadLine()) != "quit"){
             Console.WriteLine($"unique: {(ulong)PerftUnique.UniquePositions.Count()} in {ms}ms");
             PerftUnique.FreeHashTable();
             
-            using (var fileStream = new FileStream("fens.txt", FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
-            using (var writer = new StreamWriter(fileStream))
-            {
-                foreach (var item in PerftUnique.UniquePositions)
-                {
-                    writer.WriteLine(item);
-                }
-            }
+            //using (var fileStream = new FileStream("fens.txt", FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
+            //using (var writer = new StreamWriter(fileStream))
+            //{
+            //    foreach (var item in PerftUnique.UniquePositions)
+            //    {
+            //        writer.WriteLine(item);
+            //    }
+            //}
             
             PerftUnique.UniquePositions.Clear();
         }

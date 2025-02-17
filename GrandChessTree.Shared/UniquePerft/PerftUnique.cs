@@ -1,10 +1,13 @@
-﻿using System.Numerics;
+﻿using System.Collections.Concurrent;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared;
+
+using System;
 
 public struct PerftUniqueHashEntry
 {
@@ -74,7 +77,7 @@ public static unsafe class PerftUnique
 
     #endregion
     
-    public static HashSet<string> UniquePositions = new HashSet<string>();
+    public static HashSet<ulong> UniquePositions = new HashSet<ulong>();
 
     public static void PerftRootUnique(ref Board board, int depth, bool whiteToMove)
     {

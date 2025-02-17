@@ -1,6 +1,4 @@
-﻿using System;
-using System.Numerics;
-using System.Reflection;
+﻿using System.Numerics;
 using System.Runtime.CompilerServices;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
@@ -47,6 +45,21 @@ public partial struct Board
 
     public unsafe void AccumulateBlackMovesUnique(int depth)
     {
+
+        if (depth == 0)
+        {
+            var hash = Hash;
+            if (EnPassantFile < 8 && !CanBlackPawnEnpassant())
+            {
+                // Is ep move possible? If not remove possibility from hash
+                hash ^= Zobrist.EnPassantFile[EnPassantFile];
+            }
+
+            PerftUnique.UniquePositions.Add(hash);
+            return;
+        }
+
+
         var ptr = (PerftUnique.HashTable + (Hash & PerftUnique.HashTableMask));
         var hashEntry = Unsafe.Read<PerftUniqueHashEntry>(ptr);
         if (hashEntry.FullHash == (Hash ^  (White | Black)) && depth == hashEntry.Depth)
@@ -57,22 +70,6 @@ public partial struct Board
         hashEntry = default;
         hashEntry.FullHash = Hash ^ (White | Black);
         hashEntry.Depth = (byte)depth;
-
-        if (depth == 0)
-        {
-            var hash = Hash;
-            if (EnPassantFile < 8 && !CanBlackPawnEnpassant())
-            {
-                // Is move possible? If not remove possibility from hash
-                //hash ^= Zobrist.EnPassantFile[EnPassantFile];
-                EnPassantFile = 8;
-            }
-
-           // hash = Zobrist.CalculateZobristKey(ref this, false);
-            PerftUnique.UniquePositions.Add(this.ToFen(false, 0, 1));
-            
-            return;
-        }
 
         var checkers = WhiteCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);
