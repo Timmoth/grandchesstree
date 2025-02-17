@@ -192,7 +192,7 @@ public partial struct Board
                 toSquare = Constants.WhiteEnpassantOffset + EnPassantFile;
 
                 newBoard.WhitePawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByBlack(newBoard.WhiteKingPos))
+                if (!newBoard.IsAttackedByBlackSliders(newBoard.WhiteKingPos))
                 {
                     nodes += newBoard.AccumulateBlackMovesBulk( depth - 1);
                 }

@@ -221,11 +221,6 @@ public static unsafe class Zobrist
             0xF8D626AAAF278509
         };
 
-        // for (int i = 0; i < 781; i++)
-        // {
-        //     zobrisKeys[i] = (ulong)Random.Shared.NextInt64();
-        // }
-
         PiecesArray = MemoryHelpers.Allocate<ulong>(PieceCount * 64);
         EnPassantFile = MemoryHelpers.Allocate<ulong>(9);
 
@@ -362,17 +357,11 @@ public static unsafe class Zobrist
         {
             if (whiteToMove)
             {
-                if (board.CanWhitePawnEnpassant())
-                {
-                    zobristKey ^= EnPassantFile[board.EnPassantFile];
-                }
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
             }
             else
             {
-                if (board.CanBlackPawnEnpassant())
-                {
-                    zobristKey ^= EnPassantFile[board.EnPassantFile];
-                }
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
             }
         }
 

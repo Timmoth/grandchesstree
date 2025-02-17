@@ -231,7 +231,7 @@ public bool CanWhitePawnEnpassant()
                 toSquare = Constants.WhiteEnpassantOffset + EnPassantFile;
 
                 newBoard.WhitePawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByBlack(newBoard.WhiteKingPos))
+                if (!newBoard.IsAttackedByBlackSliders(newBoard.WhiteKingPos))
                 {
                      newBoard.AccumulateBlackMovesUnique(depth - 1);
                 }

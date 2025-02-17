@@ -8,6 +8,80 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 
 using System;
+public class LockFreeHashSet
+{
+    private readonly ulong[] _keys;
+    private readonly int[] _states; // 0 = empty, 1 = occupied
+    private int _count;
+    private readonly int _mask;
+
+    /// <summary>
+    /// Creates a lock-free hash set with the specified capacity.
+    /// Capacity must be a power of 2.
+    /// </summary>
+    /// <param name="capacity">The size of the internal table (power of 2).</param>
+    public LockFreeHashSet(int capacity = 1 << 30)
+    {
+        if ((capacity & (capacity - 1)) != 0)
+            throw new ArgumentException("Capacity must be a power of 2.", nameof(capacity));
+
+        _keys = new ulong[capacity];
+        _states = new int[capacity];  // All slots start as 0 (empty)
+        _mask = capacity - 1;
+    }
+
+    /// <summary>
+    /// Adds a key to the hash set if it isn’t already present.
+    /// Returns true if the key was added (i.e. it was not present before).
+    /// Throws an exception if the table is full.
+    /// </summary>
+    public bool Add(ulong key)
+    {
+        // Since the input key is already a hash, use it directly.
+        int startIndex = (int)(key & (ulong)_mask);
+        int index = startIndex;
+        // Limit the number of probes to the table size to avoid infinite loops.
+        for (int probes = 0; probes < _keys.Length; probes++)
+        {
+            int state = Volatile.Read(ref _states[index]);
+            if (state == 0)
+            {
+                // The slot appears empty.
+                // Try to claim it by atomically setting the state from 0 to 1.
+                if (Interlocked.CompareExchange(ref _states[index], 1, 0) == 0)
+                {
+                    // Successfully claimed this slot.
+                    // Write the key. Volatile.Write ensures proper memory ordering.
+                    Volatile.Write(ref _keys[index], key);
+                    // Update the count.
+                    Interlocked.Increment(ref _count);
+                    return true;
+                }
+                // If we lose the race, fall through and check the slot again.
+            }
+            else
+            {
+                // The slot is occupied—check if it already holds our key.
+                if (Volatile.Read(ref _keys[index]) == key)
+                {
+                    // Key already exists in the set.
+                    return false;
+                }
+            }
+            // Move to the next slot (with wrapping).
+            index = (index + 1) & _mask;
+        }
+        // If we scanned the entire table, then it's full.
+        throw new InvalidOperationException("HashSet is full. Consider resizing or increasing the capacity.");
+    }
+
+
+    /// <summary>
+    /// Gets the count of unique keys that have been added.
+    /// </summary>
+    public int Count => Volatile.Read(ref _count);
+}
+
 
 public struct PerftUniqueHashEntry
 {
@@ -76,8 +150,8 @@ public static unsafe class PerftUnique
     }
 
     #endregion
-    
-    public static HashSet<ulong> UniquePositions = new HashSet<ulong>();
+
+    public static HashSet<ulong> UniquePositions = new ();
 
     public static void PerftRootUnique(ref Board board, int depth, bool whiteToMove)
     {

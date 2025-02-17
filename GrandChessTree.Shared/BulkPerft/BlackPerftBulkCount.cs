@@ -26,7 +26,7 @@ public partial struct Board
             MoveMask = checkers | *(AttackTables.LineBitBoardsInclusive + BlackKingPos * 64 + BitOperations.TrailingZeroCount(checkers));
         }
         var pinMask = BlackKingPinnedRay();
-
+        var occupancy = White | Black;
         var positions = Black & Pawn & pinMask;
         while (positions != 0)
         {
@@ -45,49 +45,51 @@ public partial struct Board
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackKnightMovesBulkCount( index);
+            nodes += (ulong)BitOperations.PopCount(*(AttackTables.KnightAttackTable + index) & MoveMask & ~Black);
         }
 
         positions = Black & Bishop & pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackBishopMovesBulkCount( index, AttackTables.GetRayToEdgeDiagonal(BlackKingPos, index));
+            nodes += (ulong)BitOperations.PopCount(AttackTables.PextBishopAttacks(occupancy, index) & MoveMask & AttackTables.GetRayToEdgeDiagonal(BlackKingPos, index) & ~Black);
         }
-        
+
         positions = Black & Bishop & ~pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackBishopMovesBulkCount( index, 0xFFFFFFFFFFFFFFFF);
+            nodes += (ulong)BitOperations.PopCount(AttackTables.PextBishopAttacks(occupancy, index) & MoveMask & ~Black);
         }
         
-        positions = Black & Rook& pinMask;
+        positions = Black & Rook & pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackRookMovesBulkCount( index, AttackTables.GetRayToEdgeStraight(BlackKingPos, index));
+            nodes += (ulong)BitOperations.PopCount(AttackTables.PextRookAttacks(occupancy, index) & MoveMask & AttackTables.GetRayToEdgeStraight(BlackKingPos, index) & ~Black);
         }
         
         positions = Black & Rook & ~pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackRookMovesBulkCount( index, 0xFFFFFFFFFFFFFFFF);
+            nodes += (ulong)BitOperations.PopCount(AttackTables.PextRookAttacks(occupancy, index) & MoveMask & ~Black);
         }
         
         positions = Black & Queen & pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackQueenMovesBulkCount( index,  AttackTables.GetRayToEdgeDiagonal(BlackKingPos, index) | AttackTables.GetRayToEdgeStraight(BlackKingPos, index));
+            nodes += (ulong)BitOperations.PopCount((AttackTables.PextBishopAttacks(occupancy, index) |
+                     AttackTables.PextRookAttacks(occupancy, index)) & MoveMask & (AttackTables.GetRayToEdgeDiagonal(BlackKingPos, index) | AttackTables.GetRayToEdgeStraight(BlackKingPos, index)) & ~Black);
         }
         
         positions = Black & Queen & ~pinMask;
         while (positions != 0)
         {
             var index = positions.PopLSB();
-            nodes += AccumulateBlackQueenMovesBulkCount( index,  0xFFFFFFFFFFFFFFFF);
+            nodes += (ulong)BitOperations.PopCount((AttackTables.PextBishopAttacks(occupancy, index) |
+                     AttackTables.PextRookAttacks(occupancy, index)) & MoveMask & ~Black);
         }
 
         return nodes;
@@ -120,7 +122,7 @@ public partial struct Board
                 toSquare = Constants.BlackEnpassantOffset + EnPassantFile;
 
                 newBoard.BlackPawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByWhite(newBoard.BlackKingPos))
+                if (!newBoard.IsAttackedByWhiteSliders(newBoard.BlackKingPos))
                 {
                     nodes++;
                 }
@@ -148,80 +150,13 @@ public partial struct Board
 
     }
 
-    public unsafe ulong AccumulateBlackKnightMovesBulkCount(int index)
-    {
-        ulong nodes = 0;
-
-        var potentialMoves = *(AttackTables.KnightAttackTable + index) & MoveMask;
-        var captureMoves = potentialMoves & White;
-        nodes += (ulong)BitOperations.PopCount(captureMoves);
-
-
-        var emptyMoves = potentialMoves & ~(White | Black);
-        nodes += (ulong)BitOperations.PopCount(emptyMoves);
-        return nodes;
-
-    }
-
-    public unsafe ulong AccumulateBlackBishopMovesBulkCount(int index, ulong pinMask)
-    {
-        ulong nodes = 0;
-        var potentialMoves = AttackTables.PextBishopAttacks(White | Black, index) & MoveMask & pinMask;
-
-        var captureMoves = potentialMoves & White;
-        nodes += (ulong)BitOperations.PopCount(captureMoves);
-
-        var emptyMoves = potentialMoves & ~(White | Black);
-        nodes += (ulong)BitOperations.PopCount(emptyMoves);
-
-        return nodes;
-
-    }
-
-    public unsafe ulong AccumulateBlackRookMovesBulkCount(int index, ulong pinMask)
-    {
-        ulong nodes = 0;
-        var potentialMoves = AttackTables.PextRookAttacks(White | Black, index) & MoveMask & pinMask;
-
-        var captureMoves = potentialMoves & White;
-        nodes += (ulong)BitOperations.PopCount(captureMoves);
-        var emptyMoves = potentialMoves & ~(White | Black);
-        nodes += (ulong)BitOperations.PopCount(emptyMoves);
-
-        return nodes;
-
-    }
-
-    public unsafe ulong AccumulateBlackQueenMovesBulkCount(int index, ulong pinMask)
-    {
-        ulong nodes = 0;
-        var potentialMoves = (AttackTables.PextBishopAttacks(White | Black, index) |
-                             AttackTables.PextRookAttacks(White | Black, index)) & MoveMask & pinMask;
-        var captureMoves = potentialMoves & White;
-        nodes += (ulong)BitOperations.PopCount(captureMoves);
-
-
-        var emptyMoves = potentialMoves & ~(White | Black);
-        nodes += (ulong)BitOperations.PopCount(emptyMoves);
-
-        return nodes;
-
-    }
-
     public unsafe ulong AccumulateBlackKingMovesBulkCount(bool inCheck)
     {
         ulong nodes = 0;
 
         var attackedSquares = BlackKingDangerSquares();
-        var potentialMoves = *(AttackTables.KingAttackTable + BlackKingPos) & ~attackedSquares;
-
-        var captureMoves = potentialMoves & White;
-        nodes += (ulong)BitOperations.PopCount(captureMoves);
-
-
-        var emptyMoves = potentialMoves & ~(White | Black);
-        nodes += (ulong)BitOperations.PopCount(emptyMoves);
-
+        var potentialMoves = *(AttackTables.KingAttackTable + BlackKingPos) & ~attackedSquares & ~Black;
+        nodes += (ulong)BitOperations.PopCount(potentialMoves);
 
         if (BlackKingPos != 60 || inCheck)
             // Can't castle if king is attacked or not on the starting position
@@ -230,24 +165,18 @@ public partial struct Board
 
         // King Side Castle
         if ((CastleRights & CastleRights.BlackKingSide) != 0 &&
-            (Black & Rook & Constants.BlackKingSideCastleRookPosition) > 0 &&
             ((White | Black)& Constants.BlackKingSideCastleEmptyPositions) == 0 &&
-            (attackedSquares & (1ul << 61)) == 0 &&
-            (attackedSquares & (1ul << 62)) == 0)
+            (attackedSquares & ((1ul << 61) | 1ul << 62)) == 0)
         {
             nodes++;
-
         }
 
         // Queen Side Castle
         if ((CastleRights & CastleRights.BlackQueenSide) != 0 &&
-            (Black & Rook & Constants.BlackQueenSideCastleRookPosition) > 0 &&
             ((White | Black) & Constants.BlackQueenSideCastleEmptyPositions) == 0 &&
-            (attackedSquares & (1ul << 58)) == 0 &&
-            (attackedSquares & (1ul << 59)) == 0)
+            (attackedSquares & ((1ul << 58) | (1ul << 59))) == 0)
         {
             nodes++;
-
         }
         return nodes;
 
