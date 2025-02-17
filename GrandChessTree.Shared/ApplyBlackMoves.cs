@@ -12,7 +12,8 @@ public partial struct Board
 
         Hash ^= *(Zobrist.PiecesArray + Zobrist.BlackPawn + fromSquare) ^
                 *(Zobrist.PiecesArray + Zobrist.BlackPawn + toSquare) ^
-                *(Zobrist.PiecesArray + Zobrist.WhitePawn + (fromSquare.GetRankIndex() * 8 + EnPassantFile)) ^ Zobrist.SideToMove ^
+                *(Zobrist.PiecesArray + Zobrist.WhitePawn + (fromSquare.GetRankIndex() * 8 + EnPassantFile))
+                ^ Zobrist.SideToMove ^
                 *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
 
         Pawn ^= moveMask ^ captureSquare;

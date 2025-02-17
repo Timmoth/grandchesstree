@@ -64,10 +64,13 @@ public bool CanWhitePawnEnpassant()
             if (EnPassantFile < 8 && !CanWhitePawnEnpassant())
             {
                 // Is move possible? If not remove possibility from hash
-                hash ^= Zobrist.EnPassantFile[EnPassantFile];
+                //hash ^= Zobrist.EnPassantFile[EnPassantFile];
+                EnPassantFile = 8;
             }
+            PerftUnique.UniquePositions.Add(this.ToFen(true, 0, 1));
 
-            PerftUnique.UniquePositions.Add(hash);
+            //hash = Zobrist.CalculateZobristKey(ref this, true);
+            //PerftUnique.UniquePositions.Add(hash);
             return;
         }
 
@@ -235,31 +238,44 @@ public bool CanWhitePawnEnpassant()
                 }
             }
 
+// Compute all valid pawn push moves for this pawn (including double pushes)
             validMoves = AttackTables.WhitePawnPushTable[index] & MoveMask & ~(White | Black) & pushPinMask;
+
+// Loop over each destination square (each set bit in validMoves)
             while (validMoves != 0)
             {
+                // Pop the least-significant set bit; that gives us a destination square.
                 toSquare = validMoves.PopLSB();
-                newBoard = Unsafe.As<Board, Board>(ref this);
-                
-                if (rankIndex.IsSecondRank() && toSquare.GetRankIndex() == 3)
+    
+                // Create a new board instance for this move.
+
+                // For White double-pushes, the pawn must be on its initial rank (second rank, index == 1)
+                // and the destination must be two squares forward (rank 3). In that case, the intermediate
+                // square is one rank ahead (index + 8) and must be unoccupied.
+                int intermediateSquare = index + 8;
+    
+                // Compute a flag for whether this move is a double push.
+                // (Using a ternary operator to yield 1 if true, 0 if false.)
+                // Note: For white, a double push happens when the pawn starts on rank 1 (second rank)
+                // and lands on rank 3, and the intermediate square is empty.
+                if((rankIndex.IsSecondRank() && toSquare.GetRankIndex() == 3))
                 {
-                    // Double push: Check intermediate square
-                    var intermediateSquare = (index + toSquare) / 2; // Midpoint between start and destination
-                    if (((White | Black) & (1UL << intermediateSquare)) != 0)
+                    if(((White | Black) & (1UL << intermediateSquare)) != 0)
                     {
-                        continue; // Intermediate square is blocked, skip this move
+                        continue;
                     }
-                    
+                    newBoard = Unsafe.As<Board, Board>(ref this);
                     newBoard.WhitePawn_DoublePush(index, toSquare);
                 }
                 else
                 {
-                    // single push
+                    newBoard = Unsafe.As<Board, Board>(ref this);
                     newBoard.WhitePawn_Move(index, toSquare);
                 }
-
-                newBoard.AccumulateBlackMovesUnique( depth - 1);
+                
+                newBoard.AccumulateBlackMovesUnique(depth - 1);
             }
+          
         }
              return;
 

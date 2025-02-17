@@ -2,9 +2,16 @@
 using System.Diagnostics;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Precomputed;
 using GrandChessTree.Toolkit;
 
 Console.WriteLine("----The Grand Chess Tree Toolkit----");
+
+// var str = "rnb1kbnr/pppp1p1p/5q2/4pPp1/8/8/PPPPPKPP/RNBQ1BNR w kq - 1 4";
+// var (bb, wt) = FenParser.Parse(str);
+// Console.WriteLine(Zobrist.CalculateZobristKey(ref bb, wt).ToString("X"));
+//
+// return;
 string? input;
 while ((input = Console.ReadLine()) != "quit"){
     if (string.IsNullOrEmpty(input))
@@ -358,7 +365,17 @@ while ((input = Console.ReadLine()) != "quit"){
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
             var ms = sw.ElapsedMilliseconds;
             Console.WriteLine($"unique: {(ulong)PerftUnique.UniquePositions.Count()} in {ms}ms");
-            UniqueLeafNodeCounter.FreeHashTable();
+            PerftUnique.FreeHashTable();
+            
+            using (var fileStream = new FileStream("fens.txt", FileMode.Create, FileAccess.Write, FileShare.None, 4096, FileOptions.SequentialScan))
+            using (var writer = new StreamWriter(fileStream))
+            {
+                foreach (var item in PerftUnique.UniquePositions)
+                {
+                    writer.WriteLine(item);
+                }
+            }
+            
             PerftUnique.UniquePositions.Clear();
         }
 

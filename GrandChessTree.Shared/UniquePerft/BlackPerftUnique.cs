@@ -64,10 +64,12 @@ public partial struct Board
             if (EnPassantFile < 8 && !CanBlackPawnEnpassant())
             {
                 // Is move possible? If not remove possibility from hash
-                hash ^= Zobrist.EnPassantFile[EnPassantFile];
+                //hash ^= Zobrist.EnPassantFile[EnPassantFile];
+                EnPassantFile = 8;
             }
 
-            PerftUnique.UniquePositions.Add(hash);
+           // hash = Zobrist.CalculateZobristKey(ref this, false);
+            PerftUnique.UniquePositions.Add(this.ToFen(false, 0, 1));
             
             return;
         }
@@ -237,31 +239,34 @@ public partial struct Board
                 }
             }
 
+            // Generate valid push moves for a Black pawn from "index"
             validMoves = AttackTables.BlackPawnPushTable[index] & MoveMask & ~(White | Black) & pushPinMask;
             while (validMoves != 0)
             {
                 toSquare = validMoves.PopLSB();
-                newBoard = Unsafe.As<Board, Board>(ref this);
-
-
+                
+                // For Black, a double push is available if the pawn is on its starting rank (7th rank, i.e. rank index 6)
+                // and the destination is two squares ahead (rank index 4) *and* the intermediate square is empty.
+                // The intermediate square is computed as the average of source and destination.
+                int intermediateSquare = (index + toSquare) / 2;
                 if (rankIndex.IsSeventhRank() && toSquare.GetRankIndex() == 4)
                 {
-                    // Double push: Check intermediate square
-                    var intermediateSquare = (index + toSquare) / 2; // Midpoint between start and destination
                     if (((White | Black) & (1UL << intermediateSquare)) != 0)
                     {
-                        continue; // Intermediate square is blocked, skip this move
+                        continue;
                     }
+                    newBoard = Unsafe.As<Board, Board>(ref this);
                     newBoard.BlackPawn_DoublePush(index, toSquare);
                 }
                 else
                 {
-                    // single push
+                    newBoard = Unsafe.As<Board, Board>(ref this);
                     newBoard.BlackPawn_Move(index, toSquare);
                 }
-
-                newBoard.AccumulateWhiteMovesUnique( depth - 1);
+                
+                newBoard.AccumulateWhiteMovesUnique(depth - 1);
             }
+
         }
         return;
 

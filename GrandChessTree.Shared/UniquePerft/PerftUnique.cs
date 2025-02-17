@@ -74,7 +74,7 @@ public static unsafe class PerftUnique
 
     #endregion
     
-    public static HashSet<ulong> UniquePositions = new HashSet<ulong>();
+    public static HashSet<string> UniquePositions = new HashSet<string>();
 
     public static void PerftRootUnique(ref Board board, int depth, bool whiteToMove)
     {

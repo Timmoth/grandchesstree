@@ -18,11 +18,7 @@ public static unsafe class Zobrist
 
     public static ulong* DeltaCastleRights;
     public static ulong* DeltaEnpassant;
-
-    public static readonly ulong BlackKingSideCastleZobrist;
-    public static readonly ulong BlackQueenSideCastleZobrist;
-    public static readonly ulong WhiteKingSideCastleZobrist;
-    public static readonly ulong WhiteQueenSideCastleZobrist;
+    
     static Zobrist()
     {
         var zobrisKeys = stackalloc ulong[781]
@@ -225,8 +221,13 @@ public static unsafe class Zobrist
             0xF8D626AAAF278509
         };
 
+        // for (int i = 0; i < 781; i++)
+        // {
+        //     zobrisKeys[i] = (ulong)Random.Shared.NextInt64();
+        // }
+
         PiecesArray = MemoryHelpers.Allocate<ulong>(PieceCount * 64);
-        EnPassantFile = MemoryHelpers.Allocate<ulong>(8);
+        EnPassantFile = MemoryHelpers.Allocate<ulong>(9);
 
         for (var squareIndex = 0; squareIndex < 64; squareIndex++)
         {
@@ -244,12 +245,12 @@ public static unsafe class Zobrist
         EnPassantFile[5] = zobrisKeys[777];
         EnPassantFile[6] = zobrisKeys[778];
         EnPassantFile[7] = zobrisKeys[779];
-        EnPassantFile[8] = zobrisKeys[0];
+        EnPassantFile[8] = 0;
 
 
-        DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);
         DeltaEnpassant = MemoryHelpers.Allocate<ulong>(9 * 9);
 
+        DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);
 
         // Assign individual castling rights
         DeltaCastleRights[(int)CastleRights.WhiteKingSide] = Zobrist.WhiteKingSideCastlingRights;
@@ -319,27 +320,6 @@ public static unsafe class Zobrist
             }
         }
 
-        BlackKingSideCastleZobrist = *(Zobrist.PiecesArray + BlackKingZobristOffset + 60) ^
-                                  *(Zobrist.PiecesArray + BlackKingZobristOffset + 62) ^
-                                    *(Zobrist.PiecesArray + BlackRookZobristOffset + 63) ^
-                                      *(Zobrist.PiecesArray + BlackRookZobristOffset + 61);
-
-
-        BlackQueenSideCastleZobrist = *(Zobrist.PiecesArray + BlackKingZobristOffset + 60) ^
-                  *(Zobrist.PiecesArray + BlackKingZobristOffset + 58)
-                    ^ *(Zobrist.PiecesArray + BlackRookZobristOffset + 56) ^
-                        *(Zobrist.PiecesArray + BlackRookZobristOffset + 59);
-
-        WhiteKingSideCastleZobrist = *(Zobrist.PiecesArray + WhiteKingZobristOffset + 4) ^
-                      *(Zobrist.PiecesArray + WhiteKingZobristOffset + 6) ^
-                        *(Zobrist.PiecesArray + WhiteRookZobristOffset + 7) ^
-                          *(Zobrist.PiecesArray + WhiteRookZobristOffset + 5);
-
-
-        WhiteQueenSideCastleZobrist = *(Zobrist.PiecesArray + WhiteKingZobristOffset + 4) ^
-                      *(Zobrist.PiecesArray + WhiteKingZobristOffset + 2) ^
-                        *(Zobrist.PiecesArray + WhiteRookZobristOffset + 0) ^
-                          *(Zobrist.PiecesArray + WhiteRookZobristOffset + 3);
     }
 
     public static unsafe ulong CalculateZobristKey(ref Board board, bool whiteToMove)
@@ -380,7 +360,20 @@ public static unsafe class Zobrist
 
         if (board.EnPassantFile < 8)
         {
-            zobristKey ^= EnPassantFile[board.EnPassantFile];
+            if (whiteToMove)
+            {
+                if (board.CanWhitePawnEnpassant())
+                {
+                    zobristKey ^= EnPassantFile[board.EnPassantFile];
+                }
+            }
+            else
+            {
+                if (board.CanBlackPawnEnpassant())
+                {
+                    zobristKey ^= EnPassantFile[board.EnPassantFile];
+                }
+            }
         }
 
         return zobristKey;
