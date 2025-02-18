@@ -18,6 +18,7 @@ namespace GrandChessTree.Client
         public bool HasRunningWorkers => _workerReports.Any(w => w.IsRunning);
 
         private readonly ConcurrentQueue<PerftTask> _tasksToSave = new();
+        private bool OutputFullDetails = false;
 
         public WorkProcessor(SearchItemOrchistrator searchItemOrchistrator, Config config)
         {
@@ -71,8 +72,6 @@ namespace GrandChessTree.Client
             {
                 try
                 {
-                    var table = new ConsoleTable("worker", "nps", "nodes", "sub_tasks", "tasks", "fen");
-
                     var sumCompletedTasks = 0;
                     ulong sumCompletedSubTasks = 0;
                     float sumNps = 0;
@@ -83,7 +82,6 @@ namespace GrandChessTree.Client
                     for (int i = 0; i < _workerReports.Length; i++)
                     {
                         var report = _workerReports[i];
-                        table.AddRow($"{i}", report.Nps.FormatBigNumber(), report.WorkerComputedNodes.FormatBigNumber(), $"{report.CompletedSubtasks}/{report.TotalSubtasks}", report.TotalCompletedTasks, report.Fen);
                         sumCompletedTasks += report.TotalCompletedTasks;
                         sumCompletedSubTasks += (ulong)report.TotalCompletedSubTasks;
                         subtaskCacheHits += report.TotalCachedSubTasks;
@@ -102,24 +100,31 @@ namespace GrandChessTree.Client
                     prevTotalNodes = currentTotalNodes;
                     prevTime = currentTime;
 
-                    table.Configure((c) =>
-                    {
-                        c.EnableCount = false;
-                    });
-
                     Console.CursorVisible = false;
                     Console.SetCursorPosition(0, 0);
                     for (int y = 0; y < Console.WindowHeight; y++)
                         Console.Write(new string(' ', Console.WindowWidth));
                     Console.SetCursorPosition(0, 0);
 
-                    table.Write(Format.MarkDown);
-       
+                    if (OutputFullDetails)
+                    {
+                        var table = new ConsoleTable("worker", "nps", "nodes", "sub_tasks", "tasks", "fen");
+                        for (int i = 0; i < _workerReports.Length; i++)
+                        {
+                            var report = _workerReports[i];
+                            table.AddRow($"{i}", report.Nps.FormatBigNumber(), report.WorkerComputedNodes.FormatBigNumber(), $"{report.CompletedSubtasks}/{report.TotalSubtasks}", report.TotalCompletedTasks, report.Fen);
+                        }
+                        table.Configure((c) =>
+                        {
+                            c.EnableCount = false;
+                        });
+                        table.Write(Format.MarkDown);
+                    }
+
                     var cachHitPercent = sumCompletedSubTasks==0 ? 0 : ((float)subtaskCacheHits / sumCompletedSubTasks) * 100;
                     
                     Console.WriteLine($"completed {sumCompletedSubTasks.FormatBigNumber()} subtasks ({cachHitPercent.RoundToSignificantFigures(2)}% cache hits), submitted {_searchItemOrchistrator.Submitted} tasks ({_searchItemOrchistrator.PendingSubmission} pending)");
                     Console.WriteLine($"[computed stats] {totalComputedNodes.FormatBigNumber()} nodes at {sumNps.FormatBigNumber()}nps");
-                    Console.WriteLine($"[effective stats] {currentTotalNodes.FormatBigNumber()} nodes at {realNps.FormatBigNumber()}nps ");
 
                     if (ShouldSaveAndQuit)
                     {
@@ -227,7 +232,7 @@ namespace GrandChessTree.Client
                         // Clear the summary struct
                         summary = default;
 
-                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(board.Hash, out summary) && summary.Depth == currentTask.SubTaskDepth)
+                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(fen, currentTask.SubTaskDepth,  out summary))
                         {
                             // This position has been found in the global cache! Use the cached summary
                             // And report the subtask as completed
@@ -242,7 +247,7 @@ namespace GrandChessTree.Client
                             Perft.PerftRoot(ref board, ref summary, currentTask.SubTaskDepth, whiteToMove);
 
                             // Store the hash for this position in the global cache
-                            _searchItemOrchistrator.CacheCompletedSubtask(board.Hash, summary);
+                            _searchItemOrchistrator.CacheCompletedSubtask(fen, currentTask.SubTaskDepth, summary);
 
                             // Report the subtask as completed
                             workerReport.EndSubTaskWorkCompleted(currentTask, summary.Nodes, subTaskOccurrences);
@@ -303,6 +308,11 @@ namespace GrandChessTree.Client
         {
             KeepRequestingWork = false;
             ShouldSaveAndQuit = true;
+        }
+
+        internal void ToggleOutputDetails()
+        {
+            OutputFullDetails = !OutputFullDetails;
         }
     }
  }

@@ -97,6 +97,10 @@ void ReadCommands()
                 break;
             }
         }
+        else if (loweredCommand.StartsWith("d"))
+        {
+            networkClient.ToggleOutputDetails();
+        }
 
     }
 }
