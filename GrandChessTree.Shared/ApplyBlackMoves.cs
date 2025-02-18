@@ -1,11 +1,118 @@
-﻿using System.ComponentModel.Design;
-using GrandChessTree.Shared.Helpers;
+﻿using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Moves;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared;
 
 public partial struct Board
 {
+    public unsafe void ApplyBlackMove(uint move)
+    {
+        var movedPiece = move.GetMovedPiece();
+        var moveType = move.GetMoveType();
+        var fromSquare = move.GetFromSquare();
+        var toSquare = move.GetToSquare();
+
+        if(moveType == Constants.NormalMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    BlackPawn_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    BlackKnight_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    BlackBishop_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Rook:
+                    BlackRook_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Queen:
+                    BlackQueen_Move(fromSquare, toSquare);
+                    break;
+                case Constants.King:
+                    BlackKing_Move(fromSquare, toSquare);   
+                    break;
+            }
+        }else if(moveType == Constants.CaptureMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    BlackPawn_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    BlackKnight_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    BlackBishop_Capture(fromSquare, toSquare);  
+                    break;
+                case Constants.Rook:
+                    BlackRook_Capture(fromSquare, toSquare);    
+                    break;
+                case Constants.Queen:
+                    BlackQueen_Capture(fromSquare, toSquare);       
+                    break;
+                case Constants.King:
+                    BlackKing_Capture(fromSquare, toSquare);    
+                    break;
+            }
+        }
+        else if (moveType == Constants.Castle)
+        {
+            if(toSquare == 62)
+            {
+                BlackKing_KingSideCastle();
+            }
+            else
+            {
+                BlackKing_QueenSideCastle();
+            }
+        }
+        else if (moveType == Constants.DoublePush)
+        {
+            BlackPawn_DoublePush(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.EnPassant)
+        {
+            BlackPawn_Enpassant(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightPromotion)
+        {
+            BlackPawn_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopPromotion)
+        {
+            BlackPawn_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookPromotion)
+        {
+            BlackPawn_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenPromotion)
+        {
+            BlackPawn_QueenPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightCapturePromotion)
+        {
+            BlackPawn_Capture_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopCapturePromotion)
+        {
+            BlackPawn_Capture_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookCapturePromotion)
+        {
+            BlackPawn_Capture_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenCapturePromotion)
+        {
+            BlackPawn_Capture_QueenPromotion(fromSquare, toSquare);
+        }
+    }
+
     internal unsafe void BlackPawn_Enpassant(int fromSquare, int toSquare)
     {
         var moveMask = (1UL << fromSquare) | (1UL << toSquare);

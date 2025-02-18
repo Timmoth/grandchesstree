@@ -1,10 +1,120 @@
 ﻿using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Moves;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared;
 
 public partial struct Board
 {
+    public unsafe void ApplyWhiteMove(uint move)
+    {
+        var movedPiece = move.GetMovedPiece();
+        var moveType = move.GetMoveType();
+        var fromSquare = move.GetFromSquare();
+        var toSquare = move.GetToSquare();
+
+        if (moveType == Constants.NormalMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    WhitePawn_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    WhiteKnight_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    WhiteBishop_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Rook:
+                    WhiteRook_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Queen:
+                    WhiteQueen_Move(fromSquare, toSquare);
+                    break;
+                case Constants.King:
+                    WhiteKing_Move(fromSquare, toSquare);
+                    break;
+            }
+        }
+        else if (moveType == Constants.CaptureMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    WhitePawn_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    WhiteKnight_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    WhiteBishop_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Rook:
+                    WhiteRook_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Queen:
+                    WhiteQueen_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.King:
+                    WhiteKing_Capture(fromSquare, toSquare);
+                    break;
+            }
+        }
+        else if (moveType == Constants.Castle)
+        {
+            if (toSquare == 6)
+            {
+                WhiteKing_KingSideCastle();
+            }
+            else
+            {
+                WhiteKing_QueenSideCastle();
+            }
+        }
+        else if (moveType == Constants.DoublePush)
+        {
+            WhitePawn_DoublePush(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.EnPassant)
+        {
+            WhitePawn_Enpassant(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightPromotion)
+        {
+            WhitePawn_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopPromotion)
+        {
+            WhitePawn_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookPromotion)
+        {
+            WhitePawn_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenPromotion)
+        {
+            WhitePawn_QueenPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightCapturePromotion)
+        {
+            WhitePawn_Capture_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopCapturePromotion)
+        {
+            WhitePawn_Capture_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookCapturePromotion)
+        {
+            WhitePawn_Capture_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenCapturePromotion)
+        {
+            WhitePawn_Capture_QueenPromotion(fromSquare, toSquare);
+        }
+    }
+
+
     public unsafe void WhitePawn_Enpassant(int fromSquare, int toSquare)
     {
         var moveMask = (1UL << fromSquare) | (1UL << toSquare);
