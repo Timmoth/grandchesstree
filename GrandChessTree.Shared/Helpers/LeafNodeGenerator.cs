@@ -53,15 +53,19 @@ public static unsafe class LeafNodeGenerator
         var hashes = new Dictionary<ulong, (string fen, int occurrences)>();
         foreach (var b in boards)
         {
-            if (hashes.TryGetValue(b.Hash, out var entry))
+            var bb = b;
+            var hash = Zobrist.CalculateZobristKeyWithoutInvalidEp(ref bb, leafNodeWhiteToMove);
+
+
+            if (hashes.TryGetValue(hash, out var entry))
             {
                 entry.occurrences += 1;
             }
             else
             {
-                entry = (b.ToFen(leafNodeWhiteToMove, 0, 1), 1);
+                entry = (b.ToFenWithoutIllegalEp(leafNodeWhiteToMove, 0, 1), 1);
             }
-            hashes[b.Hash] = entry;
+            hashes[hash] = entry;
         }
 
 

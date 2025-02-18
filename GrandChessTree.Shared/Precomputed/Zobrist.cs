@@ -368,6 +368,58 @@ public static unsafe class Zobrist
         return zobristKey;
     }
 
+    public static unsafe ulong CalculateZobristKeyWithoutInvalidEp(ref Board board, bool whiteToMove)
+    {
+        ulong zobristKey = 0;
+
+        for (byte squareIndex = 0; squareIndex < 64; squareIndex++)
+        {
+            var piece = board.GetPiece(squareIndex);
+
+            if (piece != 0)
+            {
+                zobristKey ^= PiecesArray[piece * 64 + squareIndex];
+            }
+        }
+
+        if (whiteToMove)
+        {
+            zobristKey ^= SideToMove;
+        }
+
+        if ((board.CastleRights & CastleRights.WhiteKingSide) != 0)
+        {
+            zobristKey ^= WhiteKingSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.WhiteQueenSide) != 0)
+        {
+            zobristKey ^= WhiteQueenSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.BlackKingSide) != 0)
+        {
+            zobristKey ^= BlackKingSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.BlackQueenSide) != 0)
+        {
+            zobristKey ^= BlackQueenSideCastlingRights;
+        }
+
+        if (board.EnPassantFile < 8)
+        {
+            if (whiteToMove && board.CanWhitePawnEnpassant())
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
+            else if(!whiteToMove && board.CanBlackPawnEnpassant())
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
+        }
+
+        return zobristKey;
+    }
+
+
 
     public const int BlackPawnZobristOffset = 1 * 64;
     public const int BlackKnightZobristOffset = 3 * 64;

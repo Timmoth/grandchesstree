@@ -487,9 +487,8 @@ while ((input = Console.ReadLine()) != "quit"){
         var queue = new ConcurrentQueue<(ulong hash, string fen, int occurrences)>(divideResults);
 
         object lockObj = new();
-        var total = new HashSet<ulong>();
 
-        for (int i = 0; i < threads.Length; i++)
+                for (int i = 0; i < threads.Length; i++)
         {
             var index = i;
 
@@ -497,17 +496,30 @@ while ((input = Console.ReadLine()) != "quit"){
             {
                 unsafe
                 {
-                    PerftUnique.HashTable = PerftUnique.AllocateHashTable(512);
+                    PerftUnique.HashTable = PerftUnique.AllocateHashTable(256);
                 }
 
+                var count = 0;
                 while (queue.TryDequeue(out var item))
                 {
                     var (board, wtm) = FenParser.Parse(item.fen);
 
                     PerftUnique.PerftRootUnique(ref board, depth - launchDepth, wtm);
+
+                    count++;
+                    if (index == 0 && count % 2 == 0)
+                    {
+                        var ms = sw.ElapsedMilliseconds;
+                        var s = (float)ms / 1000;
+                        var nps = PerftUnique.UniquePositions.Count / s;
+                        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
+                        Console.WriteLine($"nodes:{PerftUnique.UniquePositions.Count}");
+                    }
                 }
 
-    
+
+             
+
                 PerftUnique.FreeHashTable();
             });
             threads[index].Start();

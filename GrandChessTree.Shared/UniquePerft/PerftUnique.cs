@@ -8,78 +8,100 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 
 using System;
-public class LockFreeHashSet
+using System;
+using System.Threading;
+using System;
+using System.Threading;
+using System.Collections.Generic;
+
+public class UniqueUlongHashSet
 {
-    private readonly ulong[] _keys;
-    private readonly int[] _states; // 0 = empty, 1 = occupied
+    private readonly long[][] _buckets;
+    private readonly int _bucketCount;
+    private readonly int _bucketSize;
+    private readonly int _bucketHashMask;
+    private readonly int _hashesPerKey;
+
+    // Unique key count.
     private int _count;
-    private readonly int _mask;
 
-    /// <summary>
-    /// Creates a lock-free hash set with the specified capacity.
-    /// Capacity must be a power of 2.
-    /// </summary>
-    /// <param name="capacity">The size of the internal table (power of 2).</param>
-    public LockFreeHashSet(int capacity = 1 << 30)
+    public UniqueUlongHashSet(int bucketCount = 4, int bucketSizeExp = 30, int hashesPerKey = 4)
     {
-        if ((capacity & (capacity - 1)) != 0)
-            throw new ArgumentException("Capacity must be a power of 2.", nameof(capacity));
+        _bucketCount = bucketCount;
+        _bucketSize = 1 << bucketSizeExp;
+        _bucketHashMask = _bucketSize - 1;
+        _hashesPerKey = hashesPerKey;
 
-        _keys = new ulong[capacity];
-        _states = new int[capacity];  // All slots start as 0 (empty)
-        _mask = capacity - 1;
-    }
-
-    /// <summary>
-    /// Adds a key to the hash set if it isn’t already present.
-    /// Returns true if the key was added (i.e. it was not present before).
-    /// Throws an exception if the table is full.
-    /// </summary>
-    public bool Add(ulong key)
-    {
-        // Since the input key is already a hash, use it directly.
-        int startIndex = (int)(key & (ulong)_mask);
-        int index = startIndex;
-        // Limit the number of probes to the table size to avoid infinite loops.
-        for (int probes = 0; probes < _keys.Length; probes++)
+        _buckets = new long[bucketCount][];
+        for (int i = 0; i < bucketCount; i++)
         {
-            int state = Volatile.Read(ref _states[index]);
-            if (state == 0)
-            {
-                // The slot appears empty.
-                // Try to claim it by atomically setting the state from 0 to 1.
-                if (Interlocked.CompareExchange(ref _states[index], 1, 0) == 0)
-                {
-                    // Successfully claimed this slot.
-                    // Write the key. Volatile.Write ensures proper memory ordering.
-                    Volatile.Write(ref _keys[index], key);
-                    // Update the count.
-                    Interlocked.Increment(ref _count);
-                    return true;
-                }
-                // If we lose the race, fall through and check the slot again.
-            }
-            else
-            {
-                // The slot is occupied—check if it already holds our key.
-                if (Volatile.Read(ref _keys[index]) == key)
-                {
-                    // Key already exists in the set.
-                    return false;
-                }
-            }
-            // Move to the next slot (with wrapping).
-            index = (index + 1) & _mask;
+            _buckets[i] = new long[_bucketSize];
         }
-        // If we scanned the entire table, then it's full.
-        throw new InvalidOperationException("HashSet is full. Consider resizing or increasing the capacity.");
     }
 
+    public int Count => Volatile.Read(ref _count);
+
+    public void Add(ulong input)
+    {
+        bool isUnique = false;
+
+        // Hash the ulong
+        ulong baseValue = PrimaryHash(input);
+
+        // Each hash goes into a set number of buckets
+        for (int i = 0; i < _hashesPerKey; i++)
+        {
+            // Use a different portion of the hash each iteration
+            int rotation = (i * 17) % 64;
+            ulong mutated = RotateRight(baseValue, rotation);
+
+            // Choose a bucket from the pool by using the Lower bits
+            int bucketIndex = (int)(mutated % (ulong)_bucketCount);
+
+            // Use the next bits to pick the bucket element index
+            // Use the 6 lowest bits for the flag index.
+            int elementIndex = (int)((mutated >> 6) & (ulong)_bucketHashMask);
+            int bit = (int)(mutated & 0x3F);
+            long mask = 1L << bit;
+
+            // Set the bit flag in the selected bucket's element.
+            long original = _buckets[bucketIndex][elementIndex];
+
+            // If the bit was already set, then this must be a unique element
+            if ((original & mask) == 0)
+            {
+                isUnique = true;
+                _buckets[bucketIndex][elementIndex] |= mask;
+            }
+        }
+
+        if (isUnique)
+        {
+            // At least one bit was not set, must be unique
+            _count++;
+        }
+    }
 
     /// <summary>
-    /// Gets the count of unique keys that have been added.
+    /// Rotates a 64-bit value to the right by the specified number of bits.
     /// </summary>
-    public int Count => Volatile.Read(ref _count);
+    private static ulong RotateRight(ulong value, int bits)
+    {
+        return (value >> bits) | (value << (64 - bits));
+    }
+
+    /// <summary>
+    /// A primary 64-bit hash function to improve the distribution of input keys.
+    /// </summary>
+    private static ulong PrimaryHash(ulong key)
+    {
+        key ^= key >> 33;
+        key *= 0xff51afd7ed558ccdUL;
+        key ^= key >> 33;
+        key *= 0xc4ceb9fe1a85ec53UL;
+        key ^= key >> 33;
+        return key;
+    }
 }
 
 
