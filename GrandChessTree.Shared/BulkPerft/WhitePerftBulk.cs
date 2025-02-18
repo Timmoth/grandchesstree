@@ -8,6 +8,11 @@ public partial struct Board
 {
     private unsafe ulong AccumulateWhiteMovesBulk(int depth)
     {
+        if (depth <= 1)
+        {
+            // bulk count
+            return AccumulateWhiteMovesBulkCount();
+        }
         var ptr = (PerftBulk.HashTable + (Hash & PerftBulk.HashTableMask));
         var hashEntry = Unsafe.Read<PerftBulkHashEntry>(ptr);
         if (hashEntry.FullHash == (Hash ^ (White | Black)) && depth == hashEntry.Depth)
@@ -20,14 +25,7 @@ public partial struct Board
         hashEntry.Depth = (byte)depth;
 
         ulong nodes = 0;
-        if (depth <= 1)
-        {
-            nodes = AccumulateWhiteMovesBulkCount();
-            hashEntry.Nodes = nodes;
-            *ptr = hashEntry;
-            // bulk count
-            return nodes;
-        }
+
 
         var checkers = BlackCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);
