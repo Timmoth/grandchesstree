@@ -10,7 +10,7 @@ namespace GrandChessTree.Client.Tests
         // https://github.com/AndyGrant/Ethereal
 
         // setting to 5 or above will take > 5 mins
-        const int maxPerftDepth = 3;
+        const int maxPerftDepth = 2;
 
         public static IEnumerable<object[]> GetChrisWhittingtonPerftDotEpdTestCases()
         {

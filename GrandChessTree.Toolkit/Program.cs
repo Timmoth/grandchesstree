@@ -1,17 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Xml.Linq;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
-using GrandChessTree.Shared.Precomputed;
 using GrandChessTree.Toolkit;
 
 Console.WriteLine("----The Grand Chess Tree Toolkit----");
 
-// var str = "rnb1kbnr/pppp1p1p/5q2/4pPp1/8/8/PPPPPKPP/RNBQ1BNR w kq - 1 4";
-// var (bb, wt) = FenParser.Parse(str);
-// Console.WriteLine(Zobrist.CalculateZobristKey(ref bb, wt).ToString("X"));
-//
-// return;
 string? input;
 while ((input = Console.ReadLine()) != "quit"){
     if (string.IsNullOrEmpty(input))
@@ -190,9 +185,11 @@ while ((input = Console.ReadLine()) != "quit"){
         var ms = sw.ElapsedMilliseconds;
         var s = (float)ms / 1000;
         var nps = nodes / s;
-        Console.WriteLine($"{nodes}");
-        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
-        Console.WriteLine($"{board.Hash}:{board.ToFen(whiteToMove, 0, 1)}");
+        Console.WriteLine($"nodes: {nodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+        Console.WriteLine($"time: {ms}ms");
+        Console.WriteLine($"hash: {board.Hash}");
+        Console.WriteLine($"fen: {board.ToFen(whiteToMove, 0, 1)}");
     }
     else if (command == "perft_count_to_disk")
     {
@@ -268,8 +265,8 @@ while ((input = Console.ReadLine()) != "quit"){
         var ms = sw.ElapsedMilliseconds;
         var s = (float)ms / 1000;
         var nps = totalNodes / s;
-        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
-        Console.WriteLine($"nodes:{totalNodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()} {ms}ms");
+        Console.WriteLine($"nodes: {totalNodes}");
         Console.WriteLine("Finished...");
     }
     else if (command == "perft_mt_bulk")
@@ -320,8 +317,7 @@ while ((input = Console.ReadLine()) != "quit"){
                         var ms = sw.ElapsedMilliseconds;
                         var s = (float)ms / 1000;
                         var nps = totalNodes / s;
-                        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
-                        Console.WriteLine($"nodes:{totalNodes}");
+                        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {s}s nodes:{totalNodes.FormatBigNumber()}");
                     }
                 }
 
@@ -339,9 +335,11 @@ while ((input = Console.ReadLine()) != "quit"){
         var ms = sw.ElapsedMilliseconds;
         var s = (float)ms / 1000;
         var nps = totalNodes / s;
-        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
-        Console.WriteLine($"nodes:{totalNodes}");
-        Console.WriteLine("Finished...");
+        Console.WriteLine($"nodes: {totalNodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+        Console.WriteLine($"time: {ms}ms");
+        Console.WriteLine($"hash: {initialBoard.Hash}");
+        Console.WriteLine($"fen: {initialBoard.ToFen(whiteToMove, 0, 1)}");
     }
 
     else if (command == "perft_test")
