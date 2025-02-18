@@ -63,6 +63,10 @@ namespace GrandChessTree.Api.Database
 
             modelBuilder.Entity<PerftTask>()
                 .HasIndex(p => p.Depth);
+
+            modelBuilder.Entity<PerftTask>()
+                .HasIndex(p => p.FinishedAt);
+
         }
 
     }

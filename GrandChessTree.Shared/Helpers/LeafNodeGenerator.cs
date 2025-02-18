@@ -6,6 +6,11 @@ public static unsafe class LeafNodeGenerator
 {
     public static List<(ulong hash, string fen, int occurrences)> GenerateLeafNodes(ref Board board, int depth, bool whiteToMove)
     {
+        if(depth == 0)
+        {
+            return new List<(ulong hash, string fen, int occurrences)>();
+        }
+
         var boards = new List<Board>();
 
         if (whiteToMove)
@@ -53,15 +58,18 @@ public static unsafe class LeafNodeGenerator
         var hashes = new Dictionary<ulong, (string fen, int occurrences)>();
         foreach (var b in boards)
         {
-            if (hashes.TryGetValue(b.Hash, out var entry))
+            var bb = b;
+            var hash = Zobrist.CalculateZobristKeyWithoutInvalidEp(ref bb, leafNodeWhiteToMove);
+
+            if (hashes.TryGetValue(hash, out var entry))
             {
                 entry.occurrences += 1;
             }
             else
             {
-                entry = (b.ToFen(leafNodeWhiteToMove, 0, 1), 1);
+                entry = (b.ToFenWithoutIllegalEp(leafNodeWhiteToMove, 0, 1), 1);
             }
-            hashes[b.Hash] = entry;
+            hashes[hash] = entry;
         }
 
 

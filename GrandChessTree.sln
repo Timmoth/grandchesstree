@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandChessTree.Client", "Gr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandChessTree.Client.Tests", "GrandChessTree.Client.Tests\GrandChessTree.Client.Tests.csproj", "{DF18613E-C6DF-40C5-99F9-6B2E251F7A27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandChessTree.Client.Worker", "GrandChessTree.Client.Worker\GrandChessTree.Client.Worker.csproj", "{D7474B06-F7B7-4FCA-815B-1717E813B304}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandChessTree.Shared", "GrandChessTree.Shared\GrandChessTree.Shared.csproj", "{91F149FE-D4FB-4D62-9F4C-EAB56B0EF330}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GrandChessTree.Api", "GrandChessTree.Api\GrandChessTree.Api.csproj", "{AF32D8AF-1BA8-42AC-AB2D-CF36FDAB4108}"
@@ -29,10 +27,6 @@ Global
 		{DF18613E-C6DF-40C5-99F9-6B2E251F7A27}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF18613E-C6DF-40C5-99F9-6B2E251F7A27}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF18613E-C6DF-40C5-99F9-6B2E251F7A27}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D7474B06-F7B7-4FCA-815B-1717E813B304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D7474B06-F7B7-4FCA-815B-1717E813B304}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D7474B06-F7B7-4FCA-815B-1717E813B304}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D7474B06-F7B7-4FCA-815B-1717E813B304}.Release|Any CPU.Build.0 = Release|Any CPU
 		{91F149FE-D4FB-4D62-9F4C-EAB56B0EF330}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{91F149FE-D4FB-4D62-9F4C-EAB56B0EF330}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91F149FE-D4FB-4D62-9F4C-EAB56B0EF330}.Release|Any CPU.ActiveCfg = Release|Any CPU

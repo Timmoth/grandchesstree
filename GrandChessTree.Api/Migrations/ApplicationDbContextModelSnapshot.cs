@@ -260,6 +260,8 @@ namespace GrandChessTree.Api.Migrations
 
                     b.HasIndex("Depth");
 
+                    b.HasIndex("FinishedAt");
+
                     b.HasIndex("PerftItemId");
 
                     b.HasIndex("RootPositionId");

@@ -1,10 +1,120 @@
 ﻿using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Moves;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Shared;
 
 public partial struct Board
 {
+    public unsafe void ApplyWhiteMove(uint move)
+    {
+        var movedPiece = move.GetMovedPiece();
+        var moveType = move.GetMoveType();
+        var fromSquare = move.GetFromSquare();
+        var toSquare = move.GetToSquare();
+
+        if (moveType == Constants.NormalMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    WhitePawn_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    WhiteKnight_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    WhiteBishop_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Rook:
+                    WhiteRook_Move(fromSquare, toSquare);
+                    break;
+                case Constants.Queen:
+                    WhiteQueen_Move(fromSquare, toSquare);
+                    break;
+                case Constants.King:
+                    WhiteKing_Move(fromSquare, toSquare);
+                    break;
+            }
+        }
+        else if (moveType == Constants.CaptureMove)
+        {
+            switch (movedPiece)
+            {
+                case Constants.Pawn:
+                    WhitePawn_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Knight:
+                    WhiteKnight_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Bishop:
+                    WhiteBishop_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Rook:
+                    WhiteRook_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.Queen:
+                    WhiteQueen_Capture(fromSquare, toSquare);
+                    break;
+                case Constants.King:
+                    WhiteKing_Capture(fromSquare, toSquare);
+                    break;
+            }
+        }
+        else if (moveType == Constants.Castle)
+        {
+            if (toSquare == 6)
+            {
+                WhiteKing_KingSideCastle();
+            }
+            else
+            {
+                WhiteKing_QueenSideCastle();
+            }
+        }
+        else if (moveType == Constants.DoublePush)
+        {
+            WhitePawn_DoublePush(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.EnPassant)
+        {
+            WhitePawn_Enpassant(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightPromotion)
+        {
+            WhitePawn_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopPromotion)
+        {
+            WhitePawn_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookPromotion)
+        {
+            WhitePawn_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenPromotion)
+        {
+            WhitePawn_QueenPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.KnightCapturePromotion)
+        {
+            WhitePawn_Capture_KnightPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.BishopCapturePromotion)
+        {
+            WhitePawn_Capture_BishopPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.RookCapturePromotion)
+        {
+            WhitePawn_Capture_RookPromotion(fromSquare, toSquare);
+        }
+        else if (moveType == Constants.QueenCapturePromotion)
+        {
+            WhitePawn_Capture_QueenPromotion(fromSquare, toSquare);
+        }
+    }
+
+
     public unsafe void WhitePawn_Enpassant(int fromSquare, int toSquare)
     {
         var moveMask = (1UL << fromSquare) | (1UL << toSquare);
@@ -41,6 +151,10 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -80,6 +194,10 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -119,6 +237,10 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -158,6 +280,10 @@ public partial struct Board
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -194,15 +320,19 @@ public partial struct Board
             Knight &= ~captureMask;
             zobristOffset = Zobrist.BlackKnight;
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             zobristOffset = Zobrist.BlackBishop;
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -306,15 +436,15 @@ public partial struct Board
         var moveMask = (1UL << fromSquare) | (1UL << toSquare);
         Pawn ^= moveMask;
         White ^= moveMask;
+        byte enPassantFile = (byte)(fromSquare % 8);
 
         Hash ^= *(Zobrist.PiecesArray + Zobrist.WhitePawn + fromSquare) ^
                 *(Zobrist.PiecesArray + Zobrist.WhitePawn + toSquare) ^
-                Zobrist.SideToMove ^
-                *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + (byte)(fromSquare % 8));
-
-        
-        EnPassantFile = (byte)(fromSquare % 8);
+                 *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + enPassantFile)^
+                Zobrist.SideToMove;
+        EnPassantFile = enPassantFile;
     }
+
 
     internal unsafe void WhiteKnight_Capture(int fromSquare, int toSquare)
     {
@@ -331,15 +461,19 @@ public partial struct Board
             Knight &= ~captureMask;
             zobristOffset = Zobrist.BlackKnight;
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             zobristOffset = Zobrist.BlackBishop;
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -389,15 +523,19 @@ public partial struct Board
             Knight &= ~captureMask;
             zobristOffset = Zobrist.BlackKnight;
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             zobristOffset = Zobrist.BlackBishop;
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
             Rook &= ~captureMask;
             zobristOffset = Zobrist.BlackRook;
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -464,7 +602,7 @@ public partial struct Board
                     *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
 
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteRook + fromSquare) ^
@@ -474,8 +612,11 @@ public partial struct Board
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8) ^
                     *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+
             Rook &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteRook + fromSquare) ^
                     *(Zobrist.PiecesArray + Zobrist.WhiteRook + toSquare) ^
@@ -483,6 +624,7 @@ public partial struct Board
                     Zobrist.SideToMove ^
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8) ^
                     *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
+
         }
         else
         {
@@ -510,10 +652,8 @@ public partial struct Board
         White ^= moveMask;
 
         var prevCastleRights = CastleRights;
-        if (fromSquare == 0)
-            CastleRights &= ~CastleRights.WhiteQueenSide;
-        else if (fromSquare == 7)
-            CastleRights &= ~CastleRights.WhiteKingSide;
+        CastleRights &= ~(((fromSquare == 0) ? CastleRights.WhiteQueenSide : 0) |
+       ((fromSquare == 7) ? CastleRights.WhiteKingSide : 0));
 
         Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteRook + fromSquare) ^
                 *(Zobrist.PiecesArray + Zobrist.WhiteRook + toSquare) ^
@@ -549,7 +689,7 @@ public partial struct Board
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
 
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteQueen + fromSquare) ^
@@ -557,8 +697,9 @@ public partial struct Board
                     *(Zobrist.PiecesArray + Zobrist.BlackBishop + toSquare) ^
                     Zobrist.SideToMove ^
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
+
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
             Rook &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteQueen + fromSquare) ^
@@ -566,6 +707,10 @@ public partial struct Board
                     *(Zobrist.PiecesArray + Zobrist.BlackRook + toSquare) ^
                     Zobrist.SideToMove ^
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8);
+            var prevCastleRights = CastleRights;
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+            Hash ^= *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
         else
         {
@@ -628,7 +773,7 @@ public partial struct Board
                     *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
 
         }
-        else if ((Black & Bishop & captureMask) != 0)
+        else if ((Bishop & captureMask) != 0)
         {
             Bishop &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteKing + fromSquare) ^
@@ -638,8 +783,11 @@ public partial struct Board
                     *(Zobrist.DeltaEnpassant + EnPassantFile * 9 + 8) ^
                     *(Zobrist.DeltaCastleRights + (int)(prevCastleRights ^ CastleRights));
         }
-        else if ((Black & Rook & captureMask) != 0)
+        else if ((Rook & captureMask) != 0)
         {
+            CastleRights &= ~(((toSquare == 56) ? CastleRights.BlackQueenSide : 0) |
+                               ((toSquare == 63) ? CastleRights.BlackKingSide : 0));
+
             Rook &= ~captureMask;
             Hash ^= *(Zobrist.PiecesArray + Zobrist.WhiteKing + fromSquare) ^
                     *(Zobrist.PiecesArray + Zobrist.WhiteKing + toSquare) ^

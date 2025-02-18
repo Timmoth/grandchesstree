@@ -40,9 +40,17 @@ public static unsafe class PerftBulk
         return (uint)transpositionCount;
     }
 
-    public static PerftBulkHashEntry* AllocateHashTable(int sizeInMb = 512)
+    public static void AllocateHashTable(int sizeInMb = 512)
     {
-        HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+
+        if (HashTable != null && HashTableSize == newHashTableSize)
+        {
+            ClearTable(HashTable);
+            return;
+        }
+
+        HashTableSize = newHashTableSize;
         HashTableMask = (uint)HashTableSize - 1;
 
         const nuint alignment = 64;
@@ -51,7 +59,7 @@ public static unsafe class PerftBulk
         var block = NativeMemory.AlignedAlloc(bytes, alignment);
         NativeMemory.Clear(block, bytes);
 
-        return (PerftBulkHashEntry*)block;
+        HashTable = (PerftBulkHashEntry*)block;
     }
 
     public static void FreeHashTable()
@@ -81,11 +89,24 @@ public static unsafe class PerftBulk
             // perft(0) = 1
             return 1;
         }
+        if (depth == 1)
+        {
+            if (whiteToMove)
+            {
+                return board.AccumulateWhiteMovesBulkCount();
+            }
+            else
+            {
+                return board.AccumulateBlackMovesBulkCount();
+            }
+        }
 
         ulong nodes = 0;
 
         if (whiteToMove)
         {
+
+
             var checkers = board.BlackCheckers();
             var numCheckers = (byte)ulong.PopCount(checkers);
 

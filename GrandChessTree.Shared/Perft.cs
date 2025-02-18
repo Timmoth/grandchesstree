@@ -33,8 +33,16 @@ public static unsafe class Perft
         return (uint)transpositionCount;
     }
 
-    public static Summary* AllocateHashTable(int sizeInMb = 512)
+    public static void AllocateHashTable(int sizeInMb = 512)
     {
+        var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+
+        if (HashTable != null && HashTableSize == newHashTableSize)
+        {
+            ClearTable(HashTable);
+            return;
+        }
+
         HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
         HashTableMask = (uint)HashTableSize - 1;
 
@@ -44,7 +52,7 @@ public static unsafe class Perft
         var block = NativeMemory.AlignedAlloc(bytes, alignment);
         NativeMemory.Clear(block, bytes);
 
-        return (Summary*)block;
+        HashTable =(Summary*)block;
     }
 
     public static void FreeHashTable()

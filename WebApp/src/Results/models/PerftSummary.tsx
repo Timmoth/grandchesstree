@@ -5,4 +5,6 @@ export interface PerftSummary {
   position_fen: string;
   position_description: string;
   results: ChessData[];
+  unique_positions: number[];
+
 }

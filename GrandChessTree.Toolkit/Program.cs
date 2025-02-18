@@ -1,10 +1,12 @@
 ﻿using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Xml.Linq;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Toolkit;
 
 Console.WriteLine("----The Grand Chess Tree Toolkit----");
+
 string? input;
 while ((input = Console.ReadLine()) != "quit"){
     if (string.IsNullOrEmpty(input))
@@ -24,32 +26,36 @@ while ((input = Console.ReadLine()) != "quit"){
     var command = commandParts[0];
     if (command == "seed_startpos")
     {
-        if (commandParts.Length != 2 || !int.TryParse(commandParts[1], out var depth))
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+                   || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedStartPos(depth);
+
+        await PositionSeeder.SeedPosition(Constants.StartPosFen, depth, 4, Constants.StartPosRootPositionId);
     }
     else if (command == "seed_kiwipete")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-            || !int.TryParse(commandParts[2], out var itemDepth))
+            || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_kiwipete:<depth>:<item_depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_kiwipete:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedKiwipete(depth, itemDepth);
+
+        await PositionSeeder.SeedPosition(Constants.KiwiPeteFen, depth, 4, Constants.KiwiPeteRootPositionId);
     }
     else if (command == "seed_sje")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-            || !int.TryParse(commandParts[2], out var itemDepth))
+                   || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_sje:<depth>:<item_depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_sje:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedSJE(depth, itemDepth);
+
+        await PositionSeeder.SeedPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
     }
     else if (command == "seed_account")
     {
@@ -93,7 +99,7 @@ while ((input = Console.ReadLine()) != "quit"){
         Summary summary = default;
         unsafe
         {
-            Perft.HashTable = Perft.AllocateHashTable(256);
+            Perft.AllocateHashTable(256);
         }
 
         var sw = Stopwatch.StartNew();
@@ -104,7 +110,7 @@ while ((input = Console.ReadLine()) != "quit"){
         Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
         summary.Print();
         Console.WriteLine($"{board.Hash}:{board.ToFen(whiteToMove, 0, 1)}");
-    }else    if (command == "perft_mt")
+    }else if (command == "perft_mt")
     {
         if (commandParts.Length != 3 ||
             !int.TryParse(commandParts[1], out var depth))
@@ -133,7 +139,7 @@ while ((input = Console.ReadLine()) != "quit"){
                 Summary s = default;
                 unsafe
                 {
-                    Perft.HashTable = Perft.AllocateHashTable(1024);
+                    Perft.AllocateHashTable(1024);
                 }
                 Perft.PerftRoot(ref board, ref s, depth - 1, wtm);
 
@@ -158,14 +164,40 @@ while ((input = Console.ReadLine()) != "quit"){
         var nps = summary.Nodes / s;
         Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
         summary.Print();
+    }else if (command == "perft_bulk")
+    {
+        if (commandParts.Length != 3 ||
+            !int.TryParse(commandParts[1], out var depth))
+        {
+            Console.WriteLine("Invalid command format is 'perft_bulk:<depth>:<fen>'.");
+            return;
+        }
+
+
+        var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+        unsafe
+        {
+            PerftBulk.AllocateHashTable(256);
+        }
+
+        var sw = Stopwatch.StartNew();
+        var nodes = PerftBulk.PerftRootBulk(ref board, depth, whiteToMove);
+        var ms = sw.ElapsedMilliseconds;
+        var s = (float)ms / 1000;
+        var nps = nodes / s;
+        Console.WriteLine($"nodes: {nodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+        Console.WriteLine($"time: {ms}ms");
+        Console.WriteLine($"hash: {board.Hash}");
+        Console.WriteLine($"fen: {board.ToFen(whiteToMove, 0, 1)}");
     }
-    else if (command == "perft_mt_bulk")
+    else if (command == "perft_count_to_disk")
     {
         if (commandParts.Length != 4 ||
             !int.TryParse(commandParts[1], out var depth) ||
             !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid command format is 'perft:<depth>:<launch_depth>:<fen>'.");
+            Console.WriteLine("Invalid command format is 'perft_mt_bulk:<depth>:<launch_depth>:<fen>'.");
             return;
         }
         var (initialBoard, whiteToMove) = FenParser.Parse(commandParts[3]);
@@ -180,8 +212,6 @@ while ((input = Console.ReadLine()) != "quit"){
 
         using (StreamWriter writer = new StreamWriter("out.txt", append: true))
         {
-
-
             object lockObj = new();
             for (int i = 0; i < threads.Length; i++)
             {
@@ -191,7 +221,7 @@ while ((input = Console.ReadLine()) != "quit"){
                 {
                     unsafe
                     {
-                        PerftBulk.HashTable = PerftBulk.AllocateHashTable(1024);
+                        PerftBulk.AllocateHashTable(1024);
                     }
 
                     var count = 0;
@@ -235,8 +265,81 @@ while ((input = Console.ReadLine()) != "quit"){
         var ms = sw.ElapsedMilliseconds;
         var s = (float)ms / 1000;
         var nps = totalNodes / s;
-        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
-        Console.WriteLine($"nodes:{totalNodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()} {ms}ms");
+        Console.WriteLine($"nodes: {totalNodes}");
+        Console.WriteLine("Finished...");
+    }
+    else if (command == "perft_mt_bulk")
+    {
+        if (commandParts.Length != 4 ||
+            !int.TryParse(commandParts[1], out var depth) ||
+            !int.TryParse(commandParts[2], out var launchDepth))
+        {
+            Console.WriteLine("Invalid command format is 'perft_mt_bulk:<depth>:<launch_depth>:<fen>'.");
+            return;
+        }
+        var (initialBoard, whiteToMove) = FenParser.Parse(commandParts[3]);
+
+        var divideResults = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, launchDepth, whiteToMove);
+        var sw = Stopwatch.StartNew();
+        ulong totalNodes = 0;
+
+        Thread[] threads = new Thread[28];
+
+        var queue = new ConcurrentQueue<(ulong hash, string fen, int occurrences)>(divideResults);
+
+        object lockObj = new();
+        for (int i = 0; i < threads.Length; i++)
+        {
+            var index = i;
+
+            threads[index] = new Thread(() =>
+            {
+                unsafe
+                {
+                    PerftBulk.AllocateHashTable(1024);
+                }
+
+                var count = 0;
+                while (queue.TryDequeue(out var item))
+                {
+                    var (board, wtm) = FenParser.Parse(item.fen);
+                    var nodes = PerftBulk.PerftRootBulk(ref board, depth - launchDepth, wtm);
+
+                    lock (lockObj)
+                    {
+                        totalNodes += nodes * (ulong)item.occurrences;
+                    }
+
+                    count++;
+                    if (index == 0 && count % 2 == 0)
+                    {
+                        var ms = sw.ElapsedMilliseconds;
+                        var s = (float)ms / 1000;
+                        var nps = totalNodes / s;
+                        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {s}s nodes:{totalNodes.FormatBigNumber()}");
+                    }
+                }
+
+                PerftBulk.FreeHashTable();
+            });
+            threads[index].Start();
+        }
+
+        // Wait for all threads to complete
+        foreach (Thread thread in threads)
+        {
+            thread.Join();
+        }
+
+        var ms = sw.ElapsedMilliseconds;
+        var s = (float)ms / 1000;
+        var nps = totalNodes / s;
+        Console.WriteLine($"nodes: {totalNodes}");
+        Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+        Console.WriteLine($"time: {ms}ms");
+        Console.WriteLine($"hash: {initialBoard.Hash}");
+        Console.WriteLine($"fen: {initialBoard.ToFen(whiteToMove, 0, 1)}");
     }
 
     else if (command == "perft_test")
@@ -257,7 +360,7 @@ while ((input = Console.ReadLine()) != "quit"){
         {
             Perft.ClearTable(Perft.HashTable);
             Perft.FreeHashTable();
-            Perft.HashTable = Perft.AllocateHashTable(hashMb);
+            Perft.AllocateHashTable(hashMb);
         }
 
         Console.WriteLine("Starting warmup");
@@ -301,10 +404,6 @@ while ((input = Console.ReadLine()) != "quit"){
         var totalS = (float)totalMs / 1000;
         Console.WriteLine($"completed {iterations} nps: min:{(minNps).FormatBigNumber()} max:{(maxNps).FormatBigNumber()} av:{(totalNodes / totalS).FormatBigNumber()} {totalS}seconds");
     }
-    else if(command == "seed_fen")
-    {
-        await FenUpdater.Seed();
-    }
     else if (command == "dump_db")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
@@ -346,14 +445,94 @@ while ((input = Console.ReadLine()) != "quit"){
             !int.TryParse(commandParts[1], out var depth)
             )
         {
-            Console.WriteLine("Invalid command format is 'quick_perft_summary:<depth>:<fen>'.");
+            Console.WriteLine("Invalid command format is 'unique_positions:<depth>:<fen>'.");
             return;
         }
-        var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+
+        unsafe
+        {
+            PerftUnique.HashTable = PerftUnique.AllocateHashTable(1024);
+            var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
+            var sw = Stopwatch.StartNew();
+            PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
+            var ms = sw.ElapsedMilliseconds;
+            Console.WriteLine($"unique: {(ulong)PerftUnique.UniquePositions.Count} in {ms}ms");
+            PerftUnique.FreeHashTable();
+                                }
+
+
+
+    }
+    else if (command == "unique_positions_mt")
+    {
+        if (commandParts.Length != 3 ||
+            !int.TryParse(commandParts[1], out var depth)
+            )
+        {
+            Console.WriteLine("Invalid command format is 'unique_positions:<depth>:<fen>'.");
+            return;
+        }
+
+        Console.WriteLine("Needs work...");
+
+        var (initialBoard, whiteToMove) = FenParser.Parse(commandParts[2]);
+        var launchDepth = 3;
+        var divideResults = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, launchDepth, whiteToMove);
         var sw = Stopwatch.StartNew();
-        var count = UniqueLeafNodeCounter.CountUniqueLeafNodes(ref board, depth, whiteToMove);
+
+        Thread[] threads = new Thread[28];
+
+        var queue = new ConcurrentQueue<(ulong hash, string fen, int occurrences)>(divideResults);
+
+        object lockObj = new();
+
+                for (int i = 0; i < threads.Length; i++)
+        {
+            var index = i;
+
+            threads[index] = new Thread(() =>
+            {
+                unsafe
+                {
+                    PerftUnique.HashTable = PerftUnique.AllocateHashTable(256);
+                }
+
+                var count = 0;
+                while (queue.TryDequeue(out var item))
+                {
+                    var (board, wtm) = FenParser.Parse(item.fen);
+
+                    PerftUnique.PerftRootUnique(ref board, depth - launchDepth, wtm);
+
+                    count++;
+                    if (index == 0 && count % 2 == 0)
+                    {
+                        var ms = sw.ElapsedMilliseconds;
+                        var s = (float)ms / 1000;
+                        var nps = PerftUnique.UniquePositions.Count / s;
+                        Console.WriteLine($"nps:{(nps).FormatBigNumber()} {ms}ms");
+                        Console.WriteLine($"nodes:{PerftUnique.UniquePositions.Count}");
+                    }
+                }
+
+
+             
+
+                PerftUnique.FreeHashTable();
+            });
+            threads[index].Start();
+        }
+
+        // Wait for all threads to complete
+        foreach (Thread thread in threads)
+        {
+            thread.Join();
+        }
+
         var ms = sw.ElapsedMilliseconds;
-        Console.WriteLine($"unique: {count.ToString()} in {ms}ms");
+        var s = (float)ms / 1000;
+        Console.WriteLine($"nodes:{(ulong)PerftUnique.UniquePositions.Count} in {s}s");
+
     }
     else
     {

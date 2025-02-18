@@ -90,7 +90,7 @@ namespace GrandChessTree.Client
 
                 foreach (var (hash, fen, occurences) in subTasks)
                 {
-                    if (SubTaskHashTable.TryGetValue(hash, out var summary) && summary.Depth == searchTask.SubTaskDepth)
+                    if (SubTaskHashTable.TryGetValue(fen, searchTask.SubTaskDepth, out var summary))
                     {
                         searchTask.CompleteSubTask(summary, occurences);
                         searchTask.CachedSubTaskCount++;
@@ -196,9 +196,9 @@ namespace GrandChessTree.Client
             return true;
         }
 
-        public void CacheCompletedSubtask(ulong hash, Summary summary)
+        public void CacheCompletedSubtask(string fen, int depth, Summary summary)
         {
-            SubTaskHashTable.Add(hash, summary);
+            SubTaskHashTable.Add(fen, depth, summary);
         }
     }
  }

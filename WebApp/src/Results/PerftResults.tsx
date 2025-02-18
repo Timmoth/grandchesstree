@@ -5,6 +5,7 @@ import AboutCard from "../AboutCard";
 import { PerftSummary } from "./models/PerftSummary";
 import PerftResultsTable from "./PerftResultsTable";
 import PerftStatsTable from "./PerftStatsTable";
+import UniquePositionsTable from "./UniquePositionsTable";
 
 const PerftResults: React.FC = () => {
   const { positionId } = useParams<{ positionId: string }>();
@@ -119,7 +120,10 @@ const PerftResults: React.FC = () => {
           </div>
           
         <PerftResultsTable summary={data}/>
+        <div className="flex flex-col xl:flex-row space-x-4 space-y-4">
         <PerftStatsTable summary={data}/>
+        <UniquePositionsTable summary={data}/>
+        </div>
         </div>
       </div>
     </>

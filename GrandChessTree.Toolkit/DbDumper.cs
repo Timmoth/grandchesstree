@@ -1,10 +1,8 @@
 ﻿using System.Diagnostics;
-using System.Formats.Asn1;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ConsoleTables;
 using CsvHelper;
 using CsvHelper.Configuration.Attributes;
 using GrandChessTree.Shared;
@@ -15,6 +13,94 @@ namespace GrandChessTree.Toolkit
 {
     internal class DbDumper
     {
+
+        public static async Task DeduplicateTasksWithIllegalEP(int positionId, int depth)
+        {
+
+            var (initialBoard, whiteToMove) = FenParser.Parse("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            var divideResults = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, 4, whiteToMove);
+            var hashes = divideResults.ToDictionary(d => d.hash, d => 1);
+            var fens = divideResults.ToDictionary(d => d.fen, d => 1);
+
+
+            Console.WriteLine("Enter pgsql connection string...");
+            var connectionString = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
+            }
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            try
+            {
+                string filePath = $"perft_p{positionId}_d{depth}_dump.csv";
+                await using var writer1 = new StreamWriter("keep.csv", false, Encoding.UTF8);
+                await using var writer2 = new StreamWriter("remove.csv", false, Encoding.UTF8);
+                await using var writer3 = new StreamWriter("add.csv", false, Encoding.UTF8);
+                var copySql = @$"COPY (SELECT 
+                                id, hash, fen
+                                FROM public.perft_items
+                                WHERE depth = {depth} AND root_position_id = {positionId}) TO STDOUT WITH CSV HEADER";
+
+                var reader = await conn.BeginTextExportAsync(copySql);
+                string? line;
+
+                var tokeep = new HashSet<string>();
+                var toRemove = new HashSet<string>();
+                var unknown = new HashSet<string>();
+
+                while((line = await reader.ReadLineAsync()) != null)
+                {
+                    var parts = line.Split(',');
+                    if (ulong.TryParse(parts[0], out var id) && ulong.TryParse(parts[1], out var val))
+                    {
+                        if (fens.ContainsKey(parts[2]))
+                        {
+                            tokeep.Add(parts[2]);
+                        }
+                        else
+                        {
+                            toRemove.Add(parts[2]);
+                        }
+                    }
+                }
+
+                foreach(var fen in fens)
+                {
+                    if (!tokeep.Contains(fen.Key) && !toRemove.Contains(fen.Key))
+                    {
+                        unknown.Add(fen.Key);
+                    }
+                }
+
+                foreach(var fen in tokeep)
+                {
+                    writer1.WriteLine(fen);
+                }
+
+                foreach (var fen in toRemove)
+                {
+                    writer2.WriteLine(fen);
+                }
+                foreach (var fen in unknown)
+                {
+                    writer3.WriteLine(fen);
+                }
+
+
+
+
+                Console.WriteLine($"Data successfully exported to {filePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during db dump: {ex.Message}");
+            }
+        }
+
         public static async Task Dump(int positionId, int depth)
         {
             Console.WriteLine("Enter pgsql connection string...");
@@ -442,7 +528,7 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 Summary summary = default;
                 unsafe
                 {
-                    Perft.HashTable = Perft.AllocateHashTable(256);
+                    Perft.AllocateHashTable(256);
                 }
 
                 var startedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

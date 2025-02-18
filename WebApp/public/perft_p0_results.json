@@ -2,392 +2,395 @@
   "position_name": "start position",
   "position_fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
   "position_description": "The initial position of a standard game of chess.",
-  "results":[
-  {
-    "position": 0,
-    "depth": 0,
-    "nodes": 1,
-    "captures": 0,
-    "enpassants": 0,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 0,
-    "single_discovered_checks": 0,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 0,
-    "direct_mates": 0,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 0,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 1,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 1,
-    "nodes": 20,
-    "captures": 0,
-    "enpassants": 0,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 0,
-    "single_discovered_checks": 0,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 0,
-    "direct_mates": 0,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 0,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 20,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 2,
-    "nodes": 400,
-    "captures": 0,
-    "enpassants": 0,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 0,
-    "single_discovered_checks": 0,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 0,
-    "direct_mates": 0,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 0,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 400,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 3,
-    "nodes": 8902,
-    "captures": 34,
-    "enpassants": 0,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 12,
-    "single_discovered_checks": 0,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 12,
-    "direct_mates": 0,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 0,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 8902,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 4,
-    "nodes": 197281,
-    "captures": 1576,
-    "enpassants": 0,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 461,
-    "single_discovered_checks": 0,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 461,
-    "direct_mates": 8,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 8,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 197281,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 5,
-    "nodes": 4865609,
-    "captures": 82719,
-    "enpassants": 258,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 26998,
-    "single_discovered_checks": 6,
-    "direct_discovered_checks": 0,
-    "double_discovered_checks": 0,
-    "total_checks": 27004,
-    "direct_mates": 347,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 347,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 4865609,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 6,
-    "nodes": 119060324,
-    "captures": 2812008,
-    "enpassants": 5248,
-    "castles": 0,
-    "promotions": 0,
-    "direct_checks": 797896,
-    "single_discovered_checks": 329,
-    "direct_discovered_checks": 46,
-    "double_discovered_checks": 0,
-    "total_checks": 798271,
-    "direct_mates": 10828,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 10828,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 119060324,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 7,
-    "nodes": 3195901860,
-    "captures": 108329926,
-    "enpassants": 319617,
-    "castles": 883453,
-    "promotions": 0,
-    "direct_checks": 32648427,
-    "single_discovered_checks": 18026,
-    "direct_discovered_checks": 1628,
-    "double_discovered_checks": 0,
-    "total_checks": 32668081,
-    "direct_mates": 435767,
-    "single_discovered_mates": 0,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 435767,
-    "total_tasks": 1,
-    "started_at": 1738592773,
-    "finished_at": 1738592773,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 3195901860,
-        "tasks": 1,
-        "compute_time": 0
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 8,
-    "nodes": 84998978956,
-    "captures": 3523740106,
-    "enpassants": 7187977,
-    "castles": 23605205,
-    "promotions": 0,
-    "direct_checks": 958135303,
-    "single_discovered_checks": 847039,
-    "direct_discovered_checks": 147215,
-    "double_discovered_checks": 0,
-    "total_checks": 959129557,
-    "direct_mates": 9852032,
-    "single_discovered_mates": 4,
-    "direct_discovered_mates": 0,
-    "double_discovered_mates": 0,
-    "total_mates": 9852036,
-    "total_tasks": 20,
-    "started_at": 1738592773,
-    "finished_at": 1738592782,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 84998978956,
-        "tasks": 20,
-        "compute_time": 9
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 9,
-    "nodes": 2439530234167,
-    "captures": 125208536153,
-    "enpassants": 319496827,
-    "castles": 1784356000,
-    "promotions": 17334376,
-    "direct_checks": 35653060996,
-    "single_discovered_checks": 37101713,
-    "direct_discovered_checks": 5547221,
-    "double_discovered_checks": 10,
-    "total_checks": 35695709940,
-    "direct_mates": 399421379,
-    "single_discovered_mates": 1869,
-    "direct_discovered_mates": 768715,
-    "double_discovered_mates": 0,
-    "total_mates": 400191963,
-    "total_tasks": 101240,
-    "started_at": 1738592782,
-    "finished_at": 1738593021,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 2439530234167,
-        "tasks": 101240,
-        "compute_time": 239
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 10,
-    "nodes": 69352859712417,
-    "captures": 4092784875884,
-    "enpassants": 7824835694,
-    "castles": 50908510199,
-    "promotions": 511374376,
-    "direct_checks": 1077020493859,
-    "single_discovered_checks": 1531274015,
-    "direct_discovered_checks": 302900733,
-    "double_discovered_checks": 879,
-    "total_checks": 1078854669486,
-    "direct_mates": 8771693969,
-    "single_discovered_mates": 598058,
-    "direct_discovered_mates": 18327128,
-    "double_discovered_mates": 0,
-    "total_mates": 8790619155,
-    "total_tasks": 101240,
-    "started_at": 1738593021,
-    "finished_at": 1738600029,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 69352859712417,
-        "tasks": 101240,
-        "compute_time": 1098173
-      }
-    ]
-  },
-  {
-    "position": 0,
-    "depth": 11,
-    "nodes": 2097651003696806,
-    "captures": 142537161824567,
-    "enpassants": 313603617408,
-    "castles": 2641343463566,
-    "promotions": 49560932860,
-    "direct_checks": 39068470901662,
-    "single_discovered_checks": 67494850305,
-    "direct_discovered_checks": 11721852393,
-    "double_discovered_checks": 57443,
-    "total_checks": 39147687661803,
-    "direct_mates": 360675926605,
-    "single_discovered_mates": 60344676,
-    "direct_discovered_mates": 1553739626,
-    "double_discovered_mates": 0,
-    "total_mates": 362290010907,
-    "total_tasks": 101240,
-    "started_at": 1738600029,
-    "finished_at": 1738744310,
-    "contributors": [
-      {
-        "id": 1,
-        "name": "Timmoth",
-        "nodes": 1136417768004282,
-        "tasks": 100875,
-        "compute_time": 17994699
-      },
-      {
-        "id": 3,
-        "name": "ProgramciDusunur",
-        "nodes": 2333500279812,
-        "tasks": 302,
-        "compute_time": 95219
-      },
-      {
-        "id": 2,
-        "name": "eduherminio",
-        "nodes": 1444702642655,
-        "tasks": 63,
-        "compute_time": 106238
-      }
-    ]
-  }
-]
+  "results": [
+    {
+      "position": 0,
+      "depth": 0,
+      "nodes": 1,
+      "captures": 0,
+      "enpassants": 0,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 0,
+      "single_discovered_checks": 0,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 0,
+      "direct_mates": 0,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 0,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 1,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 1,
+      "nodes": 20,
+      "captures": 0,
+      "enpassants": 0,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 0,
+      "single_discovered_checks": 0,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 0,
+      "direct_mates": 0,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 0,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 20,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 2,
+      "nodes": 400,
+      "captures": 0,
+      "enpassants": 0,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 0,
+      "single_discovered_checks": 0,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 0,
+      "direct_mates": 0,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 0,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 400,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 3,
+      "nodes": 8902,
+      "captures": 34,
+      "enpassants": 0,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 12,
+      "single_discovered_checks": 0,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 12,
+      "direct_mates": 0,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 0,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 8902,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 4,
+      "nodes": 197281,
+      "captures": 1576,
+      "enpassants": 0,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 461,
+      "single_discovered_checks": 0,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 461,
+      "direct_mates": 8,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 8,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 197281,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 5,
+      "nodes": 4865609,
+      "captures": 82719,
+      "enpassants": 258,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 26998,
+      "single_discovered_checks": 6,
+      "direct_discovered_checks": 0,
+      "double_discovered_checks": 0,
+      "total_checks": 27004,
+      "direct_mates": 347,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 347,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 4865609,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 6,
+      "nodes": 119060324,
+      "captures": 2812008,
+      "enpassants": 5248,
+      "castles": 0,
+      "promotions": 0,
+      "direct_checks": 797896,
+      "single_discovered_checks": 329,
+      "direct_discovered_checks": 46,
+      "double_discovered_checks": 0,
+      "total_checks": 798271,
+      "direct_mates": 10828,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 10828,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 119060324,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 7,
+      "nodes": 3195901860,
+      "captures": 108329926,
+      "enpassants": 319617,
+      "castles": 883453,
+      "promotions": 0,
+      "direct_checks": 32648427,
+      "single_discovered_checks": 18026,
+      "direct_discovered_checks": 1628,
+      "double_discovered_checks": 0,
+      "total_checks": 32668081,
+      "direct_mates": 435767,
+      "single_discovered_mates": 0,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 435767,
+      "total_tasks": 1,
+      "started_at": 1738592773,
+      "finished_at": 1738592773,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 3195901860,
+          "tasks": 1,
+          "compute_time": 0
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 8,
+      "nodes": 84998978956,
+      "captures": 3523740106,
+      "enpassants": 7187977,
+      "castles": 23605205,
+      "promotions": 0,
+      "direct_checks": 958135303,
+      "single_discovered_checks": 847039,
+      "direct_discovered_checks": 147215,
+      "double_discovered_checks": 0,
+      "total_checks": 959129557,
+      "direct_mates": 9852032,
+      "single_discovered_mates": 4,
+      "direct_discovered_mates": 0,
+      "double_discovered_mates": 0,
+      "total_mates": 9852036,
+      "total_tasks": 20,
+      "started_at": 1738592773,
+      "finished_at": 1738592782,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 84998978956,
+          "tasks": 20,
+          "compute_time": 9
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 9,
+      "nodes": 2439530234167,
+      "captures": 125208536153,
+      "enpassants": 319496827,
+      "castles": 1784356000,
+      "promotions": 17334376,
+      "direct_checks": 35653060996,
+      "single_discovered_checks": 37101713,
+      "direct_discovered_checks": 5547221,
+      "double_discovered_checks": 10,
+      "total_checks": 35695709940,
+      "direct_mates": 399421379,
+      "single_discovered_mates": 1869,
+      "direct_discovered_mates": 768715,
+      "double_discovered_mates": 0,
+      "total_mates": 400191963,
+      "total_tasks": 101240,
+      "started_at": 1738592782,
+      "finished_at": 1738593021,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 2439530234167,
+          "tasks": 101240,
+          "compute_time": 239
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 10,
+      "nodes": 69352859712417,
+      "captures": 4092784875884,
+      "enpassants": 7824835694,
+      "castles": 50908510199,
+      "promotions": 511374376,
+      "direct_checks": 1077020493859,
+      "single_discovered_checks": 1531274015,
+      "direct_discovered_checks": 302900733,
+      "double_discovered_checks": 879,
+      "total_checks": 1078854669486,
+      "direct_mates": 8771693969,
+      "single_discovered_mates": 598058,
+      "direct_discovered_mates": 18327128,
+      "double_discovered_mates": 0,
+      "total_mates": 8790619155,
+      "total_tasks": 101240,
+      "started_at": 1738593021,
+      "finished_at": 1738600029,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 69352859712417,
+          "tasks": 101240,
+          "compute_time": 1098173
+        }
+      ]
+    },
+    {
+      "position": 0,
+      "depth": 11,
+      "nodes": 2097651003696806,
+      "captures": 142537161824567,
+      "enpassants": 313603617408,
+      "castles": 2641343463566,
+      "promotions": 49560932860,
+      "direct_checks": 39068470901662,
+      "single_discovered_checks": 67494850305,
+      "direct_discovered_checks": 11721852393,
+      "double_discovered_checks": 57443,
+      "total_checks": 39147687661803,
+      "direct_mates": 360675926605,
+      "single_discovered_mates": 60344676,
+      "direct_discovered_mates": 1553739626,
+      "double_discovered_mates": 0,
+      "total_mates": 362290010907,
+      "total_tasks": 101240,
+      "started_at": 1738600029,
+      "finished_at": 1738744310,
+      "contributors": [
+        {
+          "id": 1,
+          "name": "Timmoth",
+          "nodes": 1136417768004282,
+          "tasks": 100875,
+          "compute_time": 17994699
+        },
+        {
+          "id": 3,
+          "name": "ProgramciDusunur",
+          "nodes": 2333500279812,
+          "tasks": 302,
+          "compute_time": 95219
+        },
+        {
+          "id": 2,
+          "name": "eduherminio",
+          "nodes": 1444702642655,
+          "tasks": 63,
+          "compute_time": 106238
+        }
+      ]
+    }
+  ],
+  "unique_positions": [
+    1, 20, 400, 5362, 72078, 822518, 9417681, 96400068
+  ]
 }
