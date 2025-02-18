@@ -7,7 +7,7 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 public partial struct Board
 {
-    private unsafe ulong AccumulateWhiteMovesBulkCount()
+    public unsafe ulong AccumulateWhiteMovesBulkCount()
     {
         var checkers = BlackCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);

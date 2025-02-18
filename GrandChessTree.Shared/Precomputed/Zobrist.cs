@@ -3,6 +3,7 @@ using GrandChessTree.Shared.Helpers;
 
 namespace GrandChessTree.Shared.Precomputed;
 
+// Using polyglot format values: http://hgm.nubati.net/book_format.html
 public static unsafe class Zobrist
 {
     private const int PieceCount = 13;

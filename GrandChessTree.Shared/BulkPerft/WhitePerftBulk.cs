@@ -14,12 +14,13 @@ public partial struct Board
         {
             return hashEntry.Nodes;
         }
+
         hashEntry = default;
         hashEntry.FullHash = Hash ^ (White | Black);
         hashEntry.Depth = (byte)depth;
 
         ulong nodes = 0;
-        if (depth == 1)
+        if (depth <= 1)
         {
             nodes = AccumulateWhiteMovesBulkCount();
             hashEntry.Nodes = nodes;

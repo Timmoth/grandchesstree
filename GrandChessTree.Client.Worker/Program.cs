@@ -28,7 +28,7 @@ try
     Summary summary = default;
     unsafe
     {
-        Perft.HashTable = Perft.AllocateHashTable();
+        Perft.AllocateHashTable();
     }
 
     var sw = Stopwatch.StartNew();

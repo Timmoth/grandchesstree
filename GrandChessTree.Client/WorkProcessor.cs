@@ -182,7 +182,7 @@ namespace GrandChessTree.Client
 
         private unsafe void ThreadWork(int index)
         {
-            Perft.HashTable = Perft.AllocateHashTable();
+            Perft.AllocateHashTable();
             Summary summary = default;
 
             var workerReport = _workerReports[index];

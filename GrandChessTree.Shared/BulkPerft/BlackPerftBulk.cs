@@ -21,7 +21,7 @@ public partial struct Board
         hashEntry.Depth = (byte)depth;
 
         ulong nodes = 0;
-        if (depth == 1)
+        if (depth <= 1)
         {
             nodes = AccumulateBlackMovesBulkCount();
             hashEntry.Nodes = nodes;

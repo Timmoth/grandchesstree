@@ -31,32 +31,36 @@ while ((input = Console.ReadLine()) != "quit"){
     var command = commandParts[0];
     if (command == "seed_startpos")
     {
-        if (commandParts.Length != 2 || !int.TryParse(commandParts[1], out var depth))
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+                   || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedStartPos(depth);
+
+        await PositionSeeder.SeedPosition(Constants.StartPosFen, depth, 4, Constants.StartPosRootPositionId);
     }
     else if (command == "seed_kiwipete")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-            || !int.TryParse(commandParts[2], out var itemDepth))
+            || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_kiwipete:<depth>:<item_depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_kiwipete:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedKiwipete(depth, itemDepth);
+
+        await PositionSeeder.SeedPosition(Constants.KiwiPeteFen, depth, 4, Constants.KiwiPeteRootPositionId);
     }
     else if (command == "seed_sje")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-            || !int.TryParse(commandParts[2], out var itemDepth))
+                   || !int.TryParse(commandParts[2], out var launchDepth))
         {
-            Console.WriteLine("Invalid seed command format is 'seed_sje:<depth>:<item_depth>'.");
+            Console.WriteLine("Invalid seed command format is 'seed_sje:<depth>:<launch_depth>'.");
             return;
         }
-        await PositionSeeder.SeedSJE(depth, itemDepth);
+
+        await PositionSeeder.SeedPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
     }
     else if (command == "seed_account")
     {
@@ -100,7 +104,7 @@ while ((input = Console.ReadLine()) != "quit"){
         Summary summary = default;
         unsafe
         {
-            Perft.HashTable = Perft.AllocateHashTable(256);
+            Perft.AllocateHashTable(256);
         }
 
         var sw = Stopwatch.StartNew();
@@ -140,7 +144,7 @@ while ((input = Console.ReadLine()) != "quit"){
                 Summary s = default;
                 unsafe
                 {
-                    Perft.HashTable = Perft.AllocateHashTable(1024);
+                    Perft.AllocateHashTable(1024);
                 }
                 Perft.PerftRoot(ref board, ref s, depth - 1, wtm);
 
@@ -178,7 +182,7 @@ while ((input = Console.ReadLine()) != "quit"){
         var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
         unsafe
         {
-            PerftBulk.HashTable = PerftBulk.AllocateHashTable(256);
+            PerftBulk.AllocateHashTable(256);
         }
 
         var sw = Stopwatch.StartNew();
@@ -220,7 +224,7 @@ while ((input = Console.ReadLine()) != "quit"){
                 {
                     unsafe
                     {
-                        PerftBulk.HashTable = PerftBulk.AllocateHashTable(1024);
+                        PerftBulk.AllocateHashTable(1024);
                     }
 
                     var count = 0;
@@ -296,7 +300,7 @@ while ((input = Console.ReadLine()) != "quit"){
             {
                 unsafe
                 {
-                    PerftBulk.HashTable = PerftBulk.AllocateHashTable(1024);
+                    PerftBulk.AllocateHashTable(1024);
                 }
 
                 var count = 0;
@@ -358,7 +362,7 @@ while ((input = Console.ReadLine()) != "quit"){
         {
             Perft.ClearTable(Perft.HashTable);
             Perft.FreeHashTable();
-            Perft.HashTable = Perft.AllocateHashTable(hashMb);
+            Perft.AllocateHashTable(hashMb);
         }
 
         Console.WriteLine("Starting warmup");
@@ -401,10 +405,6 @@ while ((input = Console.ReadLine()) != "quit"){
 
         var totalS = (float)totalMs / 1000;
         Console.WriteLine($"completed {iterations} nps: min:{(minNps).FormatBigNumber()} max:{(maxNps).FormatBigNumber()} av:{(totalNodes / totalS).FormatBigNumber()} {totalS}seconds");
-    }
-    else if(command == "seed_fen")
-    {
-        await FenUpdater.Seed();
     }
     else if (command == "dump_db")
     {

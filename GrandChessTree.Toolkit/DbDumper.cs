@@ -528,7 +528,7 @@ WHERE t.depth = {depth} AND t.root_position_id = {positionId} AND finished_at > 
                 Summary summary = default;
                 unsafe
                 {
-                    Perft.HashTable = Perft.AllocateHashTable(256);
+                    Perft.AllocateHashTable(256);
                 }
 
                 var startedAt = DateTimeOffset.UtcNow.ToUnixTimeSeconds();

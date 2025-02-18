@@ -31,5 +31,13 @@ public static class Constants
         0x00FF000000000000, // Rank 6
         0xFF00000000000000  // Rank 7 (8th rank, White's back rank)
     };
-    
+
+    public const string StartPosFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    public const string KiwiPeteFen = "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -";
+    public const string SjeFen = "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10";
+
+    public const int StartPosRootPositionId = 0;
+    public const int KiwiPeteRootPositionId = 1;
+    public const int SjeRootPositionId = 2;
+
 }
