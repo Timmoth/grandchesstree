@@ -28,13 +28,13 @@ jobs:
           VERSION=${{ github.event.inputs.version }}
           FORMATTED_VERSION=$(echo $VERSION | tr '.' '_')
           echo "Application version: $VERSION"
-          echo "::set-output name=version::$VERSION"
-          echo "::set-output name=formatted_version::$FORMATTED_VERSION"
+          echo "version=$VERSION" >> $GITHUB_ENV
+          echo "formatted_version=$FORMATTED_VERSION" >> $GITHUB_ENV
 
       - name: Build and Package Applications
         run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          FORMATTED_VERSION=${{ steps.get_version.outputs.formatted_version }}
+          VERSION=${{ env.version }}
+          FORMATTED_VERSION=${{ env.formatted_version }}
           OUTPUT_DIR=${{ github.workspace }}/output
           mkdir -p $OUTPUT_DIR
           for APP in GrandChessTree.Client GrandChessTree.Engine; do
@@ -63,23 +63,23 @@ jobs:
       - name: Generate release tag
         id: tag
         run: |
-          echo "::set-output name=release_tag::GrandChessTree-${{ steps.get_version.outputs.version }}"
+          echo "release_tag=GrandChessTree-${{ env.version }}" >> $GITHUB_ENV
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ steps.tag.outputs.release_tag }}
+          tag_name: ${{ env.release_tag }}
           files: |
-            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_win_x64.exe
-            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_linux_x64
-            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_linux_arm64
-            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_osx_x64
-            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_osx_arm64
-            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_win_x64.exe
-            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_linux_x64
-            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_linux_arm64
-            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_osx_x64
-            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_osx_arm64
+            ${{ github.workspace }}/output/tgct_client_${{ env.formatted_version }}_win-x64.exe
+            ${{ github.workspace }}/output/tgct_client_${{ env.formatted_version }}_linux-x64
+            ${{ github.workspace }}/output/tgct_client_${{ env.formatted_version }}_linux-arm64
+            ${{ github.workspace }}/output/tgct_client_${{ env.formatted_version }}_osx-x64
+            ${{ github.workspace }}/output/tgct_client_${{ env.formatted_version }}_osx-arm64
+            ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_win-x64.exe
+            ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_linux-x64
+            ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_linux-arm64
+            ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_osx-x64
+            ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_osx-arm64
           draft: true
