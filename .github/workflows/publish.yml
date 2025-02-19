@@ -49,9 +49,9 @@ jobs:
               fi
 
               if [[ "$PLATFORM" == "win-x64" ]]; then
-                mv $PLATFORM_OUTPUT_PATH/$OUTPUT_NAME.exe $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
+                mv $PLATFORM_OUTPUT_PATH/$(basename $APP).exe $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
               else
-                mv $PLATFORM_OUTPUT_PATH/$OUTPUT_NAME $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
+                mv $PLATFORM_OUTPUT_PATH/$(basename $APP) $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
               fi
             done
           done
