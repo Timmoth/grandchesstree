@@ -35,27 +35,30 @@ jobs:
         run: |
           VERSION=${{ steps.get_version.outputs.version }}
           FORMATTED_VERSION=${{ steps.get_version.outputs.formatted_version }}
+          OUTPUT_DIR=${{ github.workspace }}/output
+          mkdir -p $OUTPUT_DIR
           for APP in GrandChessTree.Client GrandChessTree.Engine; do
             for PLATFORM in win-x64 linux-x64 linux-arm64 osx-x64 osx-arm64; do
-              OUTPUT_NAME=$(basename $APP)
-              OUTPUT_PATH=../output/${PLATFORM}
+              OUTPUT_NAME=$(echo $APP | sed 's/GrandChessTree\.Client/tgct_client/;s/GrandChessTree\.Engine/tgct_engine/')
+              PLATFORM_OUTPUT_PATH=$OUTPUT_DIR/${PLATFORM}
+              mkdir -p $PLATFORM_OUTPUT_PATH
               if [[ "$PLATFORM" == "linux-arm64" || "$PLATFORM" == "osx-arm64" ]]; then
-                dotnet publish $APP -r $PLATFORM /p:Release=true -p:DefineConstants="ARM" -o $OUTPUT_PATH
+                dotnet publish $APP -r $PLATFORM /p:Release=true -p:DefineConstants="ARM" -o $PLATFORM_OUTPUT_PATH
               else
-                dotnet publish $APP -r $PLATFORM /p:Release=true -o $OUTPUT_PATH
+                dotnet publish $APP -r $PLATFORM /p:Release=true -o $PLATFORM_OUTPUT_PATH
               fi
 
               if [[ "$PLATFORM" == "win-x64" ]]; then
-                mv $OUTPUT_PATH/$OUTPUT_NAME.exe ../output/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
+                mv $PLATFORM_OUTPUT_PATH/$OUTPUT_NAME.exe $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
               else
-                mv $OUTPUT_PATH/$OUTPUT_NAME ../output/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
+                mv $PLATFORM_OUTPUT_PATH/$OUTPUT_NAME $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
               fi
             done
           done
 
       - name: Verify output files
         run: |
-          ls -R ../output
+          ls -R ${{ github.workspace }}/output
 
       - name: Generate release tag
         id: tag

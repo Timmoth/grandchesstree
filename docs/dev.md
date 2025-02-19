@@ -4,6 +4,7 @@ dotnet run
 
  dotnet ef migrations add migration-message
 dotnet ef database update 
+dotnet ef database update --connection
 
 ```
 
