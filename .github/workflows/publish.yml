@@ -13,9 +13,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: GrandChessTree.Client
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,61 +22,46 @@ jobs:
         with:
           dotnet-version: 9.0.x
 
-      # Get the version from the .csproj file
       - name: Get .NET application version
-        working-directory: GrandChessTree.Client
         id: get_version
         run: |
           VERSION=${{ github.event.inputs.version }}
+          FORMATTED_VERSION=$(echo $VERSION | tr '.' '_')
           echo "Application version: $VERSION"
           echo "::set-output name=version::$VERSION"
+          echo "::set-output name=formatted_version::$FORMATTED_VERSION"
 
-      - name: Build and Package for Windows
+      - name: Build and Package Applications
         run: |
-          dotnet restore
-          dotnet publish -r win-x64 /p:Release=true -o ../output/win-x64
+          VERSION=${{ steps.get_version.outputs.version }}
+          FORMATTED_VERSION=${{ steps.get_version.outputs.formatted_version }}
+          for APP in GrandChessTree.Client GrandChessTree.Engine; do
+            for PLATFORM in win-x64 linux-x64 linux-arm64 osx-x64 osx-arm64; do
+              OUTPUT_NAME=$(basename $APP)
+              OUTPUT_PATH=../output/${PLATFORM}
+              if [[ "$PLATFORM" == "linux-arm64" || "$PLATFORM" == "osx-arm64" ]]; then
+                dotnet publish $APP -r $PLATFORM /p:Release=true -p:DefineConstants="ARM" -o $OUTPUT_PATH
+              else
+                dotnet publish $APP -r $PLATFORM /p:Release=true -o $OUTPUT_PATH
+              fi
 
-      - name: Build and Package for Linux
-        run: |
-          dotnet restore
-          dotnet publish -r linux-x64 /p:Release=true -o ../output/linux-x64
+              if [[ "$PLATFORM" == "win-x64" ]]; then
+                mv $OUTPUT_PATH/$OUTPUT_NAME.exe ../output/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
+              else
+                mv $OUTPUT_PATH/$OUTPUT_NAME ../output/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
+              fi
+            done
+          done
 
-      - name: Build and Package for Linux ARM
-        run: |
-          dotnet restore
-          dotnet publish -r linux-arm64 /p:Release=true -p:DefineConstants="ARM" -o ../output/linux-arm64
-
-      - name: Build and Package for OSX
-        run: |
-          dotnet restore
-          dotnet publish -r osx-x64 /p:Release=true -o ../output/osx-x64
-
-      - name: Build and Package for OSX ARM
-        run: |
-          dotnet restore
-          dotnet publish -r osx-arm64 /p:Release=true -p:DefineConstants="ARM" -o ../output/osx-arm64
-
-      # Rename the output files for consistency
-      - name: Rename output files
-        run: |
-          mv ../output/win-x64/GrandChessTree.Client.exe ../output/GrandChessTree_win_x64.exe
-          mv ../output/linux-x64/GrandChessTree.Client ../output/GrandChessTree_linux_x64
-          mv ../output/linux-arm64/GrandChessTree.Client ../output/GrandChessTree_linux_arm64
-          mv ../output/osx-x64/GrandChessTree.Client ../output/GrandChessTree_osx_x64
-          mv ../output/osx-arm64/GrandChessTree.Client ../output/GrandChessTree_osx_arm64
-
-      # List files in output directory to verify they exist
       - name: Verify output files
         run: |
           ls -R ../output
 
-      # Generate release tag based on version
       - name: Generate release tag
         id: tag
         run: |
           echo "::set-output name=release_tag::GrandChessTree-${{ steps.get_version.outputs.version }}"
 
-      # Create a single release with all artifacts
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         env:
@@ -87,9 +69,14 @@ jobs:
         with:
           tag_name: ${{ steps.tag.outputs.release_tag }}
           files: |
-            ${{ github.workspace }}/output/GrandChessTree_win_x64.exe
-            ${{ github.workspace }}/output/GrandChessTree_linux_x64
-            ${{ github.workspace }}/output/GrandChessTree_linux_arm64
-            ${{ github.workspace }}/output/GrandChessTree_osx_x64
-            ${{ github.workspace }}/output/GrandChessTree_osx_arm64
+            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_win_x64.exe
+            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_linux_x64
+            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_linux_arm64
+            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_osx_x64
+            ${{ github.workspace }}/output/tgct_client_${{ steps.get_version.outputs.formatted_version }}_osx_arm64
+            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_win_x64.exe
+            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_linux_x64
+            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_linux_arm64
+            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_osx_x64
+            ${{ github.workspace }}/output/tgct_engine_${{ steps.get_version.outputs.formatted_version }}_osx_arm64
           draft: true
