@@ -2,12 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
+
+<PropertyGroup Condition="'$(Release.ToLower())'=='true'">
+	<Configuration>Release</Configuration>
+	<SelfContained>true</SelfContained>
+	<PublishSingleFile>true</PublishSingleFile>
+	<PublishTrimmed>true</PublishTrimmed>
+	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+	<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+	<CETCompat>false</CETCompat>
+</PropertyGroup>
+
+	
+	<ItemGroup>
     <ProjectReference Include="..\GrandChessTree.Shared\GrandChessTree.Shared.csproj" />
   </ItemGroup>
 
