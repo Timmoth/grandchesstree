@@ -42,7 +42,10 @@ public static unsafe class Perft
             ClearTable(HashTable);
             return;
         }
-
+        if (HashTable != null)
+        {
+            FreeHashTable();
+        }
         HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
         HashTableMask = (uint)HashTableSize - 1;
 

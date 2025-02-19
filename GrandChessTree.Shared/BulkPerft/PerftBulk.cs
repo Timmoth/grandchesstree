@@ -49,7 +49,10 @@ public static unsafe class PerftBulk
             ClearTable(HashTable);
             return;
         }
-
+        if (HashTable != null)
+        {
+            FreeHashTable();
+        }
         HashTableSize = newHashTableSize;
         HashTableMask = (uint)HashTableSize - 1;
 

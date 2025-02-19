@@ -20,7 +20,7 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
 
             // When
             PerftUnique.UniquePositions.Clear();
-            PerftUnique.HashTable = PerftUnique.AllocateHashTable(128);
+            PerftUnique.AllocateHashTable(128);
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
             PerftUnique.FreeHashTable();
 
@@ -42,7 +42,7 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
 
             // When
             PerftUnique.UniquePositions.Clear();
-            PerftUnique.HashTable = PerftUnique.AllocateHashTable(128);
+            PerftUnique.AllocateHashTable(128);
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
             PerftUnique.FreeHashTable();
 
@@ -65,7 +65,7 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
 
             // When
             PerftUnique.UniquePositions.Clear();
-            PerftUnique.HashTable = PerftUnique.AllocateHashTable(128);
+            PerftUnique.AllocateHashTable(128);
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
             PerftUnique.FreeHashTable();
 

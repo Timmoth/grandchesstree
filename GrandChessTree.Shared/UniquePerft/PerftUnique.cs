@@ -41,9 +41,22 @@ public static unsafe class PerftUnique
         return (uint)transpositionCount;
     }
 
-    public static PerftUniqueHashEntry* AllocateHashTable(int sizeInMb = 512)
+    public static void AllocateHashTable(int sizeInMb = 512)
     {
-        HashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+
+        if (HashTable != null && HashTableSize == newHashTableSize)
+        {
+            ClearTable();
+            return;
+        }
+
+        if(HashTable != null)
+        {
+            FreeHashTable();
+        }
+
+        HashTableSize = newHashTableSize;
         HashTableMask = (uint)HashTableSize - 1;
 
         const nuint alignment = 64;
@@ -52,7 +65,8 @@ public static unsafe class PerftUnique
         var block = NativeMemory.AlignedAlloc(bytes, alignment);
         NativeMemory.Clear(block, bytes);
 
-        return (PerftUniqueHashEntry*)block;
+        HashTable = (PerftUniqueHashEntry*)block;
+
     }
 
     public static void FreeHashTable()
@@ -65,7 +79,7 @@ public static unsafe class PerftUnique
     }
 
 
-    public static void ClearTable(PerftUniqueHashEntry* HashTable)
+    public static void ClearTable()
     {
         if (HashTable != null)
         {

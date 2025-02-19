@@ -451,7 +451,7 @@ while ((input = Console.ReadLine()) != "quit"){
 
         unsafe
         {
-            PerftUnique.HashTable = PerftUnique.AllocateHashTable(1024);
+            PerftUnique.AllocateHashTable(1024);
             var (board, whiteToMove) = FenParser.Parse(commandParts[2]);
             var sw = Stopwatch.StartNew();
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
@@ -492,10 +492,7 @@ while ((input = Console.ReadLine()) != "quit"){
 
             threads[index] = new Thread(() =>
             {
-                unsafe
-                {
-                    PerftUnique.HashTable = PerftUnique.AllocateHashTable(256);
-                }
+                PerftUnique.AllocateHashTable(256);
 
                 var count = 0;
                 while (queue.TryDequeue(out var item))
