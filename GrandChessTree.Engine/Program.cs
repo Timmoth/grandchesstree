@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Moves;
 
 namespace GrandChessTree.Engine
 {
@@ -37,6 +38,8 @@ namespace GrandChessTree.Engine
                     Console.WriteLine("stats_mt:<depth>:<mb_hash>:<threads>:<fen>  - calculates the full perft stats, multi-threaded");
                     Console.WriteLine("nodes:<depth>:<mb_hash>:<fen>               - calculates the perft nodes, single-threaded");
                     Console.WriteLine("nodes_mt:<depth>:<mb_hash>:<threads>:<fen>  - calculates the perft nodes, multi-threaded");
+                    Console.WriteLine("divide:<depth>:<mb_hash>:<fen>              - calculates the perft nodes for each move, single-threaded");
+                    Console.WriteLine("divide_mt:<depth>:<mb_hash>:<threads>:<fen> - calculates the perft nodes for each move, multi-threaded");
                     Console.WriteLine("unique:<depth>:<mb_hash>:<fen>              - calculates the number of unique positions, single-threaded");
                     Console.WriteLine("exit                                        - closes the program");
                     Console.WriteLine("clear                                       - clears the console output");
@@ -72,6 +75,14 @@ namespace GrandChessTree.Engine
                 else if (command == "nodes_mt")
                 {
                     RunPerftNodesMt(commandParts);
+                }
+                else if (command == "divide")
+                {
+                    RunDivideNodes(commandParts);
+                }
+                else if (command == "divide_mt")
+                {
+                    RunDivideNodesMt(commandParts);
                 }
                 else if (command == "unique")
                 {
@@ -244,6 +255,138 @@ namespace GrandChessTree.Engine
             Console.WriteLine($"time: {ms}ms");
             Console.WriteLine($"hash: {board.Hash}");
             Console.WriteLine($"fen: {board.ToFen(whiteToMove, 0, 1)}");
+            Console.WriteLine("-----------------");
+        }
+
+        public static void RunDivideNodes(string[] commandParts)
+        {
+            if (commandParts.Length != 4 ||
+                !int.TryParse(commandParts[1], out var depth) ||
+                !int.TryParse(commandParts[2], out var mbHash))
+            {
+                Console.WriteLine("Invalid command format is 'divide:<depth>:<mb_hash>:<fen>'.");
+                Console.WriteLine("type 'help' for more info.");
+                return;
+            }
+
+            if(depth == 0)
+            {
+                Console.WriteLine("depth must be greater then 1");
+            }
+
+            var sw = Stopwatch.StartNew();
+            var (board, whiteToMove) = FenParser.Parse(ResolveFen(commandParts[3]));
+            PerftBulk.AllocateHashTable(mbHash);
+
+            Span<uint> moves = stackalloc uint[218];
+            var totalNodes = 0ul;
+            var moveCount = MoveGenerator.GenerateMoves(ref moves, ref board, whiteToMove);
+            for (int j = 0; j < moveCount; j++)
+            {
+                var move = moves[j];
+                var newBoard = board;
+                if (whiteToMove)
+                {
+                    newBoard.ApplyWhiteMove(move);
+                }
+                else
+                {
+                    newBoard.ApplyBlackMove(move);
+                }
+
+                var nodes = PerftBulk.PerftRootBulk(ref newBoard, depth - 1, !whiteToMove);
+                totalNodes += nodes;
+                Console.WriteLine($"{move.ToUciMoveName()} {nodes}");
+            }
+
+            var ms = sw.ElapsedMilliseconds;
+            var s = (float)ms / 1000;
+            var nps = totalNodes / s;
+            Console.WriteLine("-----results-----");
+            Console.WriteLine($"nodes: {totalNodes}");
+            Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+            Console.WriteLine($"time: {ms}ms");
+            Console.WriteLine($"hash: {board.Hash}");
+            Console.WriteLine($"fen: {board.ToFen(whiteToMove, 0, 1)}");
+            Console.WriteLine("-----------------");
+        }
+
+        public static void RunDivideNodesMt(string[] commandParts)
+        {
+            if (commandParts.Length != 5 ||
+                 !int.TryParse(commandParts[1], out var depth) ||
+                 !int.TryParse(commandParts[2], out var mbHash) ||
+                  !int.TryParse(commandParts[3], out var threadCount))
+            {
+                Console.WriteLine("Invalid command format is 'divide_mt:<depth>:<mb_hash>:<threads>:<fen>'.");
+                Console.WriteLine("type 'help' for more info.");
+                return;
+            }
+
+            var sw = Stopwatch.StartNew();
+            var (initialBoard, whiteToMove) = FenParser.Parse(ResolveFen(commandParts[4]));
+
+            Span<uint> moves = new uint[218];
+            var totalNodes = 0ul;
+            var moveCount = MoveGenerator.GenerateMoves(ref moves, ref initialBoard, whiteToMove);
+
+            var queue = new ConcurrentQueue<uint>();
+            for(var i = 0; i < moveCount; i++)
+            {
+                queue.Enqueue(moves[i]);
+            }
+
+            Thread[] threads = new Thread[threadCount];
+            object lockObj = new();
+            for (int i = 0; i < threads.Length; i++)
+            {
+                var index = i;
+
+                threads[index] = new Thread(() =>
+                {
+                    PerftBulk.AllocateHashTable(mbHash);
+                    while (queue.TryDequeue(out var move))
+                    {
+                        var newBoard = initialBoard;
+                        if (whiteToMove)
+                        {
+                            newBoard.ApplyWhiteMove(move);
+                        }
+                        else
+                        {
+                            newBoard.ApplyBlackMove(move);
+                        }
+
+                        var nodes = PerftBulk.PerftRootBulk(ref newBoard, depth - 1, !whiteToMove);
+
+                        Console.WriteLine($"{move.ToUciMoveName()} {nodes}");
+
+                        lock (lockObj)
+                        {
+                            totalNodes += nodes;
+                        }
+                    }
+
+                    PerftBulk.FreeHashTable();
+                });
+                threads[index].Start();
+            }
+
+            // Wait for all threads to complete
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
+            var ms = sw.ElapsedMilliseconds;
+            var s = (float)ms / 1000;
+            var nps = totalNodes / s;
+            Console.WriteLine("-----results-----");
+            Console.WriteLine($"nodes: {totalNodes}");
+            Console.WriteLine($"nps: {(nps).FormatBigNumber()}");
+            Console.WriteLine($"time: {ms}ms");
+            Console.WriteLine($"hash: {initialBoard.Hash}");
+            Console.WriteLine($"fen: {initialBoard.ToFen(whiteToMove, 0, 1)}");
             Console.WriteLine("-----------------");
         }
 
