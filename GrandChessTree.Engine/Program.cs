@@ -39,6 +39,7 @@ namespace GrandChessTree.Engine
                     Console.WriteLine("nodes_mt:<depth>:<mb_hash>:<threads>:<fen>  - calculates the perft nodes, multi-threaded");
                     Console.WriteLine("unique:<depth>:<mb_hash>:<fen>              - calculates the number of unique positions, single-threaded");
                     Console.WriteLine("exit                                        - closes the program");
+                    Console.WriteLine("clear                                       - clears the console output");
                     Console.WriteLine("parameters:");
                     Console.WriteLine("<depth>    - the number of ply to search up to");
                     Console.WriteLine("<mb_hash>  - the hash table size in MB per thread");
@@ -52,6 +53,9 @@ namespace GrandChessTree.Engine
                 {
                     Environment.Exit(0);
                     return;
+                }else if(command == "clear")
+                {
+                    Console.Clear();
                 }
                 else if (command == "stats")
                 {
