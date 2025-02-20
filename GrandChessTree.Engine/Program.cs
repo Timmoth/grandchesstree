@@ -1,5 +1,7 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Security.Cryptography.X509Certificates;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Moves;
@@ -88,6 +90,10 @@ namespace GrandChessTree.Engine
                 {
                     RunPerftUnique(commandParts);
                 }
+                else if (command == "unique_mt")
+                {
+                    RunUniqueMt(commandParts);
+                }
             }           
         }
 
@@ -139,9 +145,9 @@ namespace GrandChessTree.Engine
         public static void RunPerftStatsMt(string[] commandParts)
         {
             if (commandParts.Length != 5 ||
-        !int.TryParse(commandParts[1], out var depth) ||
-        !int.TryParse(commandParts[2], out var mbHash) ||
-         !int.TryParse(commandParts[3], out var threadCount))
+                !int.TryParse(commandParts[1], out var depth) ||
+                !int.TryParse(commandParts[2], out var mbHash) ||
+                 !int.TryParse(commandParts[3], out var threadCount))
             {
                 Console.WriteLine("Invalid command format is 'stats_mt:<depth>:<mb_hash>:<threads>:<fen>'.");
                 Console.WriteLine("type 'help' for more info.");
@@ -477,7 +483,7 @@ namespace GrandChessTree.Engine
             Console.WriteLine("-----------------");
         }
 
-        public static void RunPerftUnique(string[] commandParts)
+         public static void RunPerftUnique(string[] commandParts)
         {
             if (commandParts.Length != 4 ||
                  !int.TryParse(commandParts[1], out var depth) ||
@@ -494,6 +500,82 @@ namespace GrandChessTree.Engine
             var (board, whiteToMove) = FenParser.Parse(ResolveFen(commandParts[3]));
             var sw = Stopwatch.StartNew();
             PerftUnique.PerftRootUnique(ref board, depth, whiteToMove);
+            var ms = sw.ElapsedMilliseconds;
+            Console.WriteLine("-----results-----");
+            Console.WriteLine($"unique positions: {(ulong)PerftUnique.UniquePositions.Count}");
+            Console.WriteLine($"time: {ms}ms");
+            Console.WriteLine("-----------------");
+        }
+
+        public static void RunUniqueMt(string[] commandParts)
+        {
+            if (commandParts.Length != 5 ||
+                           !int.TryParse(commandParts[1], out var depth) ||
+                           !int.TryParse(commandParts[2], out var mbHash) ||
+                            !int.TryParse(commandParts[3], out var threadCount))
+            {
+                Console.WriteLine("Invalid command format is 'unique_mt:<depth>:<mb_hash>:<threads>:<fen>'.");
+                Console.WriteLine("type 'help' for more info.");
+                return;
+            }
+
+            var launchDepth = 0;
+            if (depth > 7)
+            {
+                launchDepth = 3;
+            }
+            else if (depth > 4)
+            {
+                launchDepth = 2;
+            }
+            else
+            {
+                launchDepth = 1;
+            }
+
+            var sw = Stopwatch.StartNew();
+            var (initialBoard, whiteToMove) = FenParser.Parse(ResolveFen(commandParts[4]));
+
+            var launchNodes = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, launchDepth, whiteToMove);
+
+            var queue = new ConcurrentQueue<string>(launchNodes.Select(n => n.fen));
+       
+            PerftUnique.UniquePositions.Clear();     
+
+            Thread[] threads = new Thread[threadCount];
+
+            object lockObj = new();
+
+            for (int i = 0; i < threadCount; i++)
+            {
+                var index = i;
+                threads[index] = new Thread(() =>
+                {
+                    var count = 0;
+                    PerftUnique.AllocateHashTable(mbHash);
+                    while (queue.TryDequeue(out var fen))
+                    {
+                        var (board, wtm) = FenParser.Parse(fen);
+                        PerftUnique.PerftRootUnique(ref board, depth - launchDepth, wtm);
+
+                        count++;
+                        if(index == 0 && count % 2 == 0)
+                        {
+                            Console.WriteLine($"unique positions: {((ulong)PerftUnique.UniquePositions.Count).FormatBigNumber()} {PerftUnique.UniquePositions.PercentFull * 100}%");
+                        }
+                    }
+
+                    PerftUnique.FreeHashTable();
+                });
+                threads[index].Start();
+            }
+
+            // Wait for all threads to complete
+            foreach (Thread thread in threads)
+            {
+                thread.Join();
+            }
+
             var ms = sw.ElapsedMilliseconds;
             Console.WriteLine("-----results-----");
             Console.WriteLine($"unique positions: {(ulong)PerftUnique.UniquePositions.Count}");
