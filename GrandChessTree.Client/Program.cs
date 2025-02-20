@@ -1,5 +1,6 @@
 ﻿using GrandChessTree.Client;
 using GrandChessTree.Client.Stats;
+using GrandChessTree.Shared.Precomputed;
 
 Console.WriteLine("-----TheGreatChessTree-----");
 var containerized = Environment.GetEnvironmentVariable("containerized");
@@ -117,67 +118,66 @@ if (config.TaskType == 0)
     }
 }else if (config.TaskType == 1)
 {
+    Zobrist.UseXorShift();
+    var searchOrchastrator = new NodesTaskOrchistrator(config);
+    var networkClient = new NodesWorkProcessor(searchOrchastrator, config);
+    AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+    _ = Task.Run(ReadCommands);
+
+    networkClient.Run();
+
+
+    if (searchOrchastrator.PendingSubmission == 0)
     {
-        var searchOrchastrator = new NodesTaskOrchistrator(config);
-        var networkClient = new NodesWorkProcessor(searchOrchastrator, config);
-        AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
-        _ = Task.Run(ReadCommands);
-
-        networkClient.Run();
-
-
-        if (searchOrchastrator.PendingSubmission == 0)
+        Console.WriteLine("Nothing left to submit to server.");
+    }
+    else
+    {
+        while (searchOrchastrator.PendingSubmission > 0)
         {
-            Console.WriteLine("Nothing left to submit to server.");
+            Console.WriteLine($"Syncing with server... {searchOrchastrator.PendingSubmission} pending submissions.");
+            await searchOrchastrator.SubmitToApi();
         }
-        else
+
+        Console.WriteLine("All tasks submitted to server.");
+    }
+
+
+    void CurrentDomain_ProcessExit(object? sender, EventArgs e)
+    {
+        Console.WriteLine("process exited");
+    }
+
+    void ReadCommands()
+    {
+        while (true)
         {
-            while (searchOrchastrator.PendingSubmission > 0)
+            var command = Console.ReadLine();
+            if (string.IsNullOrEmpty(command))
             {
-                Console.WriteLine($"Syncing with server... {searchOrchastrator.PendingSubmission} pending submissions.");
-                await searchOrchastrator.SubmitToApi();
+                continue; // Skip empty commands
             }
 
-            Console.WriteLine("All tasks submitted to server.");
-        }
-
-
-        void CurrentDomain_ProcessExit(object? sender, EventArgs e)
-        {
-            Console.WriteLine("process exited");
-        }
-
-        void ReadCommands()
-        {
-            while (true)
+            command = command.Trim();
+            var loweredCommand = command.ToLower();
+            if (loweredCommand.StartsWith("q"))
             {
-                var command = Console.ReadLine();
-                if (string.IsNullOrEmpty(command))
+                if (loweredCommand.Contains("g"))
                 {
-                    continue; // Skip empty commands
+                    networkClient.FinishTasksAndQuit();
+                    break;
                 }
-
-                command = command.Trim();
-                var loweredCommand = command.ToLower();
-                if (loweredCommand.StartsWith("q"))
+                else
                 {
-                    if (loweredCommand.Contains("g"))
-                    {
-                        networkClient.FinishTasksAndQuit();
-                        break;
-                    }
-                    else
-                    {
-                        networkClient.SaveAndQuit();
-                        break;
-                    }
+                    networkClient.SaveAndQuit();
+                    break;
                 }
-                else if (loweredCommand.StartsWith("d"))
-                {
-                    networkClient.ToggleOutputDetails();
-                }
-
             }
+            else if (loweredCommand.StartsWith("d"))
+            {
+                networkClient.ToggleOutputDetails();
+            }
+
         }
     }
 }
