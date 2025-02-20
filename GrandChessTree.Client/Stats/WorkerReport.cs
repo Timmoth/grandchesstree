@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace GrandChessTree.Client
+namespace GrandChessTree.Client.Stats
 {
     public class WorkerReport
     {
@@ -65,4 +65,4 @@ namespace GrandChessTree.Client
             WorkerCpuTime += duration;
         }
     }
- }
+}

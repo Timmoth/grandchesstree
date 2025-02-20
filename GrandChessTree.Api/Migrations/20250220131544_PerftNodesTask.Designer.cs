@@ -2,6 +2,7 @@
 using GrandChessTree.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GrandChessTree.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250220131544_PerftNodesTask")]
+    partial class PerftNodesTask
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -284,9 +287,7 @@ namespace GrandChessTree.Api.Migrations
                         .HasAnnotation("Relational:JsonPropertyName", "account_id");
 
                     b.Property<long>("AvailableAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasDefaultValue(0L)
                         .HasColumnName("available_at");
 
                     b.Property<int>("Depth")
@@ -299,9 +300,7 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnName("fen");
 
                     b.Property<long>("FinishedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasDefaultValue(0L)
                         .HasColumnName("finished_at");
 
                     b.Property<decimal>("Hash")
@@ -313,15 +312,11 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnName("launch_depth");
 
                     b.Property<decimal>("Nodes")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("numeric(20,0)")
-                        .HasDefaultValue(0m)
                         .HasColumnName("nodes");
 
                     b.Property<float>("Nps")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("real")
-                        .HasDefaultValue(0f)
                         .HasColumnName("nps");
 
                     b.Property<int>("Occurrences")
@@ -333,15 +328,11 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnName("root_position_id");
 
                     b.Property<long>("StartedAt")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint")
-                        .HasDefaultValue(0L)
                         .HasColumnName("started_at");
 
                     b.Property<int>("WorkerId")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasDefaultValue(0)
                         .HasColumnName("worker_id");
 
                     b.HasKey("Id");

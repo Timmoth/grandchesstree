@@ -2,7 +2,7 @@
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Api;
 
-namespace GrandChessTree.Client
+namespace GrandChessTree.Client.Stats
 {
 
     public class RemainingSubTask
@@ -57,7 +57,7 @@ namespace GrandChessTree.Client
 
         public RemainingSubTask? GetNextSubTask()
         {
-            if(RemainingSubTasks.Count == 0) return null;
+            if (RemainingSubTasks.Count == 0) return null;
             WorkingTask = RemainingSubTasks[0];
             RemainingSubTasks.RemoveAt(0);
             return WorkingTask;
@@ -115,7 +115,7 @@ namespace GrandChessTree.Client
                 DoubleDiscoverdCheckmate = 0,
             };
 
-            foreach(var result in CompletedSubTaskResults)
+            foreach (var result in CompletedSubTaskResults)
             {
                 var results = result.Results;
                 var occurrences = result.Occurrences;
@@ -142,4 +142,4 @@ namespace GrandChessTree.Client
             return request;
         }
     }
- }
+}

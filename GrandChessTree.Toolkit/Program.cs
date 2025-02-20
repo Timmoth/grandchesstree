@@ -57,6 +57,17 @@ while ((input = Console.ReadLine()) != "quit"){
 
         await PositionSeeder.SeedPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
     }
+    if (command == "seed_startpos_nodes")
+    {
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+                   || !int.TryParse(commandParts[2], out var launchDepth))
+        {
+            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
+            return;
+        }
+
+        await PositionSeeder.SeedNodesPosition(Constants.StartPosFen, depth, 4, Constants.StartPosRootPositionId);
+    }
     else if (command == "seed_account")
     {
         await AccountSeeder.Seed();

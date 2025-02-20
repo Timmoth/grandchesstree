@@ -2,21 +2,20 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
-using GrandChessTree.Api.Perft.PerftNodes;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace GrandChessTree.Api.Controllers
+namespace GrandChessTree.Api.Perft.PerftNodes
 {
     [ApiController]
-    [Route("api/v2/perft/{positionId}/{depth}")]
-    public class PerftPositionController : ControllerBase
-    {     
-        private readonly ILogger<PerftController> _logger;
+    [Route("api/v2/perft/nodes/{positionId}/{depth}")]
+    public class PerftNodesPositionController : ControllerBase
+    {
+        private readonly ILogger<PerftNodesPositionController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
-        public PerftPositionController(ILogger<PerftController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
+        public PerftNodesPositionController(ILogger<PerftNodesPositionController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
         {
             _logger = logger;
             _dbContext = dbContext;
@@ -50,15 +49,14 @@ namespace GrandChessTree.Api.Controllers
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
             var pastMinuteTimestamp = currentTimestamp - 60;
 
-            var totalTaskCount = await _dbContext.PerftItems.CountAsync(i => i.RootPositionId == positionId && i.Depth == depth);
+            var totalTaskCount = await _dbContext.PerftNodesTask.CountAsync(i => i.RootPositionId == positionId && i.Depth == depth);
 
             var realTimeStatsResult = await _dbContext.Database
                 .SqlQueryRaw<RealTimeStatsModel>(@"
         SELECT
         COALESCE(COUNT(*), 0) / 60.0 AS tpm,
-        COALESCE(SUM(t.nodes * i.occurrences), 0) / 3600.0 AS nps
-        FROM public.perft_tasks t
-        JOIN public.perft_items i ON t.perft_item_id = i.id
+        COALESCE(SUM(t.nodes * t.occurrences), 0) / 3600.0 AS nps
+        FROM public.perft_nodes_tasks t
         WHERE t.root_position_id = {0} AND t.depth = {1}
         AND t.finished_at >= EXTRACT(EPOCH FROM NOW()) - 3600", positionId, depth)
                 .AsNoTracking()
@@ -69,9 +67,8 @@ namespace GrandChessTree.Api.Controllers
            .SqlQueryRaw<ProgressStatsModel>(@"
         SELECT
         COUNT(*) AS completed_tasks,
-        COALESCE(SUM(t.nodes * i.occurrences), 0) AS total_nodes
-        FROM public.perft_tasks t
-        JOIN public.perft_items i ON t.perft_item_id = i.id
+        COALESCE(SUM(t.nodes * t.occurrences), 0) AS total_nodes
+        FROM public.perft_nodes_tasks t
         WHERE t.root_position_id = {0} AND t.depth = {1} AND t.finished_at > 0", positionId, depth)
            .AsNoTracking()
            .FirstOrDefaultAsync(cancellationToken);
@@ -119,13 +116,11 @@ namespace GrandChessTree.Api.Controllers
                     SELECT 
                         tb.bucket_start AS timestamp,
                         COUNT(t.id) / 15.0 AS tpm,  -- Tasks per minute (since interval is 15 min)
-                        COALESCE(SUM(t.nodes * i.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
+                        COALESCE(SUM(t.nodes * t.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
                     FROM time_buckets tb
-                    LEFT JOIN public.perft_tasks t 
+                    LEFT JOIN public.perft_nodes_tasks t 
                         ON t.finished_at >= tb.bucket_start 
                         AND t.finished_at < tb.bucket_start + 900  -- 15-minute window
-                    LEFT JOIN public.perft_items i 
-                        ON t.perft_item_id = i.id
                     WHERE t.root_position_id = {0} AND t.depth = {1}
                     GROUP BY tb.bucket_start
                     ORDER BY timestamp
@@ -143,7 +138,7 @@ namespace GrandChessTree.Api.Controllers
         {
             var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
 
-            var stats = await _dbContext.PerftTasks
+            var stats = await _dbContext.PerftNodesTask
                 .AsNoTracking()
                 .Include(i => i.Account)
                 .Where(i => i.FinishedAt > 0 && i.RootPositionId == positionId && i.Depth == depth)
@@ -170,23 +165,10 @@ namespace GrandChessTree.Api.Controllers
            CancellationToken cancellationToken)
         {
             var result = await _dbContext.Database
-                .SqlQueryRaw<PerftResult>(@"
+                .SqlQueryRaw<PerftNodesResult>(@"
             SELECT 
-                SUM(t.nodes * i.occurrences) AS nodes,
-                SUM(t.captures * i.occurrences) AS captures,
-                SUM(t.enpassants * i.occurrences) AS enpassants,
-                SUM(t.castles * i.occurrences) AS castles,
-                SUM(t.promotions * i.occurrences) AS promotions,
-                SUM(t.direct_checks * i.occurrences) AS direct_checks,
-                SUM(t.single_discovered_check * i.occurrences) AS single_discovered_check,
-                SUM(t.direct_discovered_check * i.occurrences) AS direct_discovered_check,
-                SUM(t.double_discovered_check * i.occurrences) AS double_discovered_check,
-                SUM(t.direct_checkmate * i.occurrences) AS direct_checkmate,
-                SUM(t.single_discovered_checkmate * i.occurrences) AS single_discovered_checkmate,
-                SUM(t.direct_discoverd_checkmate * i.occurrences) AS direct_discoverd_checkmate,
-                SUM(t.double_discoverd_checkmate * i.occurrences) AS double_discoverd_checkmate
-            FROM public.perft_tasks t
-            JOIN public.perft_items i ON t.perft_item_id = i.id
+                SUM(t.nodes * t.occurrences) AS nodes
+            FROM public.perft_nodes_tasks t
             WHERE t.root_position_id = {0} AND t.depth = {1}", positionId, depth)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);

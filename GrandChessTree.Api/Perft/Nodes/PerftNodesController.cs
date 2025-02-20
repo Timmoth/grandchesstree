@@ -3,22 +3,21 @@ using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
-using GrandChessTree.Api.Perft.PerftNodes;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace GrandChessTree.Api.Controllers
+namespace GrandChessTree.Api.Perft.PerftNodes
 {
     [ApiController]
-    [Route("api/v2/perft")]
-    public class PerftControllerV2 : ControllerBase
-    {     
-        private readonly ILogger<PerftController> _logger;
+    [Route("api/v2/perft/nodes")]
+    public class PerftNodesController : ControllerBase
+    {
+        private readonly ILogger<PerftNodesController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
         private readonly ApiKeyAuthenticator _apiKeyAuthenticator;
-        public PerftControllerV2(ILogger<PerftController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator)
+        public PerftNodesController(ILogger<PerftNodesController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator)
         {
             _logger = logger;
             _dbContext = dbContext;
@@ -32,7 +31,7 @@ namespace GrandChessTree.Api.Controllers
         {
             var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);
 
-            if(apiKey == null)
+            if (apiKey == null)
             {
                 return Unauthorized();
             }
@@ -41,10 +40,10 @@ namespace GrandChessTree.Api.Controllers
 
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
-            var searchItems = await _dbContext.PerftItems
+            var searchItems = await _dbContext.PerftNodesTask
               .FromSqlRaw(@"
-                    SELECT * FROM public.perft_items 
-                    WHERE NOT confirmed AND available_at = 0 AND pass_count = 0
+                    SELECT * FROM public.perft_nodes_tasks 
+                    WHERE available_at = 0 AND finished_at = 0
                     ORDER BY depth ASC
                     LIMIT 20 FOR UPDATE SKIP LOCKED")
               .ToListAsync(cancellationToken);
@@ -54,23 +53,12 @@ namespace GrandChessTree.Api.Controllers
                 return NotFound();
             }
 
-            // Prepare search tasks
-            var searchTasks = searchItems.Select(perftItem => new PerftTask
-            {
-                PerftItem = perftItem,
-                PerftItemId = perftItem.Id,
-                StartedAt = currentTimestamp,
-                Depth = perftItem.Depth,
-                AccountId = apiKey.AccountId,
-                RootPositionId = perftItem.RootPositionId,
-            }).ToList();
-
-            await _dbContext.PerftTasks.AddRangeAsync(searchTasks, cancellationToken);
-
             // Update search items to prevent immediate reprocessing
             foreach (var item in searchItems)
             {
                 item.AvailableAt = currentTimestamp + 3600; // Becomes available again in 1 hour
+                item.StartedAt = currentTimestamp;
+                item.AccountId = apiKey.AccountId;
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
@@ -79,12 +67,11 @@ namespace GrandChessTree.Api.Controllers
             await transaction.CommitAsync(cancellationToken);
 
             // Prepare response
-            var response = searchTasks.Select(task => new PerftTaskResponse
+            var response = searchItems.Select(task => new PerftNodesTaskResponse
             {
-                PerftTaskId = task.Id,
-                PerftItemHash = task.PerftItem.Hash,
-                PerftItemFen = task.PerftItem.Fen,
-                LaunchDepth = task.PerftItem.LaunchDepth,
+                TaskId = task.Id,
+                Fen = task.Fen,
+                LaunchDepth = task.LaunchDepth,
                 Depth = task.Depth,
             }).ToArray();
 
@@ -94,18 +81,25 @@ namespace GrandChessTree.Api.Controllers
         [ApiKeyAuthorize]
         [HttpPost("results")]
         public async Task<IActionResult> SubmitResults(
-            [FromBody] PerftTaskResultBatch request,
+            [FromBody] PerftNodesTaskResultBatch request,
            CancellationToken cancellationToken)
         {
+            var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);
+
+            if (apiKey == null)
+            {
+                return Unauthorized();
+            }
+            var accountId = apiKey.AccountId;
+
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
             // Extract IDs to fetch all tasks in one query
-            var taskIds = request.Results.Select(r => r.PerftTaskId).ToList();
+            var taskIds = request.Results.Select(r => r.PerftNodesTaskId).ToList();
 
             // Fetch all tasks with related SearchItem in a single batch query
-            var searchTasks = await _dbContext.PerftTasks
-                .Include(s => s.PerftItem)
-                .Where(t => taskIds.Contains(t.Id))
+            var searchTasks = await _dbContext.PerftNodesTask
+                .Where(t => t.AccountId == accountId && taskIds.Contains(t.Id))
                 .ToDictionaryAsync(t => t.Id, cancellationToken);
 
             if (searchTasks.Count == 0)
@@ -116,14 +110,13 @@ namespace GrandChessTree.Api.Controllers
             // Process each request and update the corresponding task
             foreach (var result in request.Results)
             {
-                if (!searchTasks.TryGetValue(result.PerftTaskId, out var searchTask))
+                if (!searchTasks.TryGetValue(result.PerftNodesTaskId, out var searchTask))
                 {
                     continue; // Skip if task not found (shouldn't happen)
                 }
 
                 // Update the search item (parent)
-                searchTask.PerftItem.PassCount++;
-                searchTask.PerftItem.AvailableAt = currentTimestamp;
+                searchTask.AvailableAt = currentTimestamp;
                 searchTask.WorkerId = request.WorkerId;
 
                 var finishedAt = currentTimestamp == searchTask.StartedAt ? currentTimestamp + 1 : currentTimestamp;
@@ -132,27 +125,15 @@ namespace GrandChessTree.Api.Controllers
                 var duration = (ulong)(finishedAt - searchTask.StartedAt);
                 if (duration > 0)
                 {
-                    searchTask.Nps = result.Nodes * (ulong)searchTask.PerftItem.Occurrences / duration;
+                    searchTask.Nps = result.Nodes * (ulong)searchTask.Occurrences / duration;
                 }
                 else
                 {
-                    searchTask.Nps = result.Nodes * (ulong)searchTask.PerftItem.Occurrences;
+                    searchTask.Nps = result.Nodes * (ulong)searchTask.Occurrences;
                 }
 
                 searchTask.FinishedAt = finishedAt;
                 searchTask.Nodes = result.Nodes;
-                searchTask.Captures = result.Captures;
-                searchTask.Enpassant = result.Enpassant;
-                searchTask.Castles = result.Castles;
-                searchTask.Promotions = result.Promotions;
-                searchTask.DirectCheck = result.DirectCheck;
-                searchTask.SingleDiscoveredCheck = result.SingleDiscoveredCheck;
-                searchTask.DirectDiscoveredCheck = result.DirectDiscoveredCheck;
-                searchTask.DoubleDiscoveredCheck = result.DoubleDiscoveredCheck;
-                searchTask.DirectCheckmate = result.DirectCheckmate;
-                searchTask.SingleDiscoveredCheckmate = result.SingleDiscoveredCheckmate;
-                searchTask.DirectDiscoverdCheckmate = result.DirectDiscoverdCheckmate;
-                searchTask.DoubleDiscoverdCheckmate = result.DoubleDiscoverdCheckmate;
             }
 
             // Bulk save changes in one transaction
@@ -210,9 +191,8 @@ namespace GrandChessTree.Api.Controllers
             var realTimeStatsResult = await _dbContext.Database
                 .SqlQueryRaw<RealTimeStatsModel>(@"
         SELECT
-        COALESCE(SUM(t.nodes * i.occurrences), 0) / 3600.0 AS nps
-        FROM public.perft_tasks t
-        JOIN public.perft_items i ON t.perft_item_id = i.id
+        COALESCE(SUM(t.nodes * t.occurrences), 0) / 3600.0 AS nps
+        FROM public.perft_nodes_tasks t
         WHERE t.finished_at >= EXTRACT(EPOCH FROM NOW()) - 3600")
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
@@ -221,9 +201,8 @@ namespace GrandChessTree.Api.Controllers
             var progressStatsResult = await _dbContext.Database
            .SqlQueryRaw<ProgressStatsModel>(@"
         SELECT
-        COALESCE(SUM(t.nodes * i.occurrences), 0) AS total_nodes
-        FROM public.perft_tasks t
-        JOIN public.perft_items i ON t.perft_item_id = i.id
+        COALESCE(SUM(t.nodes * t.occurrences), 0) AS total_nodes
+        FROM public.perft_nodes_tasks t
         WHERE t.finished_at > 0")
            .AsNoTracking()
            .FirstOrDefaultAsync(cancellationToken);
@@ -263,13 +242,11 @@ namespace GrandChessTree.Api.Controllers
                     )
                     SELECT 
                         tb.bucket_start AS timestamp,
-                        COALESCE(SUM(t.nodes * i.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
+                        COALESCE(SUM(t.nodes * t.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
                     FROM time_buckets tb
-                    LEFT JOIN public.perft_tasks t 
+                    LEFT JOIN public.perft_nodes_tasks t 
                         ON t.finished_at >= tb.bucket_start 
                         AND t.finished_at < tb.bucket_start + 900  -- 15-minute window
-                    LEFT JOIN public.perft_items i 
-                        ON t.perft_item_id = i.id
                     GROUP BY tb.bucket_start
                     ORDER BY timestamp
                     ")
@@ -286,7 +263,7 @@ namespace GrandChessTree.Api.Controllers
         {
             var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
 
-            var stats = await _dbContext.PerftTasks
+            var stats = await _dbContext.PerftNodesTask
                 .AsNoTracking()
                 .Include(i => i.Account)
                 .Where(i => i.FinishedAt > 0)

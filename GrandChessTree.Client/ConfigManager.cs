@@ -15,6 +15,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("worker_id")]
         public int WorkerId { get; set; } = 0;
+
+        [JsonPropertyName("task_type")]
+        public int TaskType { get; set; } = 0;
     }
 
     public static class ConfigManager
@@ -88,6 +91,13 @@ namespace GrandChessTree.Client
             if (int.TryParse(Console.ReadLine(), out int workerId))
             {
                 config.WorkerId = workerId;
+            }
+
+
+            Console.Write("Enter the task type: ");
+            if (int.TryParse(Console.ReadLine(), out int taskType))
+            {
+                config.TaskType = taskType;
             }
 
             WorkerPersistence.SaveConfig(config);

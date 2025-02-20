@@ -231,15 +231,17 @@ public static unsafe class Zobrist
         DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);
         RefreshZobrist(ZobristKeys_polyglot);
     }
-
+    public static bool UsingPolyGlot { get; private set; }= true;
     public static void UsePolyGlot()
     {
         RefreshZobrist(ZobristKeys_polyglot);
+        UsingPolyGlot = true;
     }
 
     public static void UseXorShift()
     {
         RefreshZobrist(ZobristKeys_xorshift);
+        UsingPolyGlot = false;
     }
 
     private static void RefreshZobrist(ulong[] zobrist)

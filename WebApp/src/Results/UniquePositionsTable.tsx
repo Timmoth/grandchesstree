@@ -12,7 +12,7 @@ const UniquePositionsTable: React.FC<UniquePositionsTableProps> = ({
     <>
       <div className="relative bg-gray-100 rounded-lg p-4">
         <span className="text-md font-bold m-2 text-gray-700 w-full block">
-          {summary.position_name} estimated unique positions
+          {summary.position_name} unique positions
         </span>
         <div className="overflow-x-auto">
           <table className="min-w-[200px] text-sm text-left rtl:text-right text-gray-500">
