@@ -55,7 +55,13 @@ const Home: React.FC = () => {
                     className=" text-blue-600 hover:underline"
                     to="/perft/0/12"
                   >
-                    perft(12)
+                    perft stats(12)
+                  </Link>
+                  <Link
+                    className=" text-blue-600 hover:underline"
+                    to="/perft/nodes/0/12"
+                  >
+                    perft nodes(12)
                   </Link>
                 </div>
               </div>
@@ -101,8 +107,8 @@ const Home: React.FC = () => {
               </div>
             </div>
           </div>
-          <GlobalPerformanceChart />
-          <GlobalLeaderboard />
+          <GlobalPerformanceChart/>
+          <GlobalLeaderboard/>
         </div>
       </div>
     </>

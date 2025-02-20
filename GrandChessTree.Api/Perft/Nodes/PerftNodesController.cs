@@ -41,12 +41,12 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
             var searchItems = await _dbContext.PerftNodesTask
-              .FromSqlRaw(@"
+               .FromSqlRaw(@"
                     SELECT * FROM public.perft_nodes_tasks 
-                    WHERE available_at = 0 AND finished_at = 0
+                    WHERE available_at <= {0} AND finished_at = 0
                     ORDER BY depth ASC
-                    LIMIT 20 FOR UPDATE SKIP LOCKED")
-              .ToListAsync(cancellationToken);
+                    LIMIT 20 FOR UPDATE SKIP LOCKED", currentTimestamp)
+               .ToListAsync(cancellationToken);
 
             if (!searchItems.Any())
             {
