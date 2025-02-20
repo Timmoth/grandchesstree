@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
+using GrandChessTree.Api.Perft.PerftNodes;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

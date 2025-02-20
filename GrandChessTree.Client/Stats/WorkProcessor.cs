@@ -3,7 +3,7 @@ using ConsoleTables;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 
-namespace GrandChessTree.Client
+namespace GrandChessTree.Client.Stats
 {
     public class WorkProcessor
     {
@@ -25,7 +25,7 @@ namespace GrandChessTree.Client
             _searchItemOrchistrator = searchItemOrchistrator;
             _workerCount = config.Workers;
             _workerReports = new WorkerReport[_workerCount];
-            for(int i = 0; i < _workerReports.Length; i++) { _workerReports[i] = new WorkerReport(); }
+            for (int i = 0; i < _workerReports.Length; i++) { _workerReports[i] = new WorkerReport(); }
         }
 
         public void Run()
@@ -121,8 +121,8 @@ namespace GrandChessTree.Client
                         table.Write(Format.MarkDown);
                     }
 
-                    var cachHitPercent = sumCompletedSubTasks==0 ? 0 : ((float)subtaskCacheHits / sumCompletedSubTasks) * 100;
-                    
+                    var cachHitPercent = sumCompletedSubTasks == 0 ? 0 : (float)subtaskCacheHits / sumCompletedSubTasks * 100;
+
                     Console.WriteLine($"completed {sumCompletedSubTasks.FormatBigNumber()} subtasks ({cachHitPercent.RoundToSignificantFigures(2)}% cache hits), submitted {_searchItemOrchistrator.Submitted} tasks ({_searchItemOrchistrator.PendingSubmission} pending)");
                     Console.WriteLine($"[computed stats] {totalComputedNodes.FormatBigNumber()} nodes at {sumNps.FormatBigNumber()}nps");
 
@@ -135,7 +135,7 @@ namespace GrandChessTree.Client
                         Console.WriteLine($"Will exit automatically when the current tasks are completed. {_workerReports.Count(w => !w.IsRunning)}/{_workerCount} ready");
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
                 }
@@ -202,7 +202,7 @@ namespace GrandChessTree.Client
                     Thread.Sleep(10);
                     continue;
                 }
-                
+
                 // Report that work on this task has begun
                 workerReport.BeginTask(currentTask);
 
@@ -232,7 +232,7 @@ namespace GrandChessTree.Client
                         // Clear the summary struct
                         summary = default;
 
-                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(fen, currentTask.SubTaskDepth,  out summary))
+                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(fen, currentTask.SubTaskDepth, out summary))
                         {
                             // This position has been found in the global cache! Use the cached summary
                             // And report the subtask as completed
@@ -275,7 +275,7 @@ namespace GrandChessTree.Client
                     {
                         _searchItemOrchistrator.Submit(submission);
                         long duration = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - taskStartTime;
-                        if(duration <= 0)
+                        if (duration <= 0)
                         {
                             duration = 1;
                         }
@@ -315,4 +315,4 @@ namespace GrandChessTree.Client
             OutputFullDetails = !OutputFullDetails;
         }
     }
- }
+}

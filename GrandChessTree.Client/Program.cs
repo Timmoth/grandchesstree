@@ -1,4 +1,5 @@
 ﻿using GrandChessTree.Client;
+using GrandChessTree.Client.Stats;
 
 Console.WriteLine("-----TheGreatChessTree-----");
 var containerized = Environment.GetEnvironmentVariable("containerized");
@@ -23,12 +24,21 @@ if (containerized != null && containerized == "true")
         return;
     }
 
+    var taskTypeEnvVar = Environment.GetEnvironmentVariable("task_type");
+    if (!int.TryParse(workerEnvVar, out var taskType))
+    {
+        Console.WriteLine("'task_type' environment variable must be an integer >= 0");
+        return;
+    }
+
+
     config = new Config()
     {
         ApiKey = Environment.GetEnvironmentVariable("api_key") ?? "",
         ApiUrl = Environment.GetEnvironmentVariable("api_url") ?? "",
         Workers = workerCount,
         WorkerId = workerId,
+        TaskType = taskType
     };
 }
 else
@@ -42,65 +52,139 @@ if (!ConfigManager.IsValidConfig(config))
     return;
 }
 
-
-var searchOrchastrator = new SearchItemOrchistrator(config);
-var networkClient = new WorkProcessor(searchOrchastrator, config);
-AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
-_ = Task.Run(ReadCommands);
-
-networkClient.Run();
-
-
-if(searchOrchastrator.PendingSubmission == 0)
+if (config.TaskType == 0)
 {
-    Console.WriteLine("Nothing left to submit to server.");
+    var searchOrchastrator = new SearchItemOrchistrator(config);
+    var networkClient = new WorkProcessor(searchOrchastrator, config);
+    AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+    _ = Task.Run(ReadCommands);
+
+    networkClient.Run();
+
+
+    if (searchOrchastrator.PendingSubmission == 0)
+    {
+        Console.WriteLine("Nothing left to submit to server.");
+    }
+    else
+    {
+        while (searchOrchastrator.PendingSubmission > 0)
+        {
+            Console.WriteLine($"Syncing with server... {searchOrchastrator.PendingSubmission} pending submissions.");
+            await searchOrchastrator.SubmitToApi();
+        }
+
+        Console.WriteLine("All tasks submitted to server.");
+    }
+
+
+    void CurrentDomain_ProcessExit(object? sender, EventArgs e)
+    {
+        Console.WriteLine("process exited");
+    }
+
+    void ReadCommands()
+    {
+        while (true)
+        {
+            var command = Console.ReadLine();
+            if (string.IsNullOrEmpty(command))
+            {
+                continue; // Skip empty commands
+            }
+
+            command = command.Trim();
+            var loweredCommand = command.ToLower();
+            if (loweredCommand.StartsWith("q"))
+            {
+                if (loweredCommand.Contains("g"))
+                {
+                    networkClient.FinishTasksAndQuit();
+                    break;
+                }
+                else
+                {
+                    networkClient.SaveAndQuit();
+                    break;
+                }
+            }
+            else if (loweredCommand.StartsWith("d"))
+            {
+                networkClient.ToggleOutputDetails();
+            }
+
+        }
+    }
+}else if (config.TaskType == 1)
+{
+    {
+        var searchOrchastrator = new NodesTaskOrchistrator(config);
+        var networkClient = new NodesWorkProcessor(searchOrchastrator, config);
+        AppDomain.CurrentDomain.ProcessExit += CurrentDomain_ProcessExit;
+        _ = Task.Run(ReadCommands);
+
+        networkClient.Run();
+
+
+        if (searchOrchastrator.PendingSubmission == 0)
+        {
+            Console.WriteLine("Nothing left to submit to server.");
+        }
+        else
+        {
+            while (searchOrchastrator.PendingSubmission > 0)
+            {
+                Console.WriteLine($"Syncing with server... {searchOrchastrator.PendingSubmission} pending submissions.");
+                await searchOrchastrator.SubmitToApi();
+            }
+
+            Console.WriteLine("All tasks submitted to server.");
+        }
+
+
+        void CurrentDomain_ProcessExit(object? sender, EventArgs e)
+        {
+            Console.WriteLine("process exited");
+        }
+
+        void ReadCommands()
+        {
+            while (true)
+            {
+                var command = Console.ReadLine();
+                if (string.IsNullOrEmpty(command))
+                {
+                    continue; // Skip empty commands
+                }
+
+                command = command.Trim();
+                var loweredCommand = command.ToLower();
+                if (loweredCommand.StartsWith("q"))
+                {
+                    if (loweredCommand.Contains("g"))
+                    {
+                        networkClient.FinishTasksAndQuit();
+                        break;
+                    }
+                    else
+                    {
+                        networkClient.SaveAndQuit();
+                        break;
+                    }
+                }
+                else if (loweredCommand.StartsWith("d"))
+                {
+                    networkClient.ToggleOutputDetails();
+                }
+
+            }
+        }
+    }
 }
 else
 {
-    while (searchOrchastrator.PendingSubmission > 0)
-    {
-        Console.WriteLine($"Syncing with server... {searchOrchastrator.PendingSubmission} pending submissions.");
-        await searchOrchastrator.SubmitToApi();
-    }
-
-    Console.WriteLine("All tasks submitted to server.");
+    Console.WriteLine($"Invalid task type: '{config.TaskType}', must be either '0' for stats tasks or '1' for nodes tasks.");
 }
 
 
-void CurrentDomain_ProcessExit(object? sender, EventArgs e)
-{
-    Console.WriteLine("process exited");
-}
 
-void ReadCommands()
-{
-    while (true)
-    {
-        var command = Console.ReadLine();
-        if (string.IsNullOrEmpty(command))
-        {
-            continue; // Skip empty commands
-        }
-
-        command = command.Trim();
-        var loweredCommand = command.ToLower();
-        if (loweredCommand.StartsWith("q"))
-        {
-            if (loweredCommand.Contains("g"))
-            {
-                networkClient.FinishTasksAndQuit();
-                break;
-            }
-            else
-            {
-                networkClient.SaveAndQuit();
-                break;
-            }
-        }
-        else if (loweredCommand.StartsWith("d"))
-        {
-            networkClient.ToggleOutputDetails();
-        }
-
-    }
-}

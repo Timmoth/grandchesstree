@@ -1,16 +1,17 @@
 ﻿using System.Collections.Concurrent;
 using GrandChessTree.Shared.Api;
 
-namespace GrandChessTree.Client
+namespace GrandChessTree.Client.Stats
 {
-    public class PerftTaskQueue
+    public class PerftNodesTaskQueue
     {
-        private readonly ConcurrentQueue<PerftTaskResponse> _taskQueue = new();
-        private readonly ConcurrentDictionary<long, PerftTaskResponse> _pendingTasks = new();
+        private readonly ConcurrentQueue<PerftNodesTaskResponse> _taskQueue = new();
+        private readonly ConcurrentDictionary<long, PerftNodesTaskResponse> _pendingTasks = new();
 
-        public PerftTaskQueue() {
+        public PerftNodesTaskQueue()
+        {
 
-            var tasks = WorkerPersistence.LoadPendingTasks();
+            var tasks = WorkerPersistence.LoadPendingNodesTasks();
             if (tasks != null)
             {
                 foreach (var task in tasks)
@@ -20,18 +21,18 @@ namespace GrandChessTree.Client
             }
         }
 
-        public void Enqueue(PerftTaskResponse[] tasks)
+        public void Enqueue(PerftNodesTaskResponse[] tasks)
         {
             foreach (var newTask in tasks)
             {
                 _taskQueue.Enqueue(newTask);
-                _pendingTasks.TryAdd(newTask.PerftTaskId, newTask);
+                _pendingTasks.TryAdd(newTask.TaskId, newTask);
             }
 
-            WorkerPersistence.SavePendingTasks(_pendingTasks.Values.ToArray());
+            WorkerPersistence.SavePendingNodesTasks(_pendingTasks.Values.ToArray());
         }
 
-        public PerftTaskResponse? Dequeue()
+        public PerftNodesTaskResponse? Dequeue()
         {
             if (!_taskQueue.TryDequeue(out var task))
             {
@@ -53,7 +54,7 @@ namespace GrandChessTree.Client
                 _pendingTasks.TryRemove(taskId, out _);
             }
 
-            WorkerPersistence.SavePendingTasks(_pendingTasks.Values.ToArray());
+            WorkerPersistence.SavePendingNodesTasks(_pendingTasks.Values.ToArray());
         }
     }
- }
+}

@@ -1,22 +1,22 @@
 ﻿using System.Collections.Concurrent;
 using GrandChessTree.Shared;
 
-namespace GrandChessTree.Client
+namespace GrandChessTree.Client.Stats
 {
-    public class SubTaskHashTable
+    public class NodesSubTaskHashTable
     {
-        private readonly ConcurrentDictionary<(string fen, int depth), Summary> _dict;
+        private readonly ConcurrentDictionary<(string fen, int depth), ulong> _dict;
         private readonly ConcurrentQueue<(string fen, int depth)> _keysQueue;
         private readonly int _capacity;
 
-        public SubTaskHashTable(int capacity)
+        public NodesSubTaskHashTable(int capacity)
         {
             _capacity = capacity;
-            _dict = new ConcurrentDictionary<(string fen, int depth), Summary>();
+            _dict = new ConcurrentDictionary<(string fen, int depth), ulong>();
             _keysQueue = new ConcurrentQueue<(string fen, int depth)>();
         }
 
-        public void Add(string fen, int depth, Summary value)
+        public void Add(string fen, int depth, ulong value)
         {
             if (_dict.TryAdd((fen, depth), value))
             {
@@ -29,6 +29,6 @@ namespace GrandChessTree.Client
             }
         }
 
-        public bool TryGetValue(string fen, int depth, out Summary value) => _dict.TryGetValue((fen, depth), out value);
+        public bool TryGetValue(string fen, int depth, out ulong value) => _dict.TryGetValue((fen, depth), out value);
     }
- }
+}
