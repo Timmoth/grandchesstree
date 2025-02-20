@@ -2,8 +2,8 @@ import React from "react";
 import NavBar from "./NavBar";
 import AboutCard from "./AboutCard";
 import { Link } from "react-router-dom";
-import GlobalPerformanceChart from "./GlobalPerformanceChart";
-import GlobalLeaderboard from "./GlobalLeaderboard";
+import GlobalPerformanceChart from "./perft_stats/GlobalPerformanceChart";
+import GlobalLeaderboard from "./perft_stats/GlobalLeaderboard";
 
 const Home: React.FC = () => {
   return (

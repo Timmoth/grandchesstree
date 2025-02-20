@@ -1,12 +1,12 @@
 import React from "react";
-import Leaderboard from "./Leaderboard";
-import RealtimeStats from "./RealtimeStats";
+import Leaderboard from "./PerftNodesLeaderboard";
+import RealtimeStats from "./PerftNodesRealtimeStats";
 import { useParams } from "react-router-dom";
-import NavBar from "./NavBar";
-import AboutCard from "./AboutCard";
-import PerformanceChart from "./PerformanceChart";
+import NavBar from "../NavBar";
+import AboutCard from "../AboutCard";
+import PerformanceChart from "./PerftNodesPerformanceChart";
 
-const Perft: React.FC = () => {
+const PerftNodes: React.FC = () => {
   const { positionId } = useParams<{ positionId: string }>();
   const { depthId } = useParams<{ depthId: string }>();
 
@@ -67,4 +67,4 @@ const Perft: React.FC = () => {
   );
 };
 
-export default Perft;
+export default PerftNodes;
