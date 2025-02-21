@@ -4,15 +4,14 @@ namespace GrandChessTree.Toolkit
 {
     public static class PerftClearer
     {
-        public static async Task FullReset(int depth)
+        public static async Task FullReset(int depth, int rootPositionId)
         {
-            Console.WriteLine("Enter PostgreSQL connection string...");
+            Console.WriteLine("Enter pgsql connection string...");
             var connectionString = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
-                Console.WriteLine("Error: Connection string cannot be empty.");
-                return;
+                connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
             }
 
             await using var conn = new NpgsqlConnection(connectionString);
@@ -23,11 +22,12 @@ namespace GrandChessTree.Toolkit
             try
             {
                 // Delete from perft_tasks
-                const string deleteQuery = "DELETE FROM perft_tasks WHERE depth = @depth;";
+                const string deleteQuery = "DELETE FROM perft_tasks WHERE depth = @depth and root_position_id = @position;";
 
                 await using (var deleteCmd = new NpgsqlCommand(deleteQuery, conn, transaction))
                 {
                     deleteCmd.Parameters.AddWithValue("depth", depth);
+                    deleteCmd.Parameters.AddWithValue("position", rootPositionId);
                     int deletedRows = await deleteCmd.ExecuteNonQueryAsync();
                     Console.WriteLine($"Deleted {deletedRows} rows from perft_tasks.");
                 }
@@ -36,11 +36,12 @@ namespace GrandChessTree.Toolkit
                 const string updateQuery = @"
                     UPDATE perft_items 
                     SET available_at = 0, pass_count = 0, confirmed = false 
-                    WHERE depth = @depth;";
+                    WHERE depth = @depth and root_position_id = @position;";
 
                 await using (var updateCmd = new NpgsqlCommand(updateQuery, conn, transaction))
                 {
                     updateCmd.Parameters.AddWithValue("depth", depth);
+                    updateCmd.Parameters.AddWithValue("position", rootPositionId);
                     int updatedRows = await updateCmd.ExecuteNonQueryAsync();
                     Console.WriteLine($"Updated {updatedRows} rows in perft_items.");
                 }
@@ -56,15 +57,14 @@ namespace GrandChessTree.Toolkit
             }
         }
 
-        public static async Task ReleaseIncompleteTasks(int depth)
+        public static async Task ReleaseIncompleteTasks(int depth, int rootPositionId)
         {
             Console.WriteLine("Enter PostgreSQL connection string...");
             var connectionString = Console.ReadLine();
 
-            if (string.IsNullOrWhiteSpace(connectionString))
+            if (string.IsNullOrEmpty(connectionString))
             {
-                Console.WriteLine("Error: Connection string cannot be empty.");
-                return;
+                connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
             }
 
             await using var conn = new NpgsqlConnection(connectionString);
@@ -80,7 +80,7 @@ namespace GrandChessTree.Toolkit
                 // Delete incomplete tasks that started more than 1 minute ago and have not been finished
                 const string deleteQuery = @"
             DELETE FROM perft_tasks 
-            WHERE depth = @depth
+            WHERE depth = @depth and root_position_id = @position
             AND (finished_at IS NULL OR finished_at = 0) 
             AND started_at <= @timeLimit;";
 
@@ -88,6 +88,7 @@ namespace GrandChessTree.Toolkit
                 {
                     deleteCmd.Parameters.AddWithValue("depth", depth);
                     deleteCmd.Parameters.AddWithValue("timeLimit", timeLimit);
+                    deleteCmd.Parameters.AddWithValue("position", rootPositionId);
 
                     int deletedRows = await deleteCmd.ExecuteNonQueryAsync();
                     Console.WriteLine($"Deleted {deletedRows} incomplete tasks from perft_tasks.");
@@ -97,12 +98,13 @@ namespace GrandChessTree.Toolkit
                 const string updateQuery = @"
                     UPDATE perft_items 
                     SET available_at = 0
-                    WHERE depth = @depth;";
+                    WHERE depth = @depth and root_position_id = @position;";
 
                 await using (var updateCmd = new NpgsqlCommand(updateQuery, conn, transaction))
                 {
                     updateCmd.Parameters.AddWithValue("depth", depth);
                     updateCmd.Parameters.AddWithValue("timeLimit", timeLimit);
+                    updateCmd.Parameters.AddWithValue("position", rootPositionId);
 
                     int updatedRows = await updateCmd.ExecuteNonQueryAsync();
                     Console.WriteLine($"Reset {updatedRows} perft_items.");

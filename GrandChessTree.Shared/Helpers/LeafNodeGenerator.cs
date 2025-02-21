@@ -52,6 +52,11 @@ public static unsafe class LeafNodeGenerator
 
     public static List<(ulong hash, string fen, int occurrences)> GenerateLeafNodes(ref Board board, int depth, bool whiteToMove)
     {
+        if(depth == 0)
+        {
+            return new List<(ulong hash, string fen, int occurrences)>();
+        }
+
         var boards = new List<Board>();
 
         if (whiteToMove)
@@ -99,20 +104,125 @@ public static unsafe class LeafNodeGenerator
         var hashes = new Dictionary<ulong, (string fen, int occurrences)>();
         foreach (var b in boards)
         {
-            if (hashes.TryGetValue(b.Hash, out var entry))
+            var bb = b;
+            var hash = Zobrist.CalculateZobristKeyWithoutInvalidEp(ref bb, leafNodeWhiteToMove);
+
+            if (hashes.TryGetValue(hash, out var entry))
             {
                 entry.occurrences += 1;
             }
             else
             {
-                entry = (b.ToFen(leafNodeWhiteToMove, 0, 1), 1);
+                entry = (b.ToFenWithoutIllegalEp(leafNodeWhiteToMove, 0, 1), 1);
             }
-            hashes[b.Hash] = entry;
+            hashes[hash] = entry;
         }
 
 
         return hashes.Select(h => (h.Key, h.Value.fen, h.Value.occurrences)).ToList();
     }
+
+    public static List<(ulong hash, string fen)> GenerateLeafNodesIncludeDuplicates(ref Board board, int depth, bool whiteToMove)
+    {
+        var boards = new List<Board>();
+
+        if (whiteToMove)
+        {
+            var positions = board.White & board.Pawn;
+            while (positions != 0) GenerateWhitePawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Knight;
+            while (positions != 0) GenerateWhiteKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Bishop;
+            while (positions != 0) GenerateWhiteBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Rook;
+            while (positions != 0) GenerateWhiteRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Queen;
+            while (positions != 0) GenerateWhiteQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateWhiteKingNodes(ref board, boards, depth, board.WhiteKingPos);
+        }
+        else
+        {
+            var positions = board.Black & board.Pawn;
+            while (positions != 0) GenerateBlackPawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Knight;
+            while (positions != 0) GenerateBlackKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Bishop;
+            while (positions != 0) GenerateBlackBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Rook;
+            while (positions != 0) GenerateBlackRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Queen;
+            while (positions != 0) GenerateBlackQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateBlackKingNodes(ref board, boards, depth, board.BlackKingPos);
+        }
+
+        var leafNodeWhiteToMove = depth % 2 == 0 ? whiteToMove : !whiteToMove;
+        var fens = new List<string>();
+
+        var hashes = new List<(ulong hash, string fen)>();
+        foreach (var b in boards)
+        {
+            hashes.Add((b.Hash, b.ToFen(leafNodeWhiteToMove, 0, 1)));
+        }
+
+
+        return hashes;
+    }
+    public static List<Board> GenerateLeafNodesBoardsIncludeDuplicates(ref Board board, int depth, bool whiteToMove)
+    {
+        var boards = new List<Board>();
+
+        if (whiteToMove)
+        {
+            var positions = board.White & board.Pawn;
+            while (positions != 0) GenerateWhitePawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Knight;
+            while (positions != 0) GenerateWhiteKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Bishop;
+            while (positions != 0) GenerateWhiteBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Rook;
+            while (positions != 0) GenerateWhiteRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.White & board.Queen;
+            while (positions != 0) GenerateWhiteQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateWhiteKingNodes(ref board, boards, depth, board.WhiteKingPos);
+        }
+        else
+        {
+            var positions = board.Black & board.Pawn;
+            while (positions != 0) GenerateBlackPawnNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Knight;
+            while (positions != 0) GenerateBlackKnightNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Bishop;
+            while (positions != 0) GenerateBlackBishopNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Rook;
+            while (positions != 0) GenerateBlackRookNodes(ref board, boards, depth, positions.PopLSB());
+
+            positions = board.Black & board.Queen;
+            while (positions != 0) GenerateBlackQueenNodes(ref board, boards, depth, positions.PopLSB());
+
+            GenerateBlackKingNodes(ref board, boards, depth, board.BlackKingPos);
+        }
+
+        return boards;
+    }
+
 
     private static void GenerateWhiteNodes(ref Board board, List<Board> boards, int depth)
     {

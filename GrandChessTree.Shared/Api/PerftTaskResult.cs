@@ -4,6 +4,9 @@ namespace GrandChessTree.Shared.Api;
 
 public class PerftTaskResultBatch
 {
+    [JsonPropertyName("worker_id")]
+    public int WorkerId { get; set; } = 0;
+
     [JsonPropertyName("results")]
     public required PerftTaskResult[] Results { get; set; }
 }

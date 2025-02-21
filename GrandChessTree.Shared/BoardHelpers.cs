@@ -7,7 +7,26 @@ namespace GrandChessTree.Shared;
 
 public partial struct Board
 {
-       [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public unsafe bool IsAttackedByWhiteSliders(int index)
+    {
+        return (AttackTables.PextBishopAttacks(White | Black, index) &
+                (White & (Bishop | Queen))) != 0 ||
+               (AttackTables.PextRookAttacks(White | Black, index) & (White & (Rook | Queen))) !=
+               0;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public unsafe bool IsAttackedByBlackSliders(int index)
+    {
+        return (AttackTables.PextBishopAttacks(White | Black, index) &
+                (Black & (Bishop | Queen))) != 0 ||
+               (AttackTables.PextRookAttacks(White | Black, index) & (Black & (Rook | Queen))) !=
+               0;
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public unsafe bool IsAttackedByWhite(int index)
     {
         return (AttackTables.PextBishopAttacks(White | Black, index) &

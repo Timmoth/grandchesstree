@@ -150,7 +150,7 @@ public partial struct Board
             var toSquare = Constants.BlackEnpassantOffset + EnPassantFile;
 
             newBoard.BlackPawn_Enpassant(index, toSquare);
-            if (!newBoard.IsAttackedByWhite(newBoard.BlackKingPos))
+            if (!newBoard.IsAttackedByWhiteSliders(newBoard.BlackKingPos))
             {
                 return true;
             }

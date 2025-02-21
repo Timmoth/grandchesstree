@@ -115,6 +115,75 @@ public static class OutputHelpers
         return fen.ToString();
     }
 
+    public static string ToFenWithoutIllegalEp(this Board board, bool whiteToMove, int hmc, int moves)
+    {
+        var fen = new StringBuilder();
+
+        for (var row = 7; row >= 0; row--)
+        {
+            var emptyCount = 0;
+
+            for (var col = 0; col < 8; col++)
+            {
+                var piece = board.GetPiece(row * 8 + col);
+                if (piece == 0)
+                {
+                    emptyCount++;
+                }
+                else
+                {
+                    if (emptyCount > 0)
+                    {
+                        fen.Append(emptyCount);
+                        emptyCount = 0;
+                    }
+
+                    fen.Append(piece.PieceToChar());
+                }
+            }
+
+            if (emptyCount > 0) fen.Append(emptyCount);
+
+            if (row > 0) fen.Append('/');
+        }
+
+        fen.Append(' ');
+        fen.Append(whiteToMove ? "w" : "b");
+        fen.Append(' ');
+
+        if (board.CastleRights == CastleRights.None)
+        {
+            fen.Append('-');
+        }
+        else
+        {
+            if (board.CastleRights.HasFlag(CastleRights.WhiteKingSide)) fen.Append("K");
+
+            if (board.CastleRights.HasFlag(CastleRights.WhiteQueenSide)) fen.Append('Q');
+
+            if (board.CastleRights.HasFlag(CastleRights.BlackKingSide)) fen.Append('k');
+
+            if (board.CastleRights.HasFlag(CastleRights.BlackQueenSide)) fen.Append('q');
+        }
+        fen.Append(' ');
+
+        var canEp = board.EnPassantFile < 8 && ((whiteToMove && board.CanWhitePawnEnpassant()) || (!whiteToMove && board.CanBlackPawnEnpassant()));
+
+        if (!canEp)
+            fen.Append("-");
+        else
+        {
+            var enpassantTargetSquare = whiteToMove ? 5 * 8 + board.EnPassantFile : 2 * 8 + board.EnPassantFile;
+            fen.Append((enpassantTargetSquare).ConvertPosition());
+        }
+        fen.Append(' ');
+        fen.Append(hmc);
+        fen.Append(' ');
+        fen.Append(moves);
+
+        return fen.ToString();
+    }
+
     private static char PieceToChar(this byte piece)
     {
         return piece switch

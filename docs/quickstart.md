@@ -6,7 +6,7 @@
   api_url: https://api.grandchesstree.com/
   api_key: <your_api_key>
   workers: <number_of_threads>
-  desired_depth: 12
+  worker_id: 0
 ```
 - That's it! 
 
@@ -78,3 +78,27 @@ completed 159k subtasks (29% cache hits), submitted 322 tasks (0 pending)
 [effective stats] 129.6t nodes at 13.3bnps
                                                                                                                                      
 ```
+
+## Running the toolkit
+
+```
+git clone https://github.com/Timmoth/grandchesstree
+cd GrandChessTree.Toolkit
+# x86
+dotnet run -c Release --no-launch-profile 
+# ARM
+dotnet run -c Release --no-launch-profile --property:DefineConstants="ARM"
+
+----The Grand Chess Tree Toolkit----
+perft_test:5:512:10
+
+```
+The command to run a perft_test locally is:
+
+```
+perft_test:depth:hash_mb:iterations
+```
+
+- depth: the depth to search, anything over 7 is going to take a while...
+- hash_mb: the size in MB to allocate to the hash table
+- iterations: the number of test iterations to run

@@ -14,8 +14,17 @@ namespace GrandChessTree.Api.D10Search
         [Column("hash")]
         public ulong Hash { get; set; }
 
+        [Column("fen")]
+        public string Fen { get; set; } = "";
+
+        [Column("root_position_id")]
+        public int RootPositionId { get; set; } = 0;
+
         [Column("depth")]
         public int Depth { get; set; } = 0;
+
+        [Column("launch_depth")]
+        public int LaunchDepth { get; set; } = 0;
 
         [Column("available_at")]
         public long AvailableAt { get; set; } = 0;

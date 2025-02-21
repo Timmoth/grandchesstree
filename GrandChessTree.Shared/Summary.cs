@@ -40,6 +40,24 @@ public struct Summary
         DoubleDiscoverdCheckmate += summary.DoubleDiscoverdCheckmate;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void Accumulate(ref Summary summary, ulong occurrences)
+    {
+        Nodes += summary.Nodes * occurrences;
+        Captures += summary.Captures * occurrences;
+        Enpassant += summary.Enpassant * occurrences;
+        Castles += summary.Castles * occurrences;
+        Promotions += summary.Promotions * occurrences;
+        DirectCheck += summary.DirectCheck * occurrences;
+        SingleDiscoveredCheck += summary.SingleDiscoveredCheck * occurrences;
+        DirectDiscoveredCheck += summary.DirectDiscoveredCheck * occurrences;
+        DoubleDiscoveredCheck += summary.DoubleDiscoveredCheck * occurrences;
+        DirectCheckmate += summary.DirectCheckmate * occurrences;
+        SingleDiscoveredCheckmate += summary.SingleDiscoveredCheckmate * occurrences;
+        DirectDiscoverdCheckmate += summary.DirectDiscoverdCheckmate * occurrences;
+        DoubleDiscoverdCheckmate += summary.DoubleDiscoverdCheckmate * occurrences;
+    }
+
     public void Print()
     {
         Console.WriteLine($"nodes:{Nodes}");

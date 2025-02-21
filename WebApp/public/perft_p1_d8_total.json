@@ -1,0 +1,29 @@
+{
+  "nodes": 15493944087984,
+  "captures": 3093158581098,
+  "enpassants": 6455134672,
+  "castles": 269372817251,
+  "promotions": 154095409292,
+  "direct_checks": 256442503361,
+  "single_discovered_check": 3185990802,
+  "direct_discovered_check": 270025831,
+  "double_discovered_check": 0,
+  "total_checks": 259898519994,
+  "direct_checkmate": 1612539510,
+  "single_discovered_checkmate": 834183,
+  "direct_discoverd_checkmate": 1743937,
+  "double_discoverd_checkmate": 0,
+  "total_mates": 1615117630,
+  "total_tasks": 59198,
+  "started_at": 1739402024,
+  "finished_at": 1739404592,
+  "contributors": [
+    {
+      "id": 1,
+      "name": "Timmoth",
+      "nodes": 9251668967404,
+      "tasks": 59198,
+      "compute_time": 182934
+    }
+  ]
+}

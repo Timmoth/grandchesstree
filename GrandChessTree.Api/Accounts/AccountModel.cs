@@ -4,10 +4,11 @@ using System.Text.Json.Serialization;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Shared.Api;
+using GrandChessTree.Api.Perft.PerftNodes;
 
 namespace GrandChessTree.Api.Accounts
 {
-    
+
     [Table("accounts")]
     public class AccountModel
     {
@@ -31,6 +32,7 @@ namespace GrandChessTree.Api.Accounts
 
         [JsonIgnore] public ICollection<ApiKeyModel> ApiKeys { get; set; } = default!;
         [JsonIgnore] public ICollection<PerftTask> SearchTasks { get; set; } = default!;
+        [JsonIgnore] public ICollection<PerftNodesTask> PerftNodesTasks { get; set; } = default!;
 
         #region Versioning
 

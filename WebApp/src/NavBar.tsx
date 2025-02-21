@@ -26,22 +26,7 @@ const NavBar: React.FC = () => {
                   home
                 </Link>
               </li>
-              <li>
-                <Link
-                  className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                  to="/perft/11"
-                >
-                  perft(11)
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="font-medium rounded-lg text-sm py-2 text-center flex items-center"
-                  to="/perft/12"
-                >
-                  perft(12)
-                </Link>
-              </li>
+            
               <li>
                 <a
                   type="button"

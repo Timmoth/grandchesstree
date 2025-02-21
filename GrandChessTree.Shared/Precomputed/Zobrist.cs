@@ -3,30 +3,30 @@ using GrandChessTree.Shared.Helpers;
 
 namespace GrandChessTree.Shared.Precomputed;
 
+// Using polyglot format values: http://hgm.nubati.net/book_format.html
 public static unsafe class Zobrist
 {
     private const int PieceCount = 13;
 
-    public const ulong WhiteKingSideCastlingRights = 0x31D71DCE64B2C310;
-    public const ulong WhiteQueenSideCastlingRights = 0xF165B587DF898190;
-    public const ulong BlackKingSideCastlingRights = 0xA57E6339DD2CF3A0;
-    public const ulong BlackQueenSideCastlingRights = 0x1EF6E6DBB1961EC9;
-    public const ulong SideToMove = 0xF8D626AAAF278509;
+    public static ulong WhiteKingSideCastlingRights;
+    public static ulong WhiteQueenSideCastlingRights;
+    public static ulong BlackKingSideCastlingRights;
+    public static ulong BlackQueenSideCastlingRights;
+    public static ulong SideToMove;
+
     public static readonly ulong* PiecesArray;
-
     public static readonly ulong* EnPassantFile;
-
     public static ulong* DeltaCastleRights;
     public static ulong* DeltaEnpassant;
 
-    public static readonly ulong BlackKingSideCastleZobrist;
-    public static readonly ulong BlackQueenSideCastleZobrist;
-    public static readonly ulong WhiteKingSideCastleZobrist;
-    public static readonly ulong WhiteQueenSideCastleZobrist;
+    public static readonly ulong[] ZobristKeys_xorshift;
+    public static readonly ulong[] ZobristKeys_polyglot;
+
     static Zobrist()
     {
-        var zobrisKeys = stackalloc ulong[781]
-       {
+       ZobristKeys_xorshift = Rng.GenerateBatch(781);
+       ZobristKeys_polyglot =
+       [
             0x9D39247E33776D41, 0x2AF7398005AAA5C7, 0x44DB015024623547, 0x9C15F73E62A76AE2,
             0x75834465489C0C89, 0x3290AC3A203001BF, 0x0FBBAD1F61042279, 0xE83A908FF2FB60CA,
             0x0D7E765D58755C10, 0x1A083822CEAFE02D, 0x9605D5F0E25EC3B0, 0xD021FF5CD13A2ED5,
@@ -223,32 +223,52 @@ public static unsafe class Zobrist
             0x70CC73D90BC26E24, 0xE21A6B35DF0C3AD7, 0x003A93D8B2806962, 0x1C99DED33CB890A1,
             0xCF3145DE0ADD4289, 0xD0E4427A5514FB72, 0x77C621CC9FB3A483, 0x67A34DAC4356550B,
             0xF8D626AAAF278509
-        };
+        ];
 
         PiecesArray = MemoryHelpers.Allocate<ulong>(PieceCount * 64);
-        EnPassantFile = MemoryHelpers.Allocate<ulong>(8);
+        EnPassantFile = MemoryHelpers.Allocate<ulong>(9);
+        DeltaEnpassant = MemoryHelpers.Allocate<ulong>(9 * 9);
+        DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);
+        RefreshZobrist(ZobristKeys_polyglot);
+    }
+    public static bool UsingPolyGlot { get; private set; }= true;
+    public static void UsePolyGlot()
+    {
+        RefreshZobrist(ZobristKeys_polyglot);
+        UsingPolyGlot = true;
+    }
+
+    public static void UseXorShift()
+    {
+        RefreshZobrist(ZobristKeys_xorshift);
+        UsingPolyGlot = false;
+    }
+
+    private static void RefreshZobrist(ulong[] zobrist)
+    {
+        WhiteKingSideCastlingRights = zobrist[768];
+        WhiteQueenSideCastlingRights = zobrist[769];
+        BlackKingSideCastlingRights = zobrist[770];
+        BlackQueenSideCastlingRights = zobrist[771];
+        SideToMove = zobrist[780];
 
         for (var squareIndex = 0; squareIndex < 64; squareIndex++)
         {
             for (var i = 1; i < PieceCount; i++)
             {
-                PiecesArray[i * 64 + squareIndex] = zobrisKeys[(i - 1) * 64 + squareIndex];
+                PiecesArray[i * 64 + squareIndex] = zobrist[(i - 1) * 64 + squareIndex];
             }
         }
 
-        EnPassantFile[0] = zobrisKeys[772];
-        EnPassantFile[1] = zobrisKeys[773];
-        EnPassantFile[2] = zobrisKeys[774];
-        EnPassantFile[3] = zobrisKeys[775];
-        EnPassantFile[4] = zobrisKeys[776];
-        EnPassantFile[5] = zobrisKeys[777];
-        EnPassantFile[6] = zobrisKeys[778];
-        EnPassantFile[7] = zobrisKeys[779];
-
-
-        DeltaCastleRights = MemoryHelpers.Allocate<ulong>(16);
-        DeltaEnpassant = MemoryHelpers.Allocate<ulong>(9 * 9);
-
+        EnPassantFile[0] = zobrist[772];
+        EnPassantFile[1] = zobrist[773];
+        EnPassantFile[2] = zobrist[774];
+        EnPassantFile[3] = zobrist[775];
+        EnPassantFile[4] = zobrist[776];
+        EnPassantFile[5] = zobrist[777];
+        EnPassantFile[6] = zobrist[778];
+        EnPassantFile[7] = zobrist[779];
+        EnPassantFile[8] = 0;
 
         // Assign individual castling rights
         DeltaCastleRights[(int)CastleRights.WhiteKingSide] = Zobrist.WhiteKingSideCastlingRights;
@@ -317,28 +337,6 @@ public static unsafe class Zobrist
                 DeltaEnpassant[i * 9 + j] = hash;
             }
         }
-
-        BlackKingSideCastleZobrist = *(Zobrist.PiecesArray + BlackKingZobristOffset + 60) ^
-                                  *(Zobrist.PiecesArray + BlackKingZobristOffset + 62) ^
-                                    *(Zobrist.PiecesArray + BlackRookZobristOffset + 63) ^
-                                      *(Zobrist.PiecesArray + BlackRookZobristOffset + 61);
-
-
-        BlackQueenSideCastleZobrist = *(Zobrist.PiecesArray + BlackKingZobristOffset + 60) ^
-                  *(Zobrist.PiecesArray + BlackKingZobristOffset + 58)
-                    ^ *(Zobrist.PiecesArray + BlackRookZobristOffset + 56) ^
-                        *(Zobrist.PiecesArray + BlackRookZobristOffset + 59);
-
-        WhiteKingSideCastleZobrist = *(Zobrist.PiecesArray + WhiteKingZobristOffset + 4) ^
-                      *(Zobrist.PiecesArray + WhiteKingZobristOffset + 6) ^
-                        *(Zobrist.PiecesArray + WhiteRookZobristOffset + 7) ^
-                          *(Zobrist.PiecesArray + WhiteRookZobristOffset + 5);
-
-
-        WhiteQueenSideCastleZobrist = *(Zobrist.PiecesArray + WhiteKingZobristOffset + 4) ^
-                      *(Zobrist.PiecesArray + WhiteKingZobristOffset + 2) ^
-                        *(Zobrist.PiecesArray + WhiteRookZobristOffset + 0) ^
-                          *(Zobrist.PiecesArray + WhiteRookZobristOffset + 3);
     }
 
     public static unsafe ulong CalculateZobristKey(ref Board board, bool whiteToMove)
@@ -379,11 +377,70 @@ public static unsafe class Zobrist
 
         if (board.EnPassantFile < 8)
         {
-            zobristKey ^= EnPassantFile[board.EnPassantFile];
+            if (whiteToMove)
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
+            else
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
         }
 
         return zobristKey;
     }
+
+    public static unsafe ulong CalculateZobristKeyWithoutInvalidEp(ref Board board, bool whiteToMove)
+    {
+        ulong zobristKey = 0;
+
+        for (byte squareIndex = 0; squareIndex < 64; squareIndex++)
+        {
+            var piece = board.GetPiece(squareIndex);
+
+            if (piece != 0)
+            {
+                zobristKey ^= PiecesArray[piece * 64 + squareIndex];
+            }
+        }
+
+        if (whiteToMove)
+        {
+            zobristKey ^= SideToMove;
+        }
+
+        if ((board.CastleRights & CastleRights.WhiteKingSide) != 0)
+        {
+            zobristKey ^= WhiteKingSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.WhiteQueenSide) != 0)
+        {
+            zobristKey ^= WhiteQueenSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.BlackKingSide) != 0)
+        {
+            zobristKey ^= BlackKingSideCastlingRights;
+        }
+        if ((board.CastleRights & CastleRights.BlackQueenSide) != 0)
+        {
+            zobristKey ^= BlackQueenSideCastlingRights;
+        }
+
+        if (board.EnPassantFile < 8)
+        {
+            if (whiteToMove && board.CanWhitePawnEnpassant())
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
+            else if(!whiteToMove && board.CanBlackPawnEnpassant())
+            {
+                zobristKey ^= EnPassantFile[board.EnPassantFile];
+            }
+        }
+
+        return zobristKey;
+    }
+
 
 
     public const int BlackPawnZobristOffset = 1 * 64;

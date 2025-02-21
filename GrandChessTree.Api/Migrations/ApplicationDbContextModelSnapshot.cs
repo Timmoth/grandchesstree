@@ -123,9 +123,18 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("depth");
 
+                    b.Property<string>("Fen")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fen");
+
                     b.Property<decimal>("Hash")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("hash");
+
+                    b.Property<int>("LaunchDepth")
+                        .HasColumnType("integer")
+                        .HasColumnName("launch_depth");
 
                     b.Property<int>("Occurrences")
                         .HasColumnType("integer")
@@ -135,9 +144,15 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("pass_count");
 
+                    b.Property<int>("RootPositionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("root_position_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Depth");
+
+                    b.HasIndex("RootPositionId");
 
                     b.HasIndex("Hash", "Depth")
                         .IsUnique();
@@ -219,6 +234,10 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("promotions");
 
+                    b.Property<int>("RootPositionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("root_position_id");
+
                     b.Property<decimal>("SingleDiscoveredCheck")
                         .HasColumnType("numeric(20,0)")
                         .HasColumnName("single_discovered_check");
@@ -231,15 +250,114 @@ namespace GrandChessTree.Api.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("started_at");
 
+                    b.Property<int>("WorkerId")
+                        .HasColumnType("integer")
+                        .HasColumnName("worker_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
 
                     b.HasIndex("Depth");
 
+                    b.HasIndex("FinishedAt");
+
                     b.HasIndex("PerftItemId");
 
+                    b.HasIndex("RootPositionId");
+
                     b.ToTable("perft_tasks");
+                });
+
+            modelBuilder.Entity("GrandChessTree.Api.Perft.PerftNodes.PerftNodesTask", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("AccountId")
+                        .HasColumnType("bigint")
+                        .HasColumnName("account_id")
+                        .HasAnnotation("Relational:JsonPropertyName", "account_id");
+
+                    b.Property<long>("AvailableAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
+                        .HasColumnName("available_at");
+
+                    b.Property<int>("Depth")
+                        .HasColumnType("integer")
+                        .HasColumnName("depth");
+
+                    b.Property<string>("Fen")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("fen");
+
+                    b.Property<long>("FinishedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
+                        .HasColumnName("finished_at");
+
+                    b.Property<decimal>("Hash")
+                        .HasColumnType("numeric(20,0)")
+                        .HasColumnName("hash");
+
+                    b.Property<int>("LaunchDepth")
+                        .HasColumnType("integer")
+                        .HasColumnName("launch_depth");
+
+                    b.Property<decimal>("Nodes")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("numeric(20,0)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("nodes");
+
+                    b.Property<float>("Nps")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("real")
+                        .HasDefaultValue(0f)
+                        .HasColumnName("nps");
+
+                    b.Property<int>("Occurrences")
+                        .HasColumnType("integer")
+                        .HasColumnName("occurrences");
+
+                    b.Property<int>("RootPositionId")
+                        .HasColumnType("integer")
+                        .HasColumnName("root_position_id");
+
+                    b.Property<long>("StartedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L)
+                        .HasColumnName("started_at");
+
+                    b.Property<int>("WorkerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("worker_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.HasIndex("Depth");
+
+                    b.HasIndex("FinishedAt");
+
+                    b.HasIndex("RootPositionId");
+
+                    b.HasIndex("Hash", "Depth")
+                        .IsUnique();
+
+                    b.ToTable("perft_nodes_tasks");
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.ApiKeys.ApiKeyModel", b =>
@@ -271,9 +389,21 @@ namespace GrandChessTree.Api.Migrations
                     b.Navigation("PerftItem");
                 });
 
+            modelBuilder.Entity("GrandChessTree.Api.Perft.PerftNodes.PerftNodesTask", b =>
+                {
+                    b.HasOne("GrandChessTree.Api.Accounts.AccountModel", "Account")
+                        .WithMany("PerftNodesTasks")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("GrandChessTree.Api.Accounts.AccountModel", b =>
                 {
                     b.Navigation("ApiKeys");
+
+                    b.Navigation("PerftNodesTasks");
 
                     b.Navigation("SearchTasks");
                 });

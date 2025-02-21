@@ -256,7 +256,7 @@ public partial struct Board
                 toSquare = Constants.WhiteEnpassantOffset + EnPassantFile;
 
                 newBoard.WhitePawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByBlack(newBoard.WhiteKingPos))
+                if (!newBoard.IsAttackedByBlackSliders(newBoard.WhiteKingPos))
                 {
                     if (depth == 1) summary.AddEnpassant();
                     newBoard.AccumulateBlackMoves( ref summary, depth - 1, toSquare);
