@@ -115,7 +115,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                     COALESCE(SUM(nodes * occurrences) / 900.0, 0) AS nps  -- Nodes per second
                 FROM public.perft_nodes_tasks
                 WHERE finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
-                                        AND EXTRACT(EPOCH FROM NOW() - 900)::bigint
+                                        AND (EXTRACT(EPOCH FROM NOW()) - 900)::bigint
                   AND root_position_id = {0} 
                   AND depth = {1}
                 GROUP BY ((finished_at / 900)::bigint)

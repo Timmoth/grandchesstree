@@ -121,7 +121,7 @@ namespace GrandChessTree.Api.Controllers
                     LEFT JOIN public.perft_items i 
                         ON t.perft_item_id = i.id
                     WHERE t.finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
-                                            AND EXTRACT(EPOCH FROM NOW() - 900)::bigint
+                                            AND (EXTRACT(EPOCH FROM NOW()) - 900)::bigint
                       AND t.root_position_id = {0}
                       AND t.depth = {1}
                     GROUP BY ((t.finished_at / 900)::bigint)
