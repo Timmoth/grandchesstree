@@ -7,6 +7,7 @@ namespace GrandChessTree.Client.Stats
 {
     public class WorkProcessor
     {
+        private readonly Config _config;
         private readonly int _workerCount;
         private readonly SearchItemOrchistrator _searchItemOrchistrator;
 
@@ -22,6 +23,7 @@ namespace GrandChessTree.Client.Stats
 
         public WorkProcessor(SearchItemOrchistrator searchItemOrchistrator, Config config)
         {
+            _config = config;
             _searchItemOrchistrator = searchItemOrchistrator;
             _workerCount = config.Workers;
             _workerReports = new WorkerReport[_workerCount];
@@ -187,7 +189,7 @@ namespace GrandChessTree.Client.Stats
 
         private unsafe void ThreadWork(int index)
         {
-            Perft.AllocateHashTable();
+            Perft.AllocateHashTable(_config.MbHash);
             Summary summary = default;
 
             var workerReport = _workerReports[index];

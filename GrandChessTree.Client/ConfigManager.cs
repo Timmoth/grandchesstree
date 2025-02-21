@@ -18,6 +18,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("task_type")]
         public int TaskType { get; set; } = 0;
+
+        [JsonPropertyName("mb_hash")]
+        public int MbHash { get; set; } = 1024;
     }
 
     public static class ConfigManager
@@ -52,6 +55,12 @@ namespace GrandChessTree.Client
             if (config.WorkerId < 0)
             {
                 Console.WriteLine("Error: Worker Id must be >= 0.");
+                isValid = false;
+            }
+
+            if (config.MbHash < 256)
+            {
+                Console.WriteLine("Error: Mb Hash must be >= 256.");
                 isValid = false;
             }
 
@@ -98,6 +107,12 @@ namespace GrandChessTree.Client
             if (int.TryParse(Console.ReadLine(), out int taskType))
             {
                 config.TaskType = taskType;
+            }
+
+            Console.Write("Enter the amount of ram to allocate to each worker (in MB)e: ");
+            if (int.TryParse(Console.ReadLine(), out int mbHash))
+            {
+                config.MbHash = mbHash;
             }
 
             WorkerPersistence.SaveConfig(config);
