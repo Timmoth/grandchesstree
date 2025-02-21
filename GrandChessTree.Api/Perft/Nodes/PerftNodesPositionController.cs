@@ -4,6 +4,7 @@ using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GrandChessTree.Api.Perft.PerftNodes
@@ -43,7 +44,8 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         }
 
         [HttpGet("stats")]
-        [ResponseCache(Duration = 10, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 30, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetStats(int positionId, int depth, CancellationToken cancellationToken)
         {
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
@@ -102,38 +104,32 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
         [HttpGet("stats/charts/performance")]
         [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetPerformanceChart(int positionId, int depth, CancellationToken cancellationToken)
         {
             var result = await _dbContext.Database
-                .SqlQueryRaw<PerformanceChartEntry>(@"
-                    WITH time_buckets AS (
-                        SELECT generate_series(
-                            EXTRACT(EPOCH FROM NOW()) - 43200,  -- 3 hours ago
-                            EXTRACT(EPOCH FROM NOW()),         -- Now
-                            900                                -- 15-minute intervals (900 seconds)
-                        ) AS bucket_start
-                    )
-                    SELECT 
-                        tb.bucket_start AS timestamp,
-                        COUNT(t.id) / 15.0 AS tpm,  -- Tasks per minute (since interval is 15 min)
-                        COALESCE(SUM(t.nodes * t.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
-                    FROM time_buckets tb
-                    LEFT JOIN public.perft_nodes_tasks t 
-                        ON t.finished_at >= tb.bucket_start 
-                        AND t.finished_at < tb.bucket_start + 900  -- 15-minute window
-                    WHERE t.root_position_id = {0} AND t.depth = {1}
-                    GROUP BY tb.bucket_start
-                    ORDER BY timestamp
-                    ", positionId, depth)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-
+               .SqlQueryRaw<PerformanceChartEntry>(@"
+                SELECT 
+                    ((finished_at / 900)::bigint * 900) AS timestamp,  -- Align timestamps to 15-min buckets
+                    COUNT(id) / 15.0 AS tpm,  -- Tasks per minute
+                    COALESCE(SUM(nodes * occurrences) / 900.0, 0) AS nps  -- Nodes per second
+                FROM public.perft_nodes_tasks
+                WHERE finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
+                                        AND EXTRACT(EPOCH FROM NOW() - 900)::bigint
+                  AND root_position_id = {0} 
+                  AND depth = {1}
+                GROUP BY ((finished_at / 900)::bigint)
+                ORDER BY timestamp
+            ", positionId, depth)
+               .AsNoTracking()
+               .ToListAsync(cancellationToken);
 
             return Ok(result);
         }
 
         [HttpGet("leaderboard")]
         [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetLeaderboard(int positionId, int depth, CancellationToken cancellationToken)
         {
             var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
@@ -161,6 +157,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
         [HttpGet("results")]
         [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetResults(int positionId, int depth,
            CancellationToken cancellationToken)
         {

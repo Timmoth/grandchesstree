@@ -64,7 +64,11 @@ namespace GrandChessTree.Api
                     c.ColorBehavior = LoggerColorBehavior.Enabled;
                 });
             });
-            
+
+            services.AddOutputCache(options =>
+            {
+  
+            });
             services.AddCors(options =>
             {
                 options.AddDefaultPolicy(b =>

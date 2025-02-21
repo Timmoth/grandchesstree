@@ -6,6 +6,7 @@ using GrandChessTree.Api.Database;
 using GrandChessTree.Api.Perft.PerftNodes;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 
 namespace GrandChessTree.Api.Controllers
@@ -200,7 +201,8 @@ namespace GrandChessTree.Api.Controllers
 
 
         [HttpGet("stats")]
-        [ResponseCache(Duration = 10)]
+        [ResponseCache(Duration = 30)]
+        [OutputCache(Duration = 30)]
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
@@ -250,31 +252,25 @@ namespace GrandChessTree.Api.Controllers
 
         [HttpGet("stats/charts/performance")]
         [ResponseCache(Duration = 300)]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetPerformanceChart(CancellationToken cancellationToken)
         {
             var result = await _dbContext.Database
-                .SqlQueryRaw<PerformanceChartEntry>(@"
-                    WITH time_buckets AS (
-                        SELECT generate_series(
-                            EXTRACT(EPOCH FROM NOW()) - 43200,  -- 3 hours ago
-                            EXTRACT(EPOCH FROM NOW()) - 900,    -- Slightly in the past
-                            900                                -- 15-minute intervals (900 seconds)
-                        ) AS bucket_start
-                    )
-                    SELECT 
-                        tb.bucket_start AS timestamp,
-                        COALESCE(SUM(t.nodes * i.occurrences) / (15 * 60), 0) AS nps  -- Nodes per second
-                    FROM time_buckets tb
-                    LEFT JOIN public.perft_tasks t 
-                        ON t.finished_at >= tb.bucket_start 
-                        AND t.finished_at < tb.bucket_start + 900  -- 15-minute window
-                    LEFT JOIN public.perft_items i 
-                        ON t.perft_item_id = i.id
-                    GROUP BY tb.bucket_start
-                    ORDER BY timestamp
+                       .SqlQueryRaw<PerformanceChartEntry>(@"
+                        SELECT 
+                            ((t.finished_at / 900)::bigint * 900) AS timestamp,  -- Align timestamps to 15-min buckets
+                            COALESCE(SUM(t.nodes * i.occurrences) / 900.0, 0) AS nps  -- Nodes per second
+                        FROM public.perft_tasks t
+                        LEFT JOIN public.perft_items i 
+                            ON t.perft_item_id = i.id
+                        WHERE t.finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
+                                                AND (EXTRACT(EPOCH FROM NOW()) - 900)::bigint
+                        GROUP BY ((t.finished_at / 900)::bigint)
+                        ORDER BY timestamp
                     ")
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
+                       .AsNoTracking()
+                       .ToListAsync(cancellationToken);
+
 
 
             return Ok(result);
@@ -282,6 +278,7 @@ namespace GrandChessTree.Api.Controllers
 
         [HttpGet("leaderboard")]
         [ResponseCache(Duration = 120)]
+        [OutputCache(Duration = 120)]
         public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
         {
             var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
