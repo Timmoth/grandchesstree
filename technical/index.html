@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Timmoth" /><link rel="canonical" href="https://grandchesstree.com/technical/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Technical overview - The Grand Chess Tree</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Technical overview";
+        var mkdocs_page_input_path = "technical.md";
+        var mkdocs_page_url = "/technical/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> The Grand Chess Tree
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick start</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../results/">Results</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Technical overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#tables">Tables:</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../linuxInstall/">Linux Installation</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../memoryConf/">Memory Configuration</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">The Grand Chess Tree</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Technical overview</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Timmoth/grandchesstree/edit/main/docs/technical.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p>There are four main components to the system:</p>
+<h2 id="database">Database</h2>
+<p>We're using PostgreSQL to store tasks, results, accounts, and API keys, with EF Core as the ORM.</p>
+<h3 id="tables">Tables:</h3>
+<ul>
+<li><strong>accounts</strong> – Stores basic information on each user, including ID, name, email, and role.</li>
+<li><strong>api_keys</strong> – Stores authentication information (the API key itself is stored in a hashed format).</li>
+<li><strong>perft_items</strong> – At each depth, we split the search into 101,240 tasks. This is done by first searching to depth 4 (197,281 positions), then storing a task for each of the 101,240 unique positions reachable, along with the number of times it occurs. The results from each worker task are multiplied by the occurrences.</li>
+<li><strong>perft_tasks</strong> – Each row corresponds to the results for a specific task at a certain depth, computed by a single user. To verify correctness, multiple entries will exist for each task/depth, contributed by different users using different hashes.</li>
+</ul>
+<h2 id="api">API</h2>
+<p>We use .NET for the API, which is containerized using Docker and deployed on a VPS.</p>
+<p>The API is fairly straightforward and allows the client to:</p>
+<ul>
+<li>Query for a batch of tasks (using row-level locking to ensure concurrent requests don't receive the same tasks).</li>
+<li>Submit a batch of results to be stored in the database.</li>
+<li>Query for real-time and total analytics.</li>
+<li>Query for compiled results.</li>
+</ul>
+<p><strong>Note:</strong> The analytics/results endpoints use response caching, so they may take a few minutes to update.</p>
+<h2 id="web-app">Web App</h2>
+<p>We have a React/TypeScript frontend using Tailwind CSS, which provides an interface for viewing the current progress of the active search, including the leaderboard.</p>
+<h2 id="client">Client</h2>
+<p>The client is a .NET console app, published using GitHub Actions as a self-contained binary for each platform (Windows, Linux, macOS).</p>
+<p>The client performs the actual computations. After gathering initial configuration details (stored in <code>./gct_config.json</code>), it periodically requests batches of work from the server to ensure tasks are always available.</p>
+<p>Each task requested from the server corresponds to a unique position occurring at depth 4. The client then performs a quick search to depth 2 (cumulatively reaching depth 6) to split the task into subtasks. These subtasks are deduplicated to avoid redundant searches. The client-side subtask result table is also checked to see if a position has already been processed within the session. The remaining positions are then searched to the final depth (<code>desired_depth - 6</code>).</p>
+<p>Each worker is assigned its own task and searches serially to the final depth, periodically updating the console with progress. Once a worker completes a task, it queues the result for submission to the API before requesting the next task.</p>
+<p><strong>Note:</strong> Choose a number of workers that is less than the number of threads available on your system since they will all run in parallel.</p>
+<h2 id="search-features">Search Features</h2>
+<p>The search algorithm employs several common techniques used in chess engines:</p>
+<ul>
+<li><strong>Zobrist hashing</strong> for efficient position lookups.</li>
+<li><strong>PEXT lookup</strong> for sliding piece moves.</li>
+<li><strong>Legal move generation</strong> using various masks for pinned pieces, attackers, etc.</li>
+<li><strong>Copy-make technique</strong> for certain non-legal move generations (e.g., en passant moves).</li>
+<li><strong>Condensed board state</strong> using bitboards for pawns, knights, bishops, rooks, queens, white occupancy, and black occupancy.</li>
+<li><strong>Pointer-based memory allocation</strong> and <strong>aligned memory</strong> to minimize bounds checking in .NET.</li>
+<li><strong>Stack-allocated structs</strong> to reduce garbage collection overhead.</li>
+</ul>
+<p>There is some inherent inconsistency when using a hash table due to potential collisions. To mitigate this, a unique method is used where the full hash is XORed with the occupancy when checking for collisions. If 12 bits from the original hash are used to look up the relevant entry, these bits are then XORed again with the occupancy so that they perform a different comparison when verifying a match.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../results/" class="btn btn-neutral float-left" title="Results"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../linuxInstall/" class="btn btn-neutral float-right" title="Linux Installation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Timmoth/grandchesstree" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../results/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../linuxInstall/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
