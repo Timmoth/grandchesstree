@@ -56,8 +56,7 @@ while ((input = Console.ReadLine()) != "quit"){
         }
 
         await PositionSeeder.SeedPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
-    }
-    if (command == "seed_startpos_nodes")
+    }else if (command == "seed_startpos_nodes")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
                    || !int.TryParse(commandParts[2], out var launchDepth))
@@ -66,7 +65,29 @@ while ((input = Console.ReadLine()) != "quit"){
             return;
         }
 
-        await PositionSeeder.SeedNodesPosition(Constants.StartPosFen, depth, 4, Constants.StartPosRootPositionId);
+        await PositionSeeder.SeedNodesPosition(Constants.StartPosFen, depth, launchDepth, Constants.StartPosRootPositionId);
+    }
+    else if (command == "seed_kiwipete_nodes")
+    {
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+                   || !int.TryParse(commandParts[2], out var launchDepth))
+        {
+            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
+            return;
+        }
+
+        await PositionSeeder.SeedNodesPosition(Constants.KiwiPeteFen, depth, launchDepth, Constants.KiwiPeteRootPositionId);
+    }
+    else if (command == "seed_sje_nodes")
+    {
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
+                   || !int.TryParse(commandParts[2], out var launchDepth))
+        {
+            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
+            return;
+        }
+
+        await PositionSeeder.SeedNodesPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
     }
     else if (command == "seed_account")
     {
@@ -86,7 +107,7 @@ while ((input = Console.ReadLine()) != "quit"){
         }
         await PerftClearer.FullReset(depth, rootPositionId);
     }
-    else if (command == "perft_release_incomplete")
+    else if (command == "perft_release_incomplete_stats")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth) 
             || !int.TryParse(commandParts[2], out var rootPositionId))
@@ -94,7 +115,16 @@ while ((input = Console.ReadLine()) != "quit"){
             Console.WriteLine("Invalid command format is 'perft_release_incomplete:<depth>:<root_position_id>'.");
             return;
         }
-        await PerftClearer.ReleaseIncompleteTasks(depth, rootPositionId);
+        await PerftClearer.ReleaseIncompleteStatsTasks(depth, rootPositionId);
+    }    else if (command == "perft_release_incomplete_nodes")
+    {
+        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth) 
+            || !int.TryParse(commandParts[2], out var rootPositionId))
+        {
+            Console.WriteLine("Invalid command format is 'perft_release_incomplete:<depth>:<root_position_id>'.");
+            return;
+        }
+        await PerftClearer.ReleaseIncompleteNodesTasks(depth, rootPositionId);
     }
     else if (command == "perft")
     {

@@ -57,7 +57,7 @@ namespace GrandChessTree.Toolkit
             }
         }
 
-        public static async Task ReleaseIncompleteTasks(int depth, int rootPositionId)
+        public static async Task ReleaseIncompleteStatsTasks(int depth, int rootPositionId)
         {
             Console.WriteLine("Enter PostgreSQL connection string...");
             var connectionString = Console.ReadLine();
@@ -121,6 +121,52 @@ namespace GrandChessTree.Toolkit
             }
         }
 
+        public static async Task ReleaseIncompleteNodesTasks(int depth, int rootPositionId)
+        {
+            Console.WriteLine("Enter PostgreSQL connection string...");
+            var connectionString = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
+            }
+
+            await using var conn = new NpgsqlConnection(connectionString);
+            await conn.OpenAsync();
+
+            await using var transaction = await conn.BeginTransactionAsync();
+
+            try
+            {
+                // Get the current time minus 1 minute
+                var timeLimit = DateTimeOffset.UtcNow.AddMinutes(-1).ToUnixTimeSeconds();
+    
+                // Reset the associated perft_items for the deleted tasks
+                const string updateQuery = @"
+                    UPDATE perft_nodes_tasks 
+                    SET available_at = 0
+                    WHERE depth = @depth and root_position_id = @position;";
+
+                await using (var updateCmd = new NpgsqlCommand(updateQuery, conn, transaction))
+                {
+                    updateCmd.Parameters.AddWithValue("depth", depth);
+                    updateCmd.Parameters.AddWithValue("timeLimit", timeLimit);
+                    updateCmd.Parameters.AddWithValue("position", rootPositionId);
+
+                    int updatedRows = await updateCmd.ExecuteNonQueryAsync();
+                    Console.WriteLine($"Reset {updatedRows} perft_items.");
+                }
+
+                // Commit the transaction
+                await transaction.CommitAsync();
+                Console.WriteLine("Update and cleanup completed successfully.");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error during update and cleanup: {ex.Message}");
+            }
+        }
 
 
     }
