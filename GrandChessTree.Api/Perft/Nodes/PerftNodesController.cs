@@ -56,7 +56,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             // Update search items to prevent immediate reprocessing
             foreach (var item in searchItems)
             {
-                item.AvailableAt = currentTimestamp + 3600; // Becomes available again in 1 hour
+                item.AvailableAt = currentTimestamp + 14400; // Becomes available again in 1 hour
                 item.StartedAt = currentTimestamp;
                 item.AccountId = apiKey.AccountId;
             }
@@ -233,20 +233,29 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetPerformanceChart(CancellationToken cancellationToken)
         {
+            // Get the current Unix time in seconds.
+            var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+
+            // Calculate the last complete 15-minute interval.
+            // (now / 900) * 900 gives the start of the current 15-minute block,
+            // so subtract 900 seconds to get the last complete block.
+            var end = ((now / 900) * 900) - 900;
+
+            // Set start as 12 hours (43200 seconds) before the end of the last full interval.
+            var start = end - 43200;
+
             var result = await _dbContext.Database
                 .SqlQueryRaw<PerformanceChartEntry>(@"
-                    SELECT 
-                      ((finished_at / 900)::bigint * 900) AS timestamp,
-                      SUM(nodes * occurrences)::numeric / 900.0 AS nps
-                    FROM public.perft_nodes_tasks
-                    WHERE finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
-                                             AND (EXTRACT(EPOCH FROM NOW()) - 900)::bigint
-                    GROUP BY ((finished_at / 900)::bigint)
-                    ORDER BY timestamp
-                    ")
+            SELECT 
+              ((finished_at / 900)::bigint * 900) AS timestamp,
+              SUM(nodes * occurrences)::numeric / 900.0 AS nps
+            FROM public.perft_nodes_tasks
+            WHERE finished_at BETWEEN {0} AND {1}
+            GROUP BY ((finished_at / 900)::bigint)
+            ORDER BY timestamp
+            ", start, end)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
-
 
             return Ok(result);
         }

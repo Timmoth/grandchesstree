@@ -107,6 +107,17 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetPerformanceChart(int positionId, int depth, CancellationToken cancellationToken)
         {
+            // Get the current Unix time in seconds.
+            var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+
+            // Calculate the last complete 15-minute interval.
+            // (now / 900) * 900 gives the start of the current 15-minute block,
+            // so subtract 900 seconds to get the last complete block.
+            var end = ((now / 900) * 900) - 900;
+
+            // Set start as 12 hours (43200 seconds) before the end of the last full interval.
+            var start = end - 43200;
+
             var result = await _dbContext.Database
                .SqlQueryRaw<PerformanceChartEntry>(@"
                 SELECT 
@@ -114,13 +125,12 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                     COUNT(id) / 15.0 AS tpm,  -- Tasks per minute
                     COALESCE(SUM(nodes * occurrences) / 900.0, 0) AS nps  -- Nodes per second
                 FROM public.perft_nodes_tasks
-                WHERE finished_at BETWEEN (EXTRACT(EPOCH FROM NOW()) - 43200)::bigint
-                                        AND (EXTRACT(EPOCH FROM NOW()) - 900)::bigint
-                  AND root_position_id = {0} 
-                  AND depth = {1}
+                WHERE finished_at BETWEEN {0} AND {1}
+                  AND root_position_id = {2} 
+                  AND depth = {3}
                 GROUP BY ((finished_at / 900)::bigint)
                 ORDER BY timestamp
-            ", positionId, depth)
+            ", start, end, positionId, depth)
                .AsNoTracking()
                .ToListAsync(cancellationToken);
 
