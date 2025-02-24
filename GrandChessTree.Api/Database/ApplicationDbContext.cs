@@ -49,8 +49,16 @@ namespace GrandChessTree.Api.Database
 
             modelBuilder.Entity<AccountModel>()
                 .Property(e => e.Role)
-                .HasConversion<string>();     
-            
+                .HasConversion<string>();
+
+            modelBuilder.Entity<AccountModel>()
+                .HasIndex(e => e.Name)
+                .IsUnique();
+
+            modelBuilder.Entity<AccountModel>()
+                .HasIndex(e => e.Email)
+                .IsUnique();
+
             modelBuilder.Entity<ApiKeyModel>()
                 .Property(e => e.Role)
                 .HasConversion<string>();
@@ -58,6 +66,9 @@ namespace GrandChessTree.Api.Database
             modelBuilder.Entity<PerftItem>()
                 .HasIndex(p => new { p.Hash, p.Depth })
                 .IsUnique();
+
+            modelBuilder.Entity<PerftItem>()
+                .HasIndex(p => p.RootPositionId);
 
             #region Perft Nodes Task
             modelBuilder.Entity<PerftNodesTask>()
