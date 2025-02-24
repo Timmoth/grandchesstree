@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 // Type definition for the leaderboard response
 interface PerftLeaderboardResponse {
+  account_id:string;
   account_name: string;
   total_nodes: number;
   compute_time_seconds: number;
@@ -10,6 +12,7 @@ interface PerftLeaderboardResponse {
 
 // New type for merged leaderboard entries
 interface PerftLeaderBoardEntry {
+  account_id:string;
   account_name: string;
   perft_stats_task_nodes: number;
   perft_nodes_task_nodes: number;
@@ -49,6 +52,7 @@ const GlobalLeaderboard: React.FC = () => {
         ) => {
           if (!mergedData[entry.account_name]) {
             mergedData[entry.account_name] = {
+              account_id: entry.account_id,
               account_name: entry.account_name,
               perft_stats_task_nodes: 0,
               perft_nodes_task_nodes: 0,
@@ -110,6 +114,7 @@ const GlobalLeaderboard: React.FC = () => {
           <thead className="text-xs text-gray-700 uppercase">
             <tr>
               <th className="px-6 py-3">Name</th>
+              <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Compute Time</th>
               <th className="px-6 py-3">Perft Stats Nodes</th>
               <th className="px-6 py-3">NPS Stats Task</th>
@@ -122,7 +127,15 @@ const GlobalLeaderboard: React.FC = () => {
               .sort((a, b) => b.perft_stats_task_nodes + b.perft_nodes_task_nodes - (a.perft_stats_task_nodes + a.perft_nodes_task_nodes))
               .map((item, index) => (
                 <tr key={index} className="bg-white border-b border-gray-200">
-                  <td className="px-6 py-4">{item.account_name}</td>
+                  <td className="px-6 py-4">
+                  <Link
+                    className="font-medium text-blue-600 hover:underline"
+                    to={`/accounts/${item.account_id}`}
+                  >
+                     {item.account_name}
+                  </Link>
+                 </td>
+                  <td className="px-6 py-4 ">{((item.nps_stats_task + item.nps_nodes_task) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
                   <td className="px-6 py-4">{formatTime(item.compute_time_seconds)}</td>
                   <td className="px-6 py-4">{formatBigNumber(item.perft_stats_task_nodes)}</td>
                   <td className="px-6 py-4">{formatBigNumber(item.nps_stats_task)}</td>

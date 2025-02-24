@@ -159,6 +159,7 @@ namespace GrandChessTree.Api.Controllers
                 .GroupBy(i => i.AccountId)
                 .Select(g => new PerftLeaderboardResponse()
                 {
+                    AccountId = g.Key.HasValue ? g.Key.Value : 0,
                     AccountName = g.Select(i => i.Account != null ? i.Account.Name : "Unknown").FirstOrDefault(),
                     TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
                     TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks

@@ -166,6 +166,9 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
         public class PerftLeaderboardResponse
         {
+            [JsonPropertyName("account_id")]
+            public long AccountId { get; set; }
+
             [JsonPropertyName("account_name")]
             public string AccountName { get; set; } = "Unknown";
 
@@ -229,31 +232,52 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
 
         [HttpGet("stats/charts/performance")]
-        [ResponseCache(Duration = 300)]
-        [OutputCache(Duration = 300)]
-        public async Task<IActionResult> GetPerformanceChart(CancellationToken cancellationToken)
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "account_id" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "account_id" })]
+        public async Task<IActionResult> GetPerformanceChart([FromQuery(Name = "account_id")] int? accountId,
+            CancellationToken cancellationToken)
         {
             // Get the current Unix time in seconds.
             var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
             // Calculate the last complete 15-minute interval.
-            // (now / 900) * 900 gives the start of the current 15-minute block,
-            // so subtract 900 seconds to get the last complete block.
             var end = ((now / 900) * 900) - 900;
 
             // Set start as 12 hours (43200 seconds) before the end of the last full interval.
             var start = end - 43200;
 
-            var result = await _dbContext.Database
-                .SqlQueryRaw<PerformanceChartEntry>(@"
+            // Build the SQL query with optional filtering by account_id.
+            string sql;
+            object[] sqlParams;
+
+            if (accountId.HasValue)
+            {
+                sql = @"
+            SELECT 
+              ((finished_at / 900)::bigint * 900) AS timestamp,
+              SUM(nodes * occurrences)::numeric / 900.0 AS nps
+            FROM public.perft_nodes_tasks
+            WHERE finished_at BETWEEN {0} AND {1}
+              AND account_id = {2}
+            GROUP BY ((finished_at / 900)::bigint)
+            ORDER BY timestamp";
+                sqlParams = new object[] { start, end, accountId.Value };
+            }
+            else
+            {
+                sql = @"
             SELECT 
               ((finished_at / 900)::bigint * 900) AS timestamp,
               SUM(nodes * occurrences)::numeric / 900.0 AS nps
             FROM public.perft_nodes_tasks
             WHERE finished_at BETWEEN {0} AND {1}
             GROUP BY ((finished_at / 900)::bigint)
-            ORDER BY timestamp
-            ", start, end)
+            ORDER BY timestamp";
+                sqlParams = new object[] { start, end };
+            }
+
+            var result = await _dbContext.Database
+                .SqlQueryRaw<PerformanceChartEntry>(sql, sqlParams)
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
@@ -274,6 +298,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                 .GroupBy(i => i.AccountId)
                 .Select(g => new PerftLeaderboardResponse()
                 {
+                    AccountId = g.Key.HasValue ? g.Key.Value : 0,
                     AccountName = g.Select(i => i.Account != null ? i.Account.Name : "Unknown").FirstOrDefault(),
                     TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
                     TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks

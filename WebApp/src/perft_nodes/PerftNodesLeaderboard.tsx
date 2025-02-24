@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 // Type definition for the leaderboard response
 interface PerftLeaderboardResponse {
+  account_id: number;
   account_name: string;
   total_nodes: number;
   compute_time_seconds: number;
@@ -92,6 +94,9 @@ const PerftNodesLeaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  
                   Name
                 </th>
                 <th scope="col" className="px-6 py-3">
+                  Status
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Total Nodes
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -113,7 +118,15 @@ const PerftNodesLeaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  
                 .sort((a, b) => b.total_nodes - a.total_nodes) // Sort by total_nodes in descending order
                 .map((item, index) => (
                   <tr key={index} className="bg-white border-b border-gray-200">
-                    <td className="px-6 py-4">{item.account_name}</td>
+                    <td className="px-6 py-4">
+                  <Link
+                    className="font-medium text-blue-600 hover:underline"
+                    to={`/accounts/${item.account_id}`}
+                  >
+                     {item.account_name}
+                  </Link>
+                 </td>
+                  <td className="px-6 py-4 ">{((item.nps) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
                     <td className="px-6 py-4">
                       {formatBigNumber(item.total_nodes)}
                     </td>

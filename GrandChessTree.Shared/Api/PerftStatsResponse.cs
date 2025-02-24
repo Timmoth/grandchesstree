@@ -24,6 +24,9 @@ public class PerftStatsResponse
 
 public class PerftLeaderboardResponse
 {
+    [JsonPropertyName("account_id")]
+    public long AccountId { get; set; }
+
     [JsonPropertyName("account_name")]
     public string AccountName { get; set; } = "Unknown";
 

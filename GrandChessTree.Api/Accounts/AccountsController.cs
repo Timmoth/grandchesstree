@@ -7,11 +7,45 @@ using SendGrid.Helpers.Mail;
 using SendGrid;
 using GrandChessTree.Api.Accounts;
 using GrandChessTree.Shared.ApiKeys;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace GrandChessTree.Api.Controllers
 {
+    public class AccountResponse
+    {
+        [JsonPropertyName("id")]
+        public required long Id { get; set; }
+
+        [JsonPropertyName("name")]
+        public required string Name { get; set; }
+
+        [JsonPropertyName("task_0")]
+        public required AccountTaskStatsResponse Task0 { get; set; }
+
+        [JsonPropertyName("task_1")]
+        public required AccountTaskStatsResponse Task1 { get; set; }
+    }
+
+
+    public class AccountTaskStatsResponse
+    {
+        [JsonPropertyName("total_nodes")]
+        public long TotalNodes { get; set; }
+
+        [JsonPropertyName("compute_time_seconds")]
+        public long TotalTimeSeconds { get; set; }
+
+        [JsonPropertyName("completed_tasks")]
+        public long CompletedTasks { get; set; }
+
+        [JsonPropertyName("tpm")]
+        public float TasksPerMinute { get; set; }
+
+        [JsonPropertyName("nps")]
+        public float NodesPerSecond { get; set; }
+    }
+
     [ApiController]
     [Route("api/v1/accounts")]
     public class AccountsController : ControllerBase
@@ -76,6 +110,62 @@ namespace GrandChessTree.Api.Controllers
             var msg = MailHelper.CreateSingleEmail(from_email, to_email, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg).ConfigureAwait(false);
             return Ok();
+        }
+
+
+        [HttpGet("{id}")]
+        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "id" })]
+        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "id" })]
+        public async Task<IActionResult> GetAccount(long id, CancellationToken cancellationToken)
+        {
+            var account = await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+            if (account == null)
+            {
+                return NotFound();
+            }
+            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+
+            var task0Stats = await _dbContext.PerftTasks
+                         .AsNoTracking()
+                         .Include(i => i.Account)
+                         .Where(i => i.FinishedAt > 0 && i.AccountId == id)
+                         .GroupBy(i => i.AccountId)
+                         .Select(g => new AccountTaskStatsResponse()
+                         {
+                             TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
+                             TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
+                             CompletedTasks = g.Count(),  // Number of tasks completed
+                             TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
+                             NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f
+                         })
+                         .FirstOrDefaultAsync(cancellationToken);
+
+            var task1Stats = await _dbContext.PerftNodesTask
+                .AsNoTracking()
+                .Include(i => i.Account)
+                .Where(i => i.FinishedAt > 0)
+                .Where(i => i.FinishedAt > 0 && i.AccountId == id)
+                .GroupBy(i => i.AccountId)
+                .Select(g => new AccountTaskStatsResponse()
+                {
+                    TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
+                    TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
+                    CompletedTasks = g.Count(),  // Number of tasks completed
+                    TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
+                    NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f
+                })
+                .FirstOrDefaultAsync(cancellationToken);
+
+
+            var response = new AccountResponse()
+            {
+                Id = account.Id,
+                Name = account.Name,
+                Task0 = task0Stats ?? new AccountTaskStatsResponse(),
+                Task1 = task1Stats ?? new AccountTaskStatsResponse(),
+            };
+
+            return Ok(response);
         }
     }
 }
