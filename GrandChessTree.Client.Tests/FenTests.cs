@@ -1,3 +1,4 @@
+using System.Text;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Helpers;
 
@@ -33,6 +34,82 @@ namespace GrandChessTree.Client.Tests
 
             // Then
             Assert.Equal(expected, board.EnPassantFile);
+        }
+
+        public static IEnumerable<object[]> GetChrisWhittingtonPerftDotEpdTestCases()
+        {
+            var filePath = "perft.epd";
+            if (!File.Exists(filePath))
+                yield break;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var parts = line.Split(';').Select(p => p.Trim()).ToArray();
+                if (parts.Length < 2) continue;
+
+                string fen = parts[0];
+                yield return new object[] { fen };
+            }
+        }
+
+        public static IEnumerable<object[]> GetChrisWhittingtonPerftMarcelDotEpdTestCases()
+        {
+            var filePath = "perft-marcel.epd";
+            if (!File.Exists(filePath))
+                yield break;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var parts = line.Split(';').Select(p => p.Trim()).ToArray();
+                if (parts.Length < 2) continue;
+
+                string fen = parts[0];
+
+                yield return new object[] { fen };
+            }
+        }
+
+        public static IEnumerable<object[]> GetAndyGrantPerftEtherealDotEpdTestCases()
+        {
+            var filePath = "perft-ethereal.epd";
+            if (!File.Exists(filePath))
+                yield break;
+
+            foreach (var line in File.ReadLines(filePath))
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+
+                var parts = line.Split(';').Select(p => p.Trim()).ToArray();
+                if (parts.Length < 2) continue;
+
+                string fen = parts[0];
+                yield return new object[] { fen };
+            }
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GetChrisWhittingtonPerftDotEpdTestCases))]
+        [MemberData(nameof(GetChrisWhittingtonPerftMarcelDotEpdTestCases))]
+        [MemberData(nameof(GetAndyGrantPerftEtherealDotEpdTestCases))]
+        public void CompressionTests(string fen)
+        {
+            // Given
+            var (board, wtm) = FenParser.Parse(fen);
+
+            // When
+            var compressedBase64 = board.Serialize(wtm);
+            var (decodedBoard, decodedWtm) = BoardStateSerialization.Deserialize(compressedBase64);
+
+            // Then
+            var originalFen = board.ToFen(wtm, 0, 1);
+            var codecFen = decodedBoard.ToFen(decodedWtm, 0, 1);
+
+            Assert.Equal(originalFen, codecFen);
         }
     }
 }
