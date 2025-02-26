@@ -10,15 +10,11 @@ namespace GrandChessTree.Client.Stats
         private readonly Config _config;
         private readonly int _workerCount;
         private readonly SearchItemOrchistrator _searchItemOrchistrator;
-
         private bool KeepRequestingWork { get; set; } = true;
-        private bool ShouldSaveAndQuit { get; set; } = false;
 
         public WorkerReport[] _workerReports;
 
         public bool HasRunningWorkers => _workerReports.Any(w => w.IsRunning);
-
-        private readonly ConcurrentQueue<PerftTask> _tasksToSave = new();
         private bool OutputFullDetails = false;
 
         public WorkProcessor(SearchItemOrchistrator searchItemOrchistrator, Config config)
@@ -56,19 +52,13 @@ namespace GrandChessTree.Client.Stats
             {
                 thread.Join();
             }
-
-            if (ShouldSaveAndQuit)
-            {
-                var tasksToSave = _tasksToSave.ToArray();
-                WorkerPersistence.SavePartiallyCompletedTasks(tasksToSave);
-                Console.WriteLine($"{tasksToSave.Length} subtasks were saved.");
-            }
         }
 
         private void OutputStatsPeriodically()
         {
             ulong prevTotalNodes = 0;
             long prevTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             while (HasRunningWorkers)
             {
@@ -102,6 +92,8 @@ namespace GrandChessTree.Client.Stats
                     prevTotalNodes = currentTotalNodes;
                     prevTime = currentTime;
 
+                    var tpm = (float)sumCompletedTasks / ((currentTime - startTime) / 60000f);
+
                     Console.CursorVisible = false;
                     Console.SetCursorPosition(0, 0);
                     for (int y = 0; y < Console.WindowHeight; y++)
@@ -126,13 +118,9 @@ namespace GrandChessTree.Client.Stats
                     var cachHitPercent = sumCompletedSubTasks == 0 ? 0 : (float)subtaskCacheHits / sumCompletedSubTasks * 100;
 
                     Console.WriteLine($"completed {sumCompletedSubTasks.FormatBigNumber()} subtasks ({cachHitPercent.RoundToSignificantFigures(2)}% cache hits), submitted {_searchItemOrchistrator.Submitted} tasks ({_searchItemOrchistrator.PendingSubmission} pending)");
-                    Console.WriteLine($"[computed stats] {totalComputedNodes.FormatBigNumber()} nodes at {sumNps.FormatBigNumber()}nps");
-
-                    if (ShouldSaveAndQuit)
-                    {
-                        Console.WriteLine($"Will save progress and exit when the current sub tasks are completed. {_workerReports.Count(w => !w.IsRunning)}/{_workerCount} ready");
-                    }
-                    else if (!KeepRequestingWork)
+                    Console.WriteLine($"[computed stats] {totalComputedNodes.FormatBigNumber()} nodes at {sumNps.FormatBigNumber()}nps {tpm.RoundToSignificantFigures(2)}tpm");
+                    
+                    if (!KeepRequestingWork)
                     {
                         Console.WriteLine($"Will exit automatically when the current tasks are completed. {_workerReports.Count(w => !w.IsRunning)}/{_workerCount} ready");
                     }
@@ -209,7 +197,7 @@ namespace GrandChessTree.Client.Stats
                 workerReport.BeginTask(currentTask);
 
                 long taskStartTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-                while (!ShouldSaveAndQuit && currentTask.RemainingSubTasks.Any())
+                while (currentTask.RemainingSubTasks.Any())
                 {
                     try
                     {
@@ -222,19 +210,18 @@ namespace GrandChessTree.Client.Stats
                             continue;
                         }
 
-                        var fen = subTask.Fen;
                         var subTaskOccurrences = subTask.Occurrences;
 
                         // Report that work on this subtask has begun
                         workerReport.BeginSubTask(currentTask);
 
-                        // Parse the subtask fen
-                        var (board, whiteToMove) = FenParser.Parse(fen);
-
+                        var board = subTask.Fen;
+                        var whiteToMove = subTask.Wtm;
+                        var hash = subTask.Hash;
                         // Clear the summary struct
                         summary = default;
 
-                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(fen, currentTask.SubTaskDepth, out summary))
+                        if (_searchItemOrchistrator.SubTaskHashTable.TryGetValue(hash, currentTask.SubTaskDepth, out summary))
                         {
                             // This position has been found in the global cache! Use the cached summary
                             // And report the subtask as completed
@@ -249,7 +236,7 @@ namespace GrandChessTree.Client.Stats
                             Perft.PerftRoot(ref board, ref summary, currentTask.SubTaskDepth, whiteToMove);
 
                             // Store the hash for this position in the global cache
-                            _searchItemOrchistrator.CacheCompletedSubtask(fen, currentTask.SubTaskDepth, summary);
+                            _searchItemOrchistrator.CacheCompletedSubtask(hash, currentTask.SubTaskDepth, summary);
 
                             // Report the subtask as completed
                             workerReport.EndSubTaskWorkCompleted(currentTask, summary.Nodes, subTaskOccurrences);
@@ -289,11 +276,6 @@ namespace GrandChessTree.Client.Stats
                         Console.Error.WriteLine($"Error: failed to parse submission...");
                     }
                 }
-                else if (ShouldSaveAndQuit)
-                {
-                    // Task was interrupted, mark it for persistence
-                    _tasksToSave.Enqueue(currentTask);
-                }
             }
 
             // Worker has exited
@@ -304,12 +286,6 @@ namespace GrandChessTree.Client.Stats
         internal void FinishTasksAndQuit()
         {
             KeepRequestingWork = false;
-        }
-
-        internal void SaveAndQuit()
-        {
-            KeepRequestingWork = false;
-            ShouldSaveAndQuit = true;
         }
 
         internal void ToggleOutputDetails()

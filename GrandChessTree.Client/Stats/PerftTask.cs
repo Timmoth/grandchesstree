@@ -10,8 +10,14 @@ namespace GrandChessTree.Client.Stats
         [JsonPropertyName("occurrences")]
         public required int Occurrences { get; set; }
 
-        [JsonPropertyName("fen")]
-        public required string Fen { get; set; } = "";
+        [JsonPropertyName("board")]
+        public required Board Fen { get; set; }
+
+        [JsonPropertyName("wtm")]
+        public required bool Wtm { get; set; }
+
+        [JsonPropertyName("hash")]
+        public required ulong Hash { get; set; }
     }
 
     public class CompletedSubTask
@@ -29,9 +35,6 @@ namespace GrandChessTree.Client.Stats
 
         [JsonPropertyName("fen")]
         public required string Fen { get; set; } = "";
-
-        [JsonPropertyName("perft_item_hash")]
-        public required ulong PerftItemHash { get; set; }
 
         [JsonPropertyName("sub_task_depth")]
         public required int SubTaskDepth { get; set; }
@@ -89,30 +92,29 @@ namespace GrandChessTree.Client.Stats
             return true;
         }
 
-        public PerftTaskResult? ToSubmission()
+        public PerftFullTaskResult? ToSubmission()
         {
             if (!IsCompleted())
             {
                 return null;
             }
 
-            var request = new PerftTaskResult()
+            var request = new PerftFullTaskResult()
             {
-                PerftTaskId = PerftTaskId,
-                PerftItemHash = PerftItemHash,
+                TaskId = PerftTaskId,
                 Nodes = 0,
                 Captures = 0,
-                Enpassant = 0,
+                Enpassants = 0,
                 Castles = 0,
                 Promotions = 0,
-                DirectCheck = 0,
-                SingleDiscoveredCheck = 0,
-                DirectDiscoveredCheck = 0,
-                DoubleDiscoveredCheck = 0,
-                DirectCheckmate = 0,
-                SingleDiscoveredCheckmate = 0,
-                DirectDiscoverdCheckmate = 0,
-                DoubleDiscoverdCheckmate = 0,
+                DirectChecks = 0,
+                SingleDiscoveredChecks = 0,
+                DirectDiscoveredChecks = 0,
+                DoubleDiscoveredChecks = 0,
+                DirectMates = 0,
+                SingleDiscoveredMates = 0,
+                DirectDiscoverdMates = 0,
+                DoubleDiscoverdMates = 0,
             };
 
             foreach (var result in CompletedSubTaskResults)
@@ -126,17 +128,17 @@ namespace GrandChessTree.Client.Stats
 
                 request.Nodes += results[0] * (ulong)occurrences;
                 request.Captures += results[1] * (ulong)occurrences;
-                request.Enpassant += results[2] * (ulong)occurrences;
+                request.Enpassants += results[2] * (ulong)occurrences;
                 request.Castles += results[3] * (ulong)occurrences;
                 request.Promotions += results[4] * (ulong)occurrences;
-                request.DirectCheck += results[5] * (ulong)occurrences;
-                request.SingleDiscoveredCheck += results[6] * (ulong)occurrences;
-                request.DirectDiscoveredCheck += results[7] * (ulong)occurrences;
-                request.DoubleDiscoveredCheck += results[8] * (ulong)occurrences;
-                request.DirectCheckmate += results[9] * (ulong)occurrences;
-                request.SingleDiscoveredCheckmate += results[10] * (ulong)occurrences;
-                request.DirectDiscoverdCheckmate += results[11] * (ulong)occurrences;
-                request.DoubleDiscoverdCheckmate += results[12] * (ulong)occurrences;
+                request.DirectChecks += results[5] * (ulong)occurrences;
+                request.SingleDiscoveredChecks += results[6] * (ulong)occurrences;
+                request.DirectDiscoveredChecks += results[7] * (ulong)occurrences;
+                request.DoubleDiscoveredChecks += results[8] * (ulong)occurrences;
+                request.DirectMates += results[9] * (ulong)occurrences;
+                request.SingleDiscoveredMates += results[10] * (ulong)occurrences;
+                request.DirectDiscoverdMates += results[11] * (ulong)occurrences;
+                request.DoubleDiscoverdMates += results[12] * (ulong)occurrences;
             }
 
             return request;

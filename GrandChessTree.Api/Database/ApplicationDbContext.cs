@@ -13,6 +13,7 @@ namespace GrandChessTree.Api.Database
         {
         }
 
+        public DbSet<PerftTaskV3> PerftTasksV3 { get; set; }
         public DbSet<PerftItem> PerftItems { get; set; }
         public DbSet<PerftTask> PerftTasks { get; set; }
         public DbSet<PerftNodesTask> PerftNodesTask { get; set; }
@@ -123,6 +124,119 @@ namespace GrandChessTree.Api.Database
 
             modelBuilder.Entity<PerftNodesTask>()
                 .HasIndex(p => p.FinishedAt);
+
+            #region V3
+
+            modelBuilder.Entity<PerftTaskV3>()
+               .HasIndex(p => new { p.RootPositionId, p.Depth, p.Board })
+               .IsUnique();
+
+            modelBuilder.Entity<PerftTaskV3>()
+                .HasIndex(p => p.RootPositionId);
+
+            modelBuilder.Entity<PerftTaskV3>()
+                .HasIndex(p => p.Depth);
+
+            modelBuilder.Entity<PerftTaskV3>()
+                 .Property(e => e.FullTaskStartedAt)
+                 .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+                 .Property(e => e.FullTaskFinishedAt)
+                 .HasDefaultValue(0);
+
+
+            modelBuilder.Entity<PerftTaskV3>()
+                 .Property(e => e.FullTaskWorkerId)
+                 .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FullTaskStartedAt)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FullTaskFinishedAt)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FullTaskNps)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FullTaskNodes)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.Captures)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.Enpassants)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.Castles)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.Promotions)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DirectChecks)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.SingleDiscoveredChecks)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DirectDiscoveredChecks)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DoubleDiscoveredChecks)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DirectMates)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.SingleDiscoveredMates)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DirectDiscoveredMates)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.DoubleDiscoveredMates)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FastTaskWorkerId)
+     .HasDefaultValue(0);
+
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FastTaskStartedAt)
+     .HasDefaultValue(0);
+
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FastTaskFinishedAt)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FastTaskNps)
+     .HasDefaultValue(0);
+
+            modelBuilder.Entity<PerftTaskV3>()
+     .Property(e => e.FastTaskNodes)
+     .HasDefaultValue(0);
+
+            #endregion
 
         }
 

@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Api;
 using GrandChessTree.Shared.Helpers;
+using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Client.Stats
 {
@@ -12,22 +13,11 @@ namespace GrandChessTree.Client.Stats
         private readonly Config _config;
         private readonly PerftNodesTaskQueue _perftTaskQueue = new PerftNodesTaskQueue();
 
-        private readonly Dictionary<long, PerftNodesTask> _restoredTasks = new Dictionary<long, PerftNodesTask>();
-
         public NodesTaskOrchistrator(Config config)
         {
             _config = config;
             _httpClient = new HttpClient() { BaseAddress = new Uri(config.ApiUrl) };
             _httpClient.DefaultRequestHeaders.Add("X-API-Key", config.ApiKey);
-
-            var restoredTasks = WorkerPersistence.LoadPartiallyCompletedNodesTasks();
-            if (restoredTasks != null)
-            {
-                foreach (var task in restoredTasks)
-                {
-                    _restoredTasks.Add(task.TaskId, task);
-                }
-            }
         }
 
         public int Submitted { get; set; }
@@ -44,61 +34,61 @@ namespace GrandChessTree.Client.Stats
                 return null;
             }
 
-            if (_restoredTasks.TryGetValue(task.TaskId, out var restoredTask))
-            {
-                return restoredTask;
-            }
-
-            var (initialBoard, initialWhiteToMove) = FenParser.Parse(task.Fen);
+            var (board, wtm) = BoardStateSerialization.Deserialize(task.Board);
+            var fen = board.ToFen(wtm, 0, 1);
 
             PerftNodesTask searchTask;
-            if (task.LaunchDepth <= 5)
+            if (task.LaunchDepth < 5)
             {
                 searchTask = new PerftNodesTask()
                 {
                     TaskId = task.TaskId,
                     SubTaskDepth = task.LaunchDepth,
                     SubTaskCount = 1,
-                    Fen = task.Fen,
+                    Fen = fen,
                     CachedSubTaskCount = 0,
                     RemainingSubTasks = new List<RemainingNodesSubTask>()
                 };
 
                 searchTask.RemainingSubTasks.Add(new RemainingNodesSubTask()
                 {
-                    Fen = task.Fen,
+                    Fen = board,
+                    Wtm = wtm,
+                    Hash = Zobrist.CalculateZobristKeyWithoutInvalidEp(ref board, wtm),
                     Occurrences = 1
                 });
             }
             else
             {
-
                 var subTaskSplitDepth = 2;
-                var subTasks = LeafNodeGenerator.GenerateLeafNodes(ref initialBoard, subTaskSplitDepth, initialWhiteToMove);
+                var subTasks = SubTaskGenerator.GenerateLeafNodes(ref board, subTaskSplitDepth, wtm);
+                var leafNodeWhiteToMove = subTaskSplitDepth % 2 == 0 ? wtm : !wtm;
 
                 searchTask = new PerftNodesTask()
                 {
                     TaskId = task.TaskId,
                     SubTaskDepth = task.LaunchDepth - subTaskSplitDepth,
                     SubTaskCount = subTasks.Count,
-                    Fen = task.Fen,
+                    Fen = fen,
                     CachedSubTaskCount = 0,
                     RemainingSubTasks = new List<RemainingNodesSubTask>()
                 };
 
-                foreach (var (hash, fen, occurences) in subTasks)
+                foreach (var kvp in subTasks)
                 {
-                    if (SubTaskHashTable.TryGetValue(fen, searchTask.SubTaskDepth, out var summary))
+                    if (SubTaskHashTable.TryGetValue(kvp.Key, searchTask.SubTaskDepth, out var summary))
                     {
-                        searchTask.CompleteSubTask(summary, occurences);
+                        searchTask.CompleteSubTask(summary, kvp.Value.occurrences);
                         searchTask.CachedSubTaskCount++;
                     }
                     else
                     {
                         searchTask.RemainingSubTasks.Add(new RemainingNodesSubTask()
                         {
-                            Fen = fen,
-                            Occurrences = occurences
+                            Fen = kvp.Value.board,
+                            Wtm = leafNodeWhiteToMove,
+                            Hash = kvp.Key,
+                            Occurrences = kvp.Value.occurrences
                         });
                     }
                 }
@@ -108,8 +98,8 @@ namespace GrandChessTree.Client.Stats
             return searchTask;
         }
 
-        private readonly ConcurrentQueue<PerftNodesTaskResult> _completedResults = new();
-        public void Submit(PerftNodesTaskResult results)
+        private readonly ConcurrentQueue<PerftFastTaskResult> _completedResults = new();
+        public void Submit(PerftFastTaskResult results)
         {
             _completedResults.Enqueue(results);
         }
@@ -136,13 +126,13 @@ namespace GrandChessTree.Client.Stats
             return true;
         }
 
-        private static async Task<PerftNodesTaskResponse[]?> RequestNewTask(HttpClient httpClient)
+        private static async Task<PerftFastTaskResponse[]?> RequestNewTask(HttpClient httpClient)
         {
-            var response = await httpClient.PostAsync($"api/v2/perft/nodes/tasks", null);
+            var response = await httpClient.PostAsync($"api/v3/perft/fast/tasks", null);
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync(jsonTypeInfo: SourceGenerationContext.Default.PerftNodesTaskResponseArray);
+                return await response.Content.ReadFromJsonAsync(jsonTypeInfo: SourceGenerationContext.Default.PerftFastTaskResponseArray);
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -157,7 +147,7 @@ namespace GrandChessTree.Client.Stats
 
         public async Task<bool> SubmitToApi()
         {
-            var results = new List<PerftNodesTaskResult>();
+            var results = new List<PerftFastTaskResult>();
             while (_completedResults.Any() && results.Count < 200)
             {
                 if (_completedResults.TryDequeue(out var res))
@@ -173,7 +163,7 @@ namespace GrandChessTree.Client.Stats
                 return false;
             }
 
-            var response = await _httpClient.PostAsJsonAsync($"api/v2/perft/nodes/results", new PerftNodesTaskResultBatch { WorkerId = _config.WorkerId, Results = [.. results] }, SourceGenerationContext.Default.PerftNodesTaskResultBatch);
+            var response = await _httpClient.PostAsJsonAsync($"api/v3/perft/fast/results", new PerftFastTaskResultBatch { WorkerId = _config.WorkerId, Results = [.. results] }, SourceGenerationContext.Default.PerftFastTaskResultBatch);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -185,18 +175,14 @@ namespace GrandChessTree.Client.Stats
                 await Task.Delay(TimeSpan.FromSeconds(10));
                 return false;
             }
-            else
-            {
-                _perftTaskQueue.MarkCompleted(results.Select(r => r.PerftNodesTaskId));
-            }
 
             await Task.Delay(100);
             return true;
         }
 
-        public void CacheCompletedSubtask(string fen, int depth, ulong nodes)
+        public void CacheCompletedSubtask(ulong hash, int depth, ulong nodes)
         {
-            SubTaskHashTable.Add(fen, depth, nodes);
+            SubTaskHashTable.Add(hash, depth, nodes);
         }
     }
 }

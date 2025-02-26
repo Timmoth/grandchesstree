@@ -15,4 +15,15 @@ namespace GrandChessTree.Client;
 [JsonSerializable(typeof(PerftNodesTaskResponse[]))]
 [JsonSerializable(typeof(PerftNodesTaskResultBatch))]
 
+
+[JsonSerializable(typeof(PerftFullTaskResult))]
+[JsonSerializable(typeof(PerftFullTaskResult[]))]
+[JsonSerializable(typeof(PerftFullTaskResponse[]))]
+[JsonSerializable(typeof(PerftFullTaskResultBatch))]
+
+[JsonSerializable(typeof(PerftFastTaskResult))]
+[JsonSerializable(typeof(PerftFastTaskResult[]))]
+[JsonSerializable(typeof(PerftFastTaskResponse[]))]
+[JsonSerializable(typeof(PerftFastTaskResultBatch))]
+
 internal sealed partial class SourceGenerationContext : JsonSerializerContext;

@@ -34,9 +34,9 @@ namespace GrandChessTree.Toolkit
             }
 
             const string insertQuery = @"
-            INSERT INTO accounts (name, email, role) 
-            VALUES (@name, @email, @role) 
-            RETURNING id;";
+                INSERT INTO accounts (name, email, role) 
+                VALUES (@name, @email, @role) 
+                RETURNING id;";
 
             await using var cmd = new NpgsqlCommand(insertQuery, conn);
             cmd.Parameters.AddWithValue("name", name);

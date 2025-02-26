@@ -1,26 +1,25 @@
 ﻿using System.Collections.Concurrent;
-using GrandChessTree.Shared;
 
 namespace GrandChessTree.Client.Stats
 {
     public class NodesSubTaskHashTable
     {
-        private readonly ConcurrentDictionary<(string fen, int depth), ulong> _dict;
-        private readonly ConcurrentQueue<(string fen, int depth)> _keysQueue;
+        private readonly ConcurrentDictionary<(ulong hash, int depth), ulong> _dict;
+        private readonly ConcurrentQueue<(ulong hash, int depth)> _keysQueue;
         private readonly int _capacity;
 
         public NodesSubTaskHashTable(int capacity)
         {
             _capacity = capacity;
-            _dict = new ConcurrentDictionary<(string fen, int depth), ulong>();
-            _keysQueue = new ConcurrentQueue<(string fen, int depth)>();
+            _dict = new ConcurrentDictionary<(ulong hash, int depth), ulong>();
+            _keysQueue = new ConcurrentQueue<(ulong hash, int depth)>();
         }
 
-        public void Add(string fen, int depth, ulong value)
+        public void Add(ulong hash, int depth, ulong value)
         {
-            if (_dict.TryAdd((fen, depth), value))
+            if (_dict.TryAdd((hash, depth), value))
             {
-                _keysQueue.Enqueue((fen, depth));
+                _keysQueue.Enqueue((hash, depth));
 
                 if (_dict.Count > _capacity && _keysQueue.TryDequeue(out var oldestKey))
                 {
@@ -29,6 +28,6 @@ namespace GrandChessTree.Client.Stats
             }
         }
 
-        public bool TryGetValue(string fen, int depth, out ulong value) => _dict.TryGetValue((fen, depth), out value);
+        public bool TryGetValue(ulong hash, int depth, out ulong value) => _dict.TryGetValue((hash, depth), out value);
     }
 }

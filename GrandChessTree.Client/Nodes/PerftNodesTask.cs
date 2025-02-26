@@ -4,14 +4,19 @@ using GrandChessTree.Shared.Api;
 
 namespace GrandChessTree.Client
 {
-
     public class RemainingNodesSubTask
     {
         [JsonPropertyName("occurrences")]
         public required int Occurrences { get; set; }
 
-        [JsonPropertyName("fen")]
-        public required string Fen { get; set; } = "";
+        [JsonPropertyName("board")]
+        public required Board Fen { get; set; }
+
+        [JsonPropertyName("wtm")]
+        public required bool Wtm { get; set; }
+
+        [JsonPropertyName("hash")]
+        public required ulong Hash { get; set; }
     }
 
     public class CompletedNodesSubTask
@@ -72,16 +77,16 @@ namespace GrandChessTree.Client
             return true;
         }
 
-        public PerftNodesTaskResult? ToSubmission()
+        public PerftFastTaskResult? ToSubmission()
         {
             if (!IsCompleted())
             {
                 return null;
             }
 
-            var request = new PerftNodesTaskResult()
+            var request = new PerftFastTaskResult()
             {
-                PerftNodesTaskId = TaskId,
+                TaskId = TaskId,
                 Nodes = 0,
             };
 

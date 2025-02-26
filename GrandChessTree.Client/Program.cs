@@ -98,16 +98,8 @@ if (config.TaskType == 0)
             var loweredCommand = command.ToLower();
             if (loweredCommand.StartsWith("q"))
             {
-                if (loweredCommand.Contains("g"))
-                {
-                    networkClient.FinishTasksAndQuit();
-                    break;
-                }
-                else
-                {
-                    networkClient.SaveAndQuit();
-                    break;
-                }
+                networkClient.FinishTasksAndQuit();
+                break;
             }
             else if (loweredCommand.StartsWith("d"))
             {
@@ -162,16 +154,8 @@ if (config.TaskType == 0)
             var loweredCommand = command.ToLower();
             if (loweredCommand.StartsWith("q"))
             {
-                if (loweredCommand.Contains("g"))
-                {
-                    networkClient.FinishTasksAndQuit();
-                    break;
-                }
-                else
-                {
-                    networkClient.SaveAndQuit();
-                    break;
-                }
+                networkClient.FinishTasksAndQuit();
+                break;
             }
             else if (loweredCommand.StartsWith("d"))
             {

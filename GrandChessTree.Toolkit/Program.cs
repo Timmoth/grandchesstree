@@ -32,7 +32,7 @@ while ((input = Console.ReadLine()) != "quit"){
             return;
         }
 
-        await PositionSeeder.SeedPosition(Constants.StartPosFen, depth, 4, Constants.StartPosRootPositionId);
+        await PositionSeeder.SeedPosition(Constants.StartPosFen, depth, launchDepth, Constants.StartPosRootPositionId);
     }
     else if (command == "seed_kiwipete")
     {
@@ -43,7 +43,7 @@ while ((input = Console.ReadLine()) != "quit"){
             return;
         }
 
-        await PositionSeeder.SeedPosition(Constants.KiwiPeteFen, depth, 4, Constants.KiwiPeteRootPositionId);
+        await PositionSeeder.SeedPosition(Constants.KiwiPeteFen, depth, launchDepth, Constants.KiwiPeteRootPositionId);
     }
     else if (command == "seed_sje")
     {
@@ -55,38 +55,6 @@ while ((input = Console.ReadLine()) != "quit"){
         }
 
         await PositionSeeder.SeedPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
-    }else if (command == "seed_startpos_nodes")
-    {
-        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-                   || !int.TryParse(commandParts[2], out var launchDepth))
-        {
-            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
-            return;
-        }
-
-        await PositionSeeder.SeedNodesPosition(Constants.StartPosFen, depth, launchDepth, Constants.StartPosRootPositionId);
-    }
-    else if (command == "seed_kiwipete_nodes")
-    {
-        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-                   || !int.TryParse(commandParts[2], out var launchDepth))
-        {
-            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
-            return;
-        }
-
-        await PositionSeeder.SeedNodesPosition(Constants.KiwiPeteFen, depth, launchDepth, Constants.KiwiPeteRootPositionId);
-    }
-    else if (command == "seed_sje_nodes")
-    {
-        if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth)
-                   || !int.TryParse(commandParts[2], out var launchDepth))
-        {
-            Console.WriteLine("Invalid seed command format is 'seed_startpos:<depth>:<launch_depth>'.");
-            return;
-        }
-
-        await PositionSeeder.SeedNodesPosition(Constants.SjeFen, depth, launchDepth, Constants.SjeRootPositionId);
     }
     else if (command == "seed_account")
     {
@@ -106,24 +74,24 @@ while ((input = Console.ReadLine()) != "quit"){
         }
         await PerftClearer.FullReset(depth, rootPositionId);
     }
-    else if (command == "perft_release_incomplete_stats")
+    else if (command == "release_full_tasks")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth) 
             || !int.TryParse(commandParts[2], out var rootPositionId))
         {
-            Console.WriteLine("Invalid command format is 'perft_release_incomplete:<depth>:<root_position_id>'.");
+            Console.WriteLine("Invalid command format is 'release_full_tasks:<depth>:<root_position_id>'.");
             return;
         }
-        await PerftClearer.ReleaseIncompleteStatsTasks(depth, rootPositionId);
-    }    else if (command == "perft_release_incomplete_nodes")
+        await PerftClearer.ReleaseIncompleteFullTasks(depth, rootPositionId);
+    }    else if (command == "release_fast_tasks")
     {
         if (commandParts.Length != 3 || !int.TryParse(commandParts[1], out var depth) 
             || !int.TryParse(commandParts[2], out var rootPositionId))
         {
-            Console.WriteLine("Invalid command format is 'perft_release_incomplete:<depth>:<root_position_id>'.");
+            Console.WriteLine("Invalid command format is 'release_fast_tasks:<depth>:<root_position_id>'.");
             return;
         }
-        await PerftClearer.ReleaseIncompleteNodesTasks(depth, rootPositionId);
+        await PerftClearer.ReleaseIncompleteFastTasks(depth, rootPositionId);
     }
     else if (command == "perft")
     {
