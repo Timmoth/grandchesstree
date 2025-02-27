@@ -48,8 +48,8 @@ const GlobalPerformanceChart: React.FC = () => {
     const fetchData = async () => {
       try {
         const [statsResponse, nodesResponse] = await Promise.all([
-          fetch("https://api.grandchesstree.com/api/v2/perft/stats/charts/performance"),
-          fetch("https://api.grandchesstree.com/api/v2/perft/nodes/stats/charts/performance"),
+          fetch("https://api.grandchesstree.com/api/v3/perft/full/stats/charts/performance"),
+          fetch("https://api.grandchesstree.com/api/v3/perft/fast/stats/charts/performance"),
         ]);
 
         if (!statsResponse.ok || !nodesResponse.ok) {

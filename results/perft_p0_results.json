@@ -388,6 +388,107 @@
             "compute_time": 106238
           }
         ]
+      },
+      {
+        "position": 0,
+        "depth": 12,
+        "nodes": 62854969236701747,
+        "captures": 4737246427144832,
+        "enpassants": 8240532674085,
+        "castles": 79307385134229,
+        "promotions": 1537540318804,
+        "direct_checks": 1221307803714074,
+        "single_discovered_checks": 2622814797365,
+        "direct_discovered_checks": 517907386372,
+        "double_discovered_checks": 2754205,
+        "total_checks": 1224448528652016,
+        "direct_mates": 8321003453595,
+        "single_discovered_mates": 2750996818,
+        "direct_discovered_mates": 37337408546,
+        "double_discovered_mates": 0,
+        "total_mates": 8361091858959,
+        "total_tasks": 72078,
+        "started_at": 1738761004,
+        "finished_at": 1740641268,
+        "contributors": [
+          {
+            "id": 8,
+            "name": "ShenniganMan",
+            "nodes": 2744926508402052,
+            "tasks": 7443,
+            "compute_time": 56347195
+          },
+          {
+            "id": 1,
+            "name": "Timmoth",
+            "nodes": 15295613217864960,
+            "tasks": 45969,
+            "compute_time": 218479033
+          },
+          {
+            "id": 5,
+            "name": "PatrickH",
+            "nodes": 3404613258551727,
+            "tasks": 10333,
+            "compute_time": 101529533
+          },
+          {
+            "id": 10,
+            "name": "madbot",
+            "nodes": 175756559293794,
+            "tasks": 509,
+            "compute_time": 2606239
+          },
+          {
+            "id": 11,
+            "name": "prljav",
+            "nodes": 2083454394835351,
+            "tasks": 5369,
+            "compute_time": 44797005
+          },
+          {
+            "id": 12,
+            "name": "xyzzy",
+            "nodes": 289187745709346,
+            "tasks": 773,
+            "compute_time": 3304407
+          },
+          {
+            "id": 9,
+            "name": "HansTibberio",
+            "nodes": 384148108685661,
+            "tasks": 1063,
+            "compute_time": 6884038
+          },
+          {
+            "id": 7,
+            "name": "Chester-alt",
+            "nodes": 106766362950251,
+            "tasks": 381,
+            "compute_time": 1684028
+          },
+          {
+            "id": 4,
+            "name": "someone",
+            "nodes": 57033699231285,
+            "tasks": 226,
+            "compute_time": 1331893
+          },
+          {
+            "id": 2,
+            "name": "eduherminio",
+            "nodes": 1237359294802,
+            "tasks": 9,
+            "compute_time": 37417
+          },
+          {
+            "id": 6,
+            "name": "moose_curse",
+            "nodes": 1386327655523,
+            "tasks": 3,
+            "compute_time": 16864
+          }
+        ]
       }
     ],
     "unique_positions": [

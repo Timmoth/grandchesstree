@@ -15,9 +15,9 @@ createRoot(document.getElementById("root")!).render(
       <Routes>
         {/* Define your routes here */}
         <Route path="/" element={<Home />} /> {/* Home page route */}
-        <Route path="/perft/:positionId/:depthId" element={<PerftPage />} />{" "}
+        <Route path="/perft/full/:positionId/:depthId" element={<PerftPage />} />{" "}
         <Route path="/perft/:positionId/results" element={<PerftResults />} />{" "}
-        <Route path="/perft/nodes/:positionId/:depthId" element={<PerftNodes />} />{" "}
+        <Route path="/perft/fast/:positionId/:depthId" element={<PerftNodes />} />{" "}
         <Route path="/accounts/signup/" element={<CreateAccountForm />} />{" "}
         <Route path="/accounts/:accountId/" element={<Account />} />{" "}
 

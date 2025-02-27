@@ -32,8 +32,8 @@ const GlobalLeaderboard: React.FC = () => {
     const fetchLeaderboards = async () => {
       try {
         const [statsResponse, nodesResponse] = await Promise.all([
-          fetch("https://api.grandchesstree.com/api/v2/perft/leaderboard"),
-          fetch("https://api.grandchesstree.com/api/v2/perft/nodes/leaderboard"),
+          fetch("https://api.grandchesstree.com/api/v3/perft/full/leaderboard"),
+          fetch("https://api.grandchesstree.com/api/v3/perft/fast/leaderboard"),
         ]);
 
         if (!statsResponse.ok || !nodesResponse.ok) {

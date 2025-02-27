@@ -4,7 +4,7 @@ import { Contributor } from "./Contributor";
 export interface ChessData {
   position: number;
   depth: number;
-  nodes: number;
+  nodes: string;
   captures: number;
   enpassants: number;
   castles: number;

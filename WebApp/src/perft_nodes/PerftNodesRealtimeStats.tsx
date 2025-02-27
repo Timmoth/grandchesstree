@@ -23,7 +23,7 @@ const PerftNodesRealtimeStats: React.FC<RealtimeStatsProps> = ({ positionId, dep
     const fetchLeaderboard = async () => {
       try {
         const resp = await fetch(
-          `https://api.grandchesstree.com/api/v2/perft/nodes/${positionId}/${depth}/stats`
+          `https://api.grandchesstree.com/api/v3/perft/fast/${positionId}/${depth}/stats`
         );
         if (!resp.ok) {
           throw new Error("Failed to fetch data");

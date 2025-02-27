@@ -51,8 +51,8 @@ const AccountPerformanceChart: React.FC<AccountPerformanceChartProps> = ({accoun
     const fetchData = async () => {
       try {
         const [statsResponse, nodesResponse] = await Promise.all([
-          fetch(`https://api.grandchesstree.com/api/v2/perft/stats/charts/performance?account_id=${accountId}`),
-          fetch(`https://api.grandchesstree.com/api/v2/perft/nodes/stats/charts/performance?account_id=${accountId}`),
+          fetch(`https://api.grandchesstree.com/api/v3/perft/full/stats/charts/performance?account_id=${accountId}`),
+          fetch(`https://api.grandchesstree.com/api/v3/perft/fast/stats/charts/performance?account_id=${accountId}`),
         ]);
 
         if (!statsResponse.ok || !nodesResponse.ok) {

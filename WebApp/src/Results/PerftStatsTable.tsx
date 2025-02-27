@@ -76,7 +76,7 @@ const PerftStatsTable: React.FC<PerftStatsTableProps> = ({ summary  }) => {
             {summary.results.map((item, index) => (
                 <tr key={index} className="bg-white border-b border-gray-200">
                   <td className="px-6 py-4">{item.depth.toLocaleString()}</td>
-                  <td className="px-6 py-4">{formatBigNumber(item.nodes)}</td>
+                  <td className="px-6 py-4">{formatBigNumber(parseInt(item.nodes))}</td>
                   <td className="px-6 py-4">{formatDuration(item.finished_at - item.started_at)}</td>
                   <td className="px-6 py-4">{item.total_tasks}</td>
                   <td className="px-6 py-4">{item.contributors.sort((a, b) => b.tasks - a.tasks).map(c => `[${c.name} ${formatBigNumber(c.tasks)} ${c.tasks <= 1 ? "task" : "tasks"}]`).join(", ")}</td>

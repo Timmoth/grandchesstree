@@ -72,7 +72,7 @@ const PerftResultsTable: React.FC<PerftResultsTableProps> = ({ summary  }) => {
               {summary.results.map((item, index) => (
                 <tr key={index} className="bg-white border-b border-gray-200">
                   <td className="px-6 py-4">{item.depth.toLocaleString()}</td>
-                  <td className="px-6 py-4">{item.nodes.toLocaleString()}</td>
+                  <td className="px-6 py-4">{(BigInt(item.nodes)).toLocaleString()}</td>
                   <td className="px-6 py-4">{item.captures.toLocaleString()}</td>
                   <td className="px-6 py-4">{item.enpassants.toLocaleString()}</td>
                   <td className="px-6 py-4">{item.castles.toLocaleString()}</td>

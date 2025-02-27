@@ -28,7 +28,7 @@ const PerftNodesLeaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  
     const fetchLeaderboard = async () => {
       try {
         const resp = await fetch(
-          `https://api.grandchesstree.com/api/v2/perft/nodes/${positionId}/${depth}/leaderboard`
+          `https://api.grandchesstree.com/api/v3/perft/fast/${positionId}/${depth}/leaderboard`
         );
         if (!resp.ok) {
           throw new Error("Failed to fetch data");

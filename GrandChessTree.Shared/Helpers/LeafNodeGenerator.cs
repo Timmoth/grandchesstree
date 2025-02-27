@@ -201,7 +201,8 @@ public static unsafe class LeafNodeGenerator
         var hashes = new List<(ulong hash, string fen)>();
         foreach (var b in boards)
         {
-            hashes.Add((b.Hash, b.ToFen(leafNodeWhiteToMove, 0, 1)));
+            var bb = b;
+            hashes.Add((Zobrist.CalculateZobristKeyWithoutInvalidEp(ref bb, leafNodeWhiteToMove), b.ToFen(leafNodeWhiteToMove, 0, 1)));
         }
 
 

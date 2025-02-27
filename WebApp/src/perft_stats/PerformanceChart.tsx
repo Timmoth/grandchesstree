@@ -40,7 +40,7 @@ const PerformanceChart: React.FC<PerformanceChartProps> = ({ positionId, depth }
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://api.grandchesstree.com/api/v2/perft/${positionId}/${depth}/stats/charts/performance`
+          `https://api.grandchesstree.com/api/v3/perft/full/${positionId}/${depth}/stats/charts/performance`
         );
         const rawData: DataPoint[] = await response.json();
         setData(rawData);

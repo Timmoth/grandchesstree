@@ -91,7 +91,7 @@ const PerftResults: React.FC = () => {
               Completed perft [{data.results.map(r => r.depth).join(", ")}]
             </span>
             <span className="text-xs">
-              Total Nodes [{formatBigNumber(data.results.reduce((sum, r) => sum + r.nodes, 0))}]
+              Total Nodes [{formatBigNumber(data.results.reduce((sum, r) => sum + parseInt(r.nodes), 0))}]
             </span>
             <span className="text-xs">
               Total Duration [{formatDuration(data.results.reduce((sum, r) => sum + (r.finished_at - r.started_at), 0))}]
