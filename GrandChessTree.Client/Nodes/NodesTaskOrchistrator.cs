@@ -62,8 +62,9 @@ namespace GrandChessTree.Client.Stats
             else
             {
                 var subTaskSplitDepth = 2;
-                var subTasks = SubTaskGenerator.GenerateLeafNodes(ref board, subTaskSplitDepth, wtm);
+                UniqueLeafNodeGenerator.PerftRootUniqueLeafNodes(ref board, subTaskSplitDepth, wtm);
                 var leafNodeWhiteToMove = subTaskSplitDepth % 2 == 0 ? wtm : !wtm;
+                var subTasks = UniqueLeafNodeGenerator.boards;
 
                 searchTask = new PerftNodesTask()
                 {

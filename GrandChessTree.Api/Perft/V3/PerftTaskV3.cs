@@ -4,6 +4,7 @@ using GrandChessTree.Api.Accounts;
 using System.Text.Json.Serialization;
 using GrandChessTree.Shared.Api;
 using System.Diagnostics.Metrics;
+using GrandChessTree.Api.Perft.V3;
 
 namespace GrandChessTree.Api.D10Search
 {
@@ -85,15 +86,13 @@ namespace GrandChessTree.Api.D10Search
         }
 
         public void FinishFullTask(
-            long currentTimeStamp,
-            int workerId,
-            PerftFullTaskResult result)
+            PerftCompletedFullTask result)
         {
             // Update the search item (parent)
-            FullTaskFinishedAt = currentTimeStamp;
-            FullTaskWorkerId = workerId;
+            FullTaskFinishedAt = result.CompletedAt;
+            FullTaskWorkerId = result.WorkerId;
 
-            var finishedAt = currentTimeStamp == FullTaskStartedAt ? currentTimeStamp + 1 : currentTimeStamp;
+            var finishedAt = result.CompletedAt == FullTaskStartedAt ? result.CompletedAt + 1 : result.CompletedAt;
 
             // Update search task properties
             var duration = (ulong)(finishedAt - FullTaskStartedAt);
@@ -159,15 +158,13 @@ namespace GrandChessTree.Api.D10Search
         }
 
         public void FinishFastTask(
-            long currentTimeStamp, 
-            int workerId,
-            PerftFastTaskResult result)
+            PerftCompletedFastTask result)
         {
             // Update the search item (parent)
-            FastTaskFinishedAt = currentTimeStamp;
-            FastTaskWorkerId = workerId;
+            FastTaskFinishedAt = result.CompletedAt;
+            FastTaskWorkerId = result.WorkerId;
 
-            var finishedAt = currentTimeStamp == FastTaskStartedAt ? currentTimeStamp + 1 : currentTimeStamp;
+            var finishedAt = result.CompletedAt == FastTaskStartedAt ? result.CompletedAt + 1 : result.CompletedAt;
 
             // Update search task properties
             var duration = (ulong)(finishedAt - FastTaskStartedAt);

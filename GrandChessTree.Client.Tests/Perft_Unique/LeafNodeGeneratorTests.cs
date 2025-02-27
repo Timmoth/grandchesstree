@@ -73,10 +73,10 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
             var (board, whiteToMove) = FenParser.Parse(Constants.StartPosFen);
 
             // When
-            var leafNodes = LeafNodeGenerator.GenerateCompressedLeafNodes(ref board, depth, whiteToMove);
+            UniqueLeafNodeGenerator.PerftRootUniqueLeafNodes(ref board, depth, whiteToMove);
 
             // Then
-            var actualCount = leafNodes.Count;
+            var actualCount = UniqueLeafNodeGenerator.boards.Count;
             Assert.Equal(expectedCount, actualCount);
         }
 
@@ -91,10 +91,10 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
             var (board, whiteToMove) = FenParser.Parse(Constants.KiwiPeteFen);
 
             // When
-            var leafNodes = LeafNodeGenerator.GenerateCompressedLeafNodes(ref board, depth, whiteToMove);
+            UniqueLeafNodeGenerator.PerftRootUniqueLeafNodes(ref board, depth, whiteToMove);
 
             // Then
-            var actualCount = leafNodes.Count;
+            var actualCount = UniqueLeafNodeGenerator.boards.Count;
             Assert.Equal(expectedCount, actualCount);
         }
 
@@ -110,10 +110,10 @@ namespace GrandChessTree.Client.Tests.Perft_Unique
             var (board, whiteToMove) = FenParser.Parse(Constants.SjeFen);
 
             // When
-            var leafNodes = LeafNodeGenerator.GenerateCompressedLeafNodes(ref board, depth, whiteToMove);
+            UniqueLeafNodeGenerator.PerftRootUniqueLeafNodes(ref board, depth, whiteToMove);
 
             // Then
-            var actualCount = leafNodes.Count;
+            var actualCount = UniqueLeafNodeGenerator.boards.Count;
             Assert.Equal(expectedCount, actualCount);
         }
     }

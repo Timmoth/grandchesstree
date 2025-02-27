@@ -1,6 +1,7 @@
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.Database;
 using GrandChessTree.Api.Middleware;
+using GrandChessTree.Api.Perft.V3;
 using GrandChessTree.Api.timescale;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging.Console;
@@ -19,6 +20,11 @@ namespace GrandChessTree.Api
             services.AddSingleton<TimeProvider>(TimeProvider.System);
             services.AddScoped<ApiKeyAuthenticator>();
             services.AddScoped<PerftReadings>();
+            services.AddScoped<PerftFullTaskService>();
+            services.AddScoped<PerftFastTaskService>();
+            services.AddHostedService<PerftFullTaskBackgroundService>();
+            services.AddHostedService<PerftFastTaskBackgroundService>();
+
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString));

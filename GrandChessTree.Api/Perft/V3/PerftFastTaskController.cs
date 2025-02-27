@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.Database;
+using GrandChessTree.Api.Perft.V3;
 using GrandChessTree.Api.timescale;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +20,15 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         private readonly TimeProvider _timeProvider;
         private readonly ApiKeyAuthenticator _apiKeyAuthenticator;
         private readonly PerftReadings _perftReadings;
-
-        public PerftFastTaskController(ILogger<PerftFastTaskController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator, PerftReadings perftReadings)
+        private readonly PerftFastTaskService _perftFastTaskService;
+        public PerftFastTaskController(ILogger<PerftFastTaskController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator, PerftReadings perftReadings, PerftFastTaskService perftFastTaskService)
         {
             _logger = logger;
             _dbContext = dbContext;
             _timeProvider = timeProvider;
             _apiKeyAuthenticator = apiKeyAuthenticator;
             _perftReadings = perftReadings;
+            _perftFastTaskService = perftFastTaskService;
         }
 
         [ApiKeyAuthorize]
@@ -52,7 +54,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                     SELECT * FROM public.perft_tasks_v3 
                     WHERE fast_task_started_at <= {0} AND fast_task_finished_at = 0
                     ORDER BY depth ASC
-                    LIMIT 100 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
+                    LIMIT 500 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
                .ToListAsync(cancellationToken);
 
             if (!tasks.Any())
@@ -92,75 +94,8 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             {
                 return Unauthorized();
             }
-            var accountId = apiKey.AccountId;
-            var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
-            var taskIds = request.Results.Select(r => r.TaskId).ToList();
 
-            const int maxRetries = 5;
-            int attempt = 0;
-            bool updateSucceeded = false;
-            var readings = new List<object[]>();
-
-            while (!updateSucceeded && attempt < maxRetries)
-            {
-                attempt++;
-                readings.Clear();
-                try
-                {
-                    // Start a new transaction for each attempt.
-                    await using var transaction = await _dbContext.Database.BeginTransactionAsync(cancellationToken);
-
-                    // Re-fetch the tasks within the transaction.
-                    var tasks = await _dbContext.PerftTasksV3
-                        .Where(t => t.FastTaskAccountId == accountId && taskIds.Contains(t.Id))
-                        .ToDictionaryAsync(t => t.Id, cancellationToken);
-
-                    if (tasks.Count == 0)
-                    {
-                        await transaction.RollbackAsync(cancellationToken);
-                        return NotFound();
-                    }
-
-                    // Process each result.
-                    foreach (var result in request.Results)
-                    {
-                        if (!tasks.TryGetValue(result.TaskId, out var task))
-                        {
-                            // This might happen if the task was updated concurrently.
-                            continue;
-                        }
-                        task.FinishFastTask(currentTimestamp, request.WorkerId, result);
-                        readings.Add(task.ToFastTaskReading());
-                    }
-
-                    // Attempt to save changes.
-                    await _dbContext.SaveChangesAsync(cancellationToken);
-
-                    // Commit the transaction.
-                    await transaction.CommitAsync(cancellationToken);
-
-                    updateSucceeded = true;
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    // If a concurrency exception occurs, log the retry and loop again.
-                    // Optionally, add a delay here (e.g. Task.Delay) before retrying.
-                }
-                catch (Exception ex)
-                {
-                    // For any other exceptions, you might want to log and return an error.
-                    return StatusCode(500, $"Error updating tasks: {ex.Message}");
-                }
-            }
-
-            if (!updateSucceeded)
-            {
-                return StatusCode(500, "Could not update tasks after multiple retries.");
-            }
-            else
-            {
-                await _perftReadings.InsertReadings(readings, cancellationToken);
-            }
+            _perftFastTaskService.Enqueue(request, apiKey.AccountId);
 
             return Ok();
         }
