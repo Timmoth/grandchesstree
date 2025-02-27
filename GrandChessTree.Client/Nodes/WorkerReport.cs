@@ -4,7 +4,6 @@ namespace GrandChessTree.Client.Stats
 {
     public class NodesWorkerReport
     {
-        public string Fen { get; set; } = "";
         public int TotalSubtasks { get; set; }
         public int CompletedSubtasks { get; set; }
         public float Nps { get; set; }
@@ -20,7 +19,6 @@ namespace GrandChessTree.Client.Stats
 
         public void BeginTask(PerftNodesTask task)
         {
-            Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks += task.CachedSubTaskCount;
@@ -31,25 +29,21 @@ namespace GrandChessTree.Client.Stats
 
         public void BeginSubTask(PerftNodesTask task)
         {
-            Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
         }
 
         public void EndSubTaskWorkCompleted(PerftNodesTask task, ulong nodes, int subTaskOccurrences)
         {
-            Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks++;
             TotalComputedNodes += nodes;
             WorkerComputedNodes += nodes;
-
         }
 
         public void EndSubTaskFoundInCache(PerftNodesTask task, ulong nodes, int subTaskOccurrences)
         {
-            Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedSubTasks++;
@@ -58,7 +52,6 @@ namespace GrandChessTree.Client.Stats
 
         public void CompleteTask(PerftNodesTask task, long duration)
         {
-            Fen = task.Fen;
             TotalSubtasks = task.SubTaskCount;
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedTasks++;

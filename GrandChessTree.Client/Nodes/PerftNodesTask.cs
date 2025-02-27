@@ -32,9 +32,6 @@ namespace GrandChessTree.Client
         [JsonPropertyName("task_id")]
         public required long TaskId { get; set; }
 
-        [JsonPropertyName("fen")]
-        public required string Fen { get; set; } = "";
-
         [JsonPropertyName("sub_task_depth")]
         public required int SubTaskDepth { get; set; }
 

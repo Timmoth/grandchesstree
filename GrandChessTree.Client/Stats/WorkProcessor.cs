@@ -59,6 +59,7 @@ namespace GrandChessTree.Client.Stats
             ulong prevTotalNodes = 0;
             long prevTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
             long startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var start = DateTimeOffset.UtcNow;
 
             while (HasRunningWorkers)
             {
@@ -92,7 +93,9 @@ namespace GrandChessTree.Client.Stats
                     prevTotalNodes = currentTotalNodes;
                     prevTime = currentTime;
 
-                    var tpm = (float)sumCompletedTasks / ((currentTime - startTime) / 60000f);
+                    var deltaT = (currentTime - startTime);
+                    var dt = DateTimeOffset.UtcNow - start;
+                    var tpm = (float)sumCompletedTasks / (deltaT / 60000f);
 
                     Console.CursorVisible = false;
                     Console.SetCursorPosition(0, 0);
@@ -102,11 +105,11 @@ namespace GrandChessTree.Client.Stats
 
                     if (OutputFullDetails)
                     {
-                        var table = new ConsoleTable("worker", "nps", "nodes", "sub_tasks", "tasks", "fen");
+                        var table = new ConsoleTable("worker", "nps", "nodes", "sub_tasks", "tasks");
                         for (int i = 0; i < _workerReports.Length; i++)
                         {
                             var report = _workerReports[i];
-                            table.AddRow($"{i}", report.Nps.FormatBigNumber(), report.WorkerComputedNodes.FormatBigNumber(), $"{report.CompletedSubtasks}/{report.TotalSubtasks}", report.TotalCompletedTasks, report.Fen);
+                            table.AddRow($"{i}", report.Nps.FormatBigNumber(), report.WorkerComputedNodes.FormatBigNumber(), $"{report.CompletedSubtasks}/{report.TotalSubtasks}", report.TotalCompletedTasks);
                         }
                         table.Configure((c) =>
                         {
@@ -117,12 +120,26 @@ namespace GrandChessTree.Client.Stats
 
                     var cachHitPercent = sumCompletedSubTasks == 0 ? 0 : (float)subtaskCacheHits / sumCompletedSubTasks * 100;
 
-                    Console.WriteLine($"completed {sumCompletedSubTasks.FormatBigNumber()} subtasks ({cachHitPercent.RoundToSignificantFigures(2)}% cache hits), submitted {_searchItemOrchistrator.Submitted} tasks ({_searchItemOrchistrator.PendingSubmission} pending)");
-                    Console.WriteLine($"[computed stats] {totalComputedNodes.FormatBigNumber()} nodes at {sumNps.FormatBigNumber()}nps {tpm.RoundToSignificantFigures(2)}tpm");
-                    
+                    Console.WriteLine($"{sumCompletedSubTasks.FormatBigNumber()} subtasks ({cachHitPercent.RoundToSignificantFigures(2)}% cache hits)");
+                    Console.WriteLine($"{_searchItemOrchistrator.Submitted} submitted tasks ({_searchItemOrchistrator.PendingSubmission} pending)");
+                    Console.WriteLine($"{_searchItemOrchistrator.TaskQueueLength} queued tasks");
+                    Console.WriteLine($"{_workerReports.Length} workers, avg {(_workerReports.Sum(w => (float)w.TotalComputedNodes) / _workerReports.Length / deltaT * 1000).FormatBigNumber()}nps");
+                    Console.WriteLine($"[{totalComputedNodes.FormatBigNumber()} nodes] [{(totalComputedNodes / (float)deltaT * 1000).FormatBigNumber()}nps] [{tpm.RoundToSignificantFigures(2)}tpm]");
+                    string formattedTime = dt.TotalDays >= 1
+                        ? dt.ToString(@"d\.hh\:mm\:ss")
+                        : dt.ToString(@"hh\:mm\:ss");
+
+                    Console.WriteLine($"{formattedTime}");
+
                     if (!KeepRequestingWork)
                     {
-                        Console.WriteLine($"Will exit automatically when the current tasks are completed. {_workerReports.Count(w => !w.IsRunning)}/{_workerCount} ready");
+                        Console.WriteLine($"Will exit automatically when the current tasks are completed.");
+                        Console.WriteLine($"{_workerReports.Count(w => !w.IsRunning)}/{_workerCount} ready");
+                    }
+                    else
+                    {
+                        Console.WriteLine("'q' + enter to quit");
+                        Console.WriteLine("'d' + enter toggles worker details");
                     }
                 }
                 catch (Exception ex)

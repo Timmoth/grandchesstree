@@ -33,9 +33,6 @@ namespace GrandChessTree.Client.Stats
         [JsonPropertyName("perft_task_id")]
         public required long PerftTaskId { get; set; }
 
-        [JsonPropertyName("fen")]
-        public required string Fen { get; set; } = "";
-
         [JsonPropertyName("sub_task_depth")]
         public required int SubTaskDepth { get; set; }
 

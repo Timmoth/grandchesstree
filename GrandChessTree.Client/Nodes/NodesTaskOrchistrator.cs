@@ -12,6 +12,7 @@ namespace GrandChessTree.Client.Stats
         private readonly HttpClient _httpClient;
         private readonly Config _config;
         private readonly PerftNodesTaskQueue _perftTaskQueue = new PerftNodesTaskQueue();
+        public int TaskQueueLength => _perftTaskQueue.Count();
 
         public NodesTaskOrchistrator(Config config)
         {
@@ -36,7 +37,6 @@ namespace GrandChessTree.Client.Stats
             }
 
             var (board, wtm) = BoardStateSerialization.Deserialize(task.Board);
-            var fen = board.ToFen(wtm, 0, 1);
 
             PerftNodesTask searchTask;
             if (task.LaunchDepth < 5)
@@ -46,7 +46,6 @@ namespace GrandChessTree.Client.Stats
                     TaskId = task.TaskId,
                     SubTaskDepth = task.LaunchDepth,
                     SubTaskCount = 1,
-                    Fen = fen,
                     CachedSubTaskCount = 0,
                     RemainingSubTasks = new List<RemainingNodesSubTask>()
                 };
@@ -71,28 +70,19 @@ namespace GrandChessTree.Client.Stats
                     TaskId = task.TaskId,
                     SubTaskDepth = task.LaunchDepth - subTaskSplitDepth,
                     SubTaskCount = subTasks.Count,
-                    Fen = fen,
                     CachedSubTaskCount = 0,
                     RemainingSubTasks = new List<RemainingNodesSubTask>()
                 };
 
                 foreach (var kvp in subTasks)
                 {
-                    if (SubTaskHashTable.TryGetValue(kvp.Key, searchTask.SubTaskDepth, out var summary))
+                    searchTask.RemainingSubTasks.Add(new RemainingNodesSubTask()
                     {
-                        searchTask.CompleteSubTask(summary, kvp.Value.occurrences);
-                        searchTask.CachedSubTaskCount++;
-                    }
-                    else
-                    {
-                        searchTask.RemainingSubTasks.Add(new RemainingNodesSubTask()
-                        {
-                            Fen = kvp.Value.board,
-                            Wtm = leafNodeWhiteToMove,
-                            Hash = kvp.Key,
-                            Occurrences = kvp.Value.occurrences
-                        });
-                    }
+                        Fen = kvp.Value.board,
+                        Wtm = leafNodeWhiteToMove,
+                        Hash = kvp.Key,
+                        Occurrences = kvp.Value.occurrences
+                    });
                 }
             }
 
@@ -109,7 +99,7 @@ namespace GrandChessTree.Client.Stats
         // Ensures only one thread loads new tasks
         public async Task<bool> TryLoadNewTasks()
         {
-            if (_perftTaskQueue.Count() >= _config.Workers)
+            if (_perftTaskQueue.Count() >= (2*_config.Workers))
             {
                 await Task.Delay(100);
                 return false;
@@ -123,7 +113,6 @@ namespace GrandChessTree.Client.Stats
             }
 
             _perftTaskQueue.Enqueue(tasks);
-
 
             return true;
         }
