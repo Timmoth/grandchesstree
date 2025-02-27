@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using GrandChessTree.Api.Accounts;
 using System.Text.Json.Serialization;
 using GrandChessTree.Shared.Api;
+using System.Diagnostics.Metrics;
 
 namespace GrandChessTree.Api.D10Search
 {
@@ -181,6 +182,38 @@ namespace GrandChessTree.Api.D10Search
 
             FastTaskNps = finishedAt;
             FastTaskNodes = result.Nodes;
+        }
+
+        internal object[] ToFullTaskReading()
+        {
+            return new object[]
+            {
+                DateTimeOffset.FromUnixTimeSeconds(FullTaskFinishedAt),
+                FullTaskAccountId ?? 0,
+                (short)FullTaskWorkerId,
+                (long)FullTaskNodes,
+                (short)Occurrences,
+                FullTaskFinishedAt - FullTaskStartedAt,
+                (short)Depth,
+                (short)RootPositionId,
+                (short)0,
+            };
+        }
+
+        internal object[] ToFastTaskReading()
+        {
+            return new object[]
+            {
+                DateTimeOffset.FromUnixTimeSeconds(FastTaskFinishedAt),
+                FastTaskAccountId ?? 0,
+                (short)FastTaskWorkerId,
+                (long)FastTaskNodes,
+                (short)Occurrences,
+                FastTaskFinishedAt - FastTaskStartedAt,
+                (short)Depth,
+                (short)RootPositionId,
+                (short)1,
+            };
         }
 
         #endregion

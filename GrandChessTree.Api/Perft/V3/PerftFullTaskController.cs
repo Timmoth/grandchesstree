@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.Database;
+using GrandChessTree.Api.timescale;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -17,12 +18,14 @@ namespace GrandChessTree.Api.Controllers
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
         private readonly ApiKeyAuthenticator _apiKeyAuthenticator;
-        public PerftFullTaskController(ILogger<PerftFullTaskController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator)
+        private readonly PerftReadings _perftReadings;
+        public PerftFullTaskController(ILogger<PerftFullTaskController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator, PerftReadings perftReadings)
         {
             _logger = logger;
             _dbContext = dbContext;
             _timeProvider = timeProvider;
             _apiKeyAuthenticator = apiKeyAuthenticator;
+            _perftReadings = perftReadings;
         }
 
         [ApiKeyAuthorize]
@@ -96,8 +99,11 @@ namespace GrandChessTree.Api.Controllers
             int attempt = 0;
             bool updateSucceeded = false;
 
+            var readings = new List<object[]>();
+
             while (!updateSucceeded && attempt < maxRetries)
             {
+                readings.Clear();
                 attempt++;
                 try
                 {
@@ -124,6 +130,7 @@ namespace GrandChessTree.Api.Controllers
                             continue;
                         }
                         task.FinishFullTask(currentTimestamp, request.WorkerId, result);
+                        readings.Add(task.ToFullTaskReading());
                     }
 
                     // Attempt to save changes.
@@ -149,6 +156,10 @@ namespace GrandChessTree.Api.Controllers
             if (!updateSucceeded)
             {
                 return StatusCode(500, "Could not update tasks after multiple retries.");
+            }
+            else
+            {
+                await _perftReadings.InsertReadings(readings, cancellationToken);
             }
 
             return Ok();
@@ -208,20 +219,20 @@ namespace GrandChessTree.Api.Controllers
 
             var realTimeStatsResult = await _dbContext.Database
                 .SqlQueryRaw<RealTimeStatsModel>(@"
-        SELECT
-        COALESCE(SUM(t.full_task_nodes * t.occurrences), 0) / 3600.0 AS nps
-        FROM public.perft_tasks_v3 t
-        WHERE t.full_task_finished_at >= {0}", pastHourTimestamp)
+      SELECT
+    COALESCE(SUM(nodes * occurrences), 0) / 3600.0 AS nps
+FROM public.perft_readings 
+WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0;")
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
 
             var progressStatsResult = await _dbContext.Database
            .SqlQueryRaw<ProgressStatsModel>(@"
-        SELECT
-        COALESCE(SUM(t.full_task_nodes * t.occurrences), 0) AS total_nodes
-        FROM public.perft_tasks_v3 t
-        WHERE t.full_task_finished_at > 0")
+         SELECT
+SUM(nodes * occurrences) AS total_nodes
+FROM public.perft_readings
+WHERE task_type = 0;")
            .AsNoTracking()
            .FirstOrDefaultAsync(cancellationToken);
 
@@ -250,17 +261,6 @@ namespace GrandChessTree.Api.Controllers
         [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "account_id" })]
         public async Task<IActionResult> GetPerformanceChart([FromQuery(Name = "account_id")] int? accountId, CancellationToken cancellationToken)
         {
-            // Get the current Unix time in seconds.
-            var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
-
-            // Calculate the last complete 15-minute interval.
-            // (now / 900) * 900 gives the start of the current 15-minute block,
-            // so subtract 900 seconds to get the last complete block.
-            var end = ((now / 900) * 900) - 900;
-
-            // Set start as 12 hours (43200 seconds) before the end of the last full interval.
-            var start = end - 43200;
-
             // Build the SQL query with optional filtering by account_id.
             string sql;
             object[] sqlParams;
@@ -268,27 +268,28 @@ namespace GrandChessTree.Api.Controllers
             if (accountId.HasValue)
             {
                 sql = @"
-            SELECT 
-              ((full_task_finished_at / 900)::bigint * 900) AS timestamp,
-              SUM(full_task_nodes * occurrences)::numeric / 900.0 AS nps
-            FROM public.perft_tasks_v3
-            WHERE full_task_finished_at BETWEEN {0} AND {1}
-              AND full_task_account_id = {2}
-            GROUP BY ((full_task_finished_at / 900)::bigint)
-            ORDER BY timestamp";
-                sqlParams = new object[] { start, end, accountId.Value };
+                   SELECT 
+              time_bucket('15 minutes', time) AS timestamp,
+              SUM(nodes * occurrences)::numeric / 900.0 AS nps
+            FROM public.perft_readings
+            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
+              AND account_id = {0}
+            GROUP BY timestamp
+            ORDER BY timestamp;
+            ";
+                sqlParams = new object[] { accountId.Value };
             }
             else
             {
                 sql = @"
-            SELECT 
-              ((full_task_finished_at / 900)::bigint * 900) AS timestamp,
-              SUM(full_task_nodes * occurrences)::numeric / 900.0 AS nps
-            FROM public.perft_tasks_v3
-            WHERE full_task_finished_at BETWEEN {0} AND {1}
-            GROUP BY ((full_task_finished_at / 900)::bigint)
-            ORDER BY timestamp";
-                sqlParams = new object[] { start, end };
+                   SELECT 
+              time_bucket('15 minutes', time) AS timestamp,
+              SUM(nodes * occurrences)::numeric / 900.0 AS nps
+            FROM public.perft_readings
+            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
+            GROUP BY timestamp
+            ORDER BY timestamp;";
+                sqlParams = new object[] { };
             }
 
             var result = await _dbContext.Database

@@ -56,23 +56,23 @@ namespace GrandChessTree.Api.Controllers
 
             var realTimeStatsResult = await _dbContext.Database
                 .SqlQueryRaw<RealTimeStatsModel>(@"
-        SELECT
+       SELECT
         COALESCE(COUNT(*), 0) / 60.0 AS tpm,
-        COALESCE(SUM(t.full_task_nodes * t.occurrences), 0) / 3600.0 AS nps
-        FROM public.perft_tasks_v3 t
-        WHERE t.root_position_id = {0} AND t.depth = {1}
-        AND t.full_task_finished_at >= EXTRACT(EPOCH FROM NOW()) - 3600", positionId, depth)
+        COALESCE(SUM(nodes * occurrences), 0) / 3600.0 AS nps
+        FROM public.perft_readings
+        WHERE root_position_id = {0} AND depth = {1}
+        AND time >= NOW() - INTERVAL '1 hour' AND task_type = 0", positionId, depth)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(cancellationToken);
 
 
             var progressStatsResult = await _dbContext.Database
            .SqlQueryRaw<ProgressStatsModel>(@"
-        SELECT
+           SELECT
         COUNT(*) AS completed_tasks,
-        COALESCE(SUM(t.full_task_nodes * t.occurrences), 0) AS total_nodes
-        FROM public.perft_tasks_v3 t
-        WHERE t.root_position_id = {0} AND t.depth = {1} AND t.full_task_finished_at > 0", positionId, depth)
+        COALESCE(SUM(nodes * occurrences), 0) AS total_nodes
+        FROM public.perft_readings
+        WHERE root_position_id = {0} AND depth = {1} AND task_type = 0", positionId, depth)
            .AsNoTracking()
            .FirstOrDefaultAsync(cancellationToken);
 
@@ -121,17 +121,15 @@ namespace GrandChessTree.Api.Controllers
 
             var result = await _dbContext.Database
                 .SqlQueryRaw<PerformanceChartEntry>(@"
-                    SELECT 
-                        ((t.full_task_finished_at / 900)::bigint * 900) AS timestamp,  -- Align timestamps to 15-min buckets
-                        COUNT(t.id) / 15.0 AS tpm,  -- Tasks per minute (since interval is 15 min)
-                        COALESCE(SUM(t.full_task_nodes * t.occurrences) / 900.0, 0) AS nps  -- Nodes per second
-                    FROM public.perft_tasks_v3 t
-                    WHERE t.full_task_finished_at BETWEEN {0} AND {1}
-                      AND t.root_position_id = {2}
-                      AND t.depth = {3}
-                    GROUP BY ((t.full_task_finished_at / 900)::bigint)
-                    ORDER BY timestamp
-                ", start, end, positionId, depth)
+       SELECT 
+              time_bucket('15 minutes', time) AS timestamp,
+              SUM(nodes * occurrences)::numeric / 900.0 AS nps
+            FROM public.perft_readings
+            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
+            AND root_position_id = {0} AND depth = {1}
+            GROUP BY timestamp
+            ORDER BY timestamp;
+                ", positionId, depth)
                             .AsNoTracking()
                             .ToListAsync(cancellationToken);
 
