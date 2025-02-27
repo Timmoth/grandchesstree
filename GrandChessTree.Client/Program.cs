@@ -53,6 +53,7 @@ if (!ConfigManager.IsValidConfig(config))
     return;
 }
 
+
 if (config.TaskType == 0)
 {
     var searchOrchastrator = new SearchItemOrchistrator(config);

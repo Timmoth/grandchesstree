@@ -18,12 +18,13 @@ namespace GrandChessTree.Client.Stats
             _config = config;
             _httpClient = new HttpClient() { BaseAddress = new Uri(config.ApiUrl) };
             _httpClient.DefaultRequestHeaders.Add("X-API-Key", config.ApiKey);
+            SubTaskHashTable = new SubTaskHashTable(_config.SubTaskCacheSize);
         }
 
         public int Submitted { get; set; }
         public int PendingSubmission => _completedResults.Count;
 
-        public readonly SubTaskHashTable SubTaskHashTable = new SubTaskHashTable(1_000_000);
+        public readonly SubTaskHashTable SubTaskHashTable;
 
         public PerftTask? GetNextTask()
         {

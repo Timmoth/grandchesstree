@@ -21,6 +21,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("mb_hash")]
         public int MbHash { get; set; } = 1024;
+
+        [JsonPropertyName("sub_task_cache_size")]
+        public int SubTaskCacheSize { get; set; } = 1_000_000;
     }
 
     public static class ConfigManager
@@ -61,6 +64,13 @@ namespace GrandChessTree.Client
             if (config.MbHash < 256)
             {
                 Console.WriteLine("Error: Mb Hash must be >= 256.");
+                isValid = false;
+            }
+
+
+            if (config.SubTaskCacheSize < 1_000_000)
+            {
+                Console.WriteLine("Error: Sub task cache must be >= 1_000_000.");
                 isValid = false;
             }
 
@@ -109,10 +119,16 @@ namespace GrandChessTree.Client
                 config.TaskType = taskType;
             }
 
-            Console.Write("Enter the amount of ram to allocate to each worker (in MB)e: ");
+            Console.Write("Enter the amount of ram to allocate to each worker (in MB): ");
             if (int.TryParse(Console.ReadLine(), out int mbHash))
             {
                 config.MbHash = mbHash;
+            }
+
+            Console.Write("Enter the max number of subtasks to cache (min 1 million): ");
+            if (int.TryParse(Console.ReadLine(), out int subTaskCache))
+            {
+                config.SubTaskCacheSize = subTaskCache;
             }
 
             WorkerPersistence.SaveConfig(config);
