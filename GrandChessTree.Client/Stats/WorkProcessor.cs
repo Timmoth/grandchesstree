@@ -169,7 +169,7 @@ namespace GrandChessTree.Client.Stats
                         Console.WriteLine(ex.ToString());
                         await Task.Delay(TimeSpan.FromSeconds(1));
                     }
-                    await Task.Delay(100);
+                    await Task.Delay(1000);
                 }
 
             });

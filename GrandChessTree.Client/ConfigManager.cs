@@ -23,7 +23,7 @@ namespace GrandChessTree.Client
         public int MbHash { get; set; } = 1024;
 
         [JsonPropertyName("sub_task_cache_size")]
-        public int SubTaskCacheSize { get; set; } = 1_000_000;
+        public int SubTaskCacheSize { get; set; } = 1024;
     }
 
     public static class ConfigManager
@@ -68,9 +68,9 @@ namespace GrandChessTree.Client
             }
 
 
-            if (config.SubTaskCacheSize < 1_000_000)
+            if (config.SubTaskCacheSize < 256)
             {
-                Console.WriteLine("Error: Sub task cache must be >= 1_000_000.");
+                Console.WriteLine("Error: Sub task cache size must be at least 256.");
                 isValid = false;
             }
 
@@ -125,7 +125,7 @@ namespace GrandChessTree.Client
                 config.MbHash = mbHash;
             }
 
-            Console.Write("Enter the max number of subtasks to cache (min 1 million): ");
+            Console.Write("Enter the amount of ram to allocate to the subtask cache (in MB): ");
             if (int.TryParse(Console.ReadLine(), out int subTaskCache))
             {
                 config.SubTaskCacheSize = subTaskCache;
