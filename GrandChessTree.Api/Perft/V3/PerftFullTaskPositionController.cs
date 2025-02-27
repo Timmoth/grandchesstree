@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
+using GrandChessTree.Api.timescale;
 using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
@@ -16,11 +17,14 @@ namespace GrandChessTree.Api.Controllers
         private readonly ILogger<PerftFullTaskPositionController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
-        public PerftFullTaskPositionController(ILogger<PerftFullTaskPositionController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
+        private readonly PerftReadings _perftReadings;
+
+        public PerftFullTaskPositionController(ILogger<PerftFullTaskPositionController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, PerftReadings perftReadings)
         {
             _logger = logger;
             _dbContext = dbContext;
             _timeProvider = timeProvider;
+            _perftReadings = perftReadings;
         }
 
         public class ProgressStatsModel
@@ -49,43 +53,7 @@ namespace GrandChessTree.Api.Controllers
 
         public async Task<IActionResult> GetStats(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
-            var pastMinuteTimestamp = currentTimestamp - 60;
-
-            var totalTaskCount = await _dbContext.PerftTasksV3.CountAsync(i => i.RootPositionId == positionId && i.Depth == depth);
-
-            var realTimeStatsResult = await _dbContext.Database
-                .SqlQueryRaw<RealTimeStatsModel>(@"
-       SELECT
-        COALESCE(COUNT(*), 0) / 60.0 AS tpm,
-        COALESCE(SUM(nodes * occurrences), 0) / 3600.0 AS nps
-        FROM public.perft_readings
-        WHERE root_position_id = {0} AND depth = {1}
-        AND time >= NOW() - INTERVAL '1 hour' AND task_type = 0", positionId, depth)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-
-            var progressStatsResult = await _dbContext.Database
-           .SqlQueryRaw<ProgressStatsModel>(@"
-           SELECT
-        COUNT(*) AS completed_tasks,
-        COALESCE(SUM(nodes * occurrences), 0) AS total_nodes
-        FROM public.perft_readings
-        WHERE root_position_id = {0} AND depth = {1} AND task_type = 0", positionId, depth)
-           .AsNoTracking()
-           .FirstOrDefaultAsync(cancellationToken);
-
-
-            var response = new PerftStatsResponse()
-            {
-                Nps = realTimeStatsResult?.nps ?? 0,
-                Tpm = realTimeStatsResult?.tpm ?? 0,
-                CompletedTasks = progressStatsResult?.completed_tasks ?? 0ul,
-                TotalNodes = progressStatsResult?.total_nodes ?? 0ul,
-                PercentCompletedTasks = (float)(progressStatsResult?.completed_tasks ?? 0ul) / totalTaskCount * 100,
-                TotalTasks = totalTaskCount,
-            };
+            var response = await _perftReadings.GetTaskPerformance(PerftTaskType.Full, positionId, depth, cancellationToken);
             return Ok(response);
         }
 
@@ -108,34 +76,9 @@ namespace GrandChessTree.Api.Controllers
         [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetPerformanceChart(int positionId, int depth, CancellationToken cancellationToken)
         {
-            // Get the current Unix time in seconds.
-            var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+            var response = await _perftReadings.GetPerformanceChart(PerftTaskType.Full, positionId, depth, cancellationToken);
 
-            // Calculate the last complete 15-minute interval.
-            // (now / 900) * 900 gives the start of the current 15-minute block,
-            // so subtract 900 seconds to get the last complete block.
-            var end = ((now / 900) * 900) - 900;
-
-            // Set start as 12 hours (43200 seconds) before the end of the last full interval.
-            var start = end - 43200;
-
-            var result = await _dbContext.Database
-                .SqlQueryRaw<PerformanceChartEntry>(@"
-       SELECT 
-              time_bucket('15 minutes', time) AS timestamp,
-              SUM(nodes * occurrences)::numeric / 900.0 AS nps
-            FROM public.perft_readings
-            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
-            AND root_position_id = {0} AND depth = {1}
-            GROUP BY timestamp
-            ORDER BY timestamp;
-                ", positionId, depth)
-                            .AsNoTracking()
-                            .ToListAsync(cancellationToken);
-
-
-
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpGet("leaderboard")]

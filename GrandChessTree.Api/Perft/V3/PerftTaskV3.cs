@@ -89,11 +89,10 @@ namespace GrandChessTree.Api.D10Search
             PerftCompletedFullTask result)
         {
             // Update the search item (parent)
-            FullTaskFinishedAt = result.CompletedAt;
             FullTaskWorkerId = result.WorkerId;
 
             var finishedAt = result.CompletedAt == FullTaskStartedAt ? result.CompletedAt + 1 : result.CompletedAt;
-
+            FullTaskFinishedAt = finishedAt;
             // Update search task properties
             var duration = (ulong)(finishedAt - FullTaskStartedAt);
             if (duration > 0)
@@ -105,7 +104,6 @@ namespace GrandChessTree.Api.D10Search
                 FullTaskNps = result.Nodes * (ulong)Occurrences;
             }
 
-            FullTaskNps = finishedAt;
             FullTaskNodes = result.Nodes;
 
             FullTaskFinishedAt = finishedAt;
@@ -161,10 +159,10 @@ namespace GrandChessTree.Api.D10Search
             PerftCompletedFastTask result)
         {
             // Update the search item (parent)
-            FastTaskFinishedAt = result.CompletedAt;
             FastTaskWorkerId = result.WorkerId;
 
             var finishedAt = result.CompletedAt == FastTaskStartedAt ? result.CompletedAt + 1 : result.CompletedAt;
+            FastTaskFinishedAt = finishedAt;
 
             // Update search task properties
             var duration = (ulong)(finishedAt - FastTaskStartedAt);
@@ -177,7 +175,6 @@ namespace GrandChessTree.Api.D10Search
                 FastTaskNps = result.Nodes * (ulong)Occurrences;
             }
 
-            FastTaskNps = finishedAt;
             FastTaskNodes = result.Nodes;
         }
 

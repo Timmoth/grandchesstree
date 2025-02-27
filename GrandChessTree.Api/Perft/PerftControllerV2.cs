@@ -14,11 +14,11 @@ namespace GrandChessTree.Api.Controllers
     [Route("api/v2/perft")]
     public class PerftControllerV2 : ControllerBase
     {     
-        private readonly ILogger<PerftController> _logger;
+        private readonly ILogger<PerftControllerV2> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
         private readonly ApiKeyAuthenticator _apiKeyAuthenticator;
-        public PerftControllerV2(ILogger<PerftController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator)
+        public PerftControllerV2(ILogger<PerftControllerV2> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, ApiKeyAuthenticator apiKeyAuthenticator)
         {
             _logger = logger;
             _dbContext = dbContext;

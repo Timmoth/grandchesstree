@@ -22,8 +22,8 @@ namespace GrandChessTree.Api
             services.AddScoped<PerftReadings>();
             services.AddScoped<PerftFullTaskService>();
             services.AddScoped<PerftFastTaskService>();
-            services.AddHostedService<PerftFullTaskBackgroundService>();
-            services.AddHostedService<PerftFastTaskBackgroundService>();
+          //  services.AddHostedService<PerftFullTaskBackgroundService>();
+          //  services.AddHostedService<PerftFastTaskBackgroundService>();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>

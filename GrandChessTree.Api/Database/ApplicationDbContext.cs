@@ -132,10 +132,20 @@ namespace GrandChessTree.Api.Database
                .IsUnique();
 
             modelBuilder.Entity<PerftTaskV3>()
-                .HasIndex(p => p.RootPositionId);
+                .HasIndex(p => new { p.RootPositionId, p.Depth });
+
 
             modelBuilder.Entity<PerftTaskV3>()
-                .HasIndex(p => p.Depth);
+     .HasIndex(p => p.FullTaskStartedAt);
+
+            modelBuilder.Entity<PerftTaskV3>()
+.HasIndex(p => p.FullTaskFinishedAt);
+
+            modelBuilder.Entity<PerftTaskV3>()
+.HasIndex(p => p.FastTaskStartedAt);
+
+            modelBuilder.Entity<PerftTaskV3>()
+.HasIndex(p => p.FastTaskFinishedAt);
 
             modelBuilder.Entity<PerftTaskV3>()
                  .Property(e => e.FullTaskStartedAt)

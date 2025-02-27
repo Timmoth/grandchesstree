@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using GrandChessTree.Api.timescale;
-using System.Threading;
 using GrandChessTree.Shared.Api;
 using System.Text.Json.Serialization;
-using GrandChessTree.Api.Controllers;
 using GrandChessTree.Api.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace GrandChessTree.Api.Perft.V3
 {
@@ -54,7 +50,10 @@ namespace GrandChessTree.Api.Perft.V3
                     _logger.LogError(ex, "Error processing consumer message batch.");
                 }
 
-                await Task.Delay(10, stoppingToken);
+                if (_fastTaskService.HasLessThenFullBatch)
+                {
+                    await Task.Delay(200, stoppingToken);
+                }
             }
         }
     }
@@ -75,6 +74,8 @@ namespace GrandChessTree.Api.Perft.V3
 
         private readonly static ConcurrentQueue<PerftCompletedFastTask> CompletedTasks = new();
 
+        public bool HasLessThenFullBatch => CompletedTasks.Count < maxBatchSize;
+
         public void Enqueue(PerftFastTaskResultBatch batch, long accountId)
         {
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
@@ -92,10 +93,11 @@ namespace GrandChessTree.Api.Perft.V3
             }
         }
 
+        public const int maxBatchSize = 100;
         public async Task Process(CancellationToken cancellationToken)
         {
             var taskBatch = new List<PerftCompletedFastTask>();
-            while(taskBatch.Count < 100 && CompletedTasks.TryDequeue(out var task))
+            while(taskBatch.Count <= maxBatchSize && CompletedTasks.TryDequeue(out var task))
             {
                 if(task.Attempts >= 4)
                 {
@@ -110,6 +112,7 @@ namespace GrandChessTree.Api.Perft.V3
             {
                 return;
             }
+
 
             var failedTasks = new List<PerftCompletedFastTask>();
 
@@ -146,7 +149,7 @@ namespace GrandChessTree.Api.Perft.V3
                     }
 
                     task.FinishFastTask(result);
-                    readings.Add(task.ToFullTaskReading());
+                    readings.Add(task.ToFastTaskReading());
                 }
 
                 // Attempt to save changes.

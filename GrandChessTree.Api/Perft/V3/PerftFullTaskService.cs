@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using GrandChessTree.Api.timescale;
-using System.Threading;
 using GrandChessTree.Shared.Api;
 using System.Text.Json.Serialization;
-using GrandChessTree.Api.Controllers;
 using GrandChessTree.Api.Database;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 
 namespace GrandChessTree.Api.Perft.V3
 {
@@ -78,11 +74,13 @@ namespace GrandChessTree.Api.Perft.V3
                     _logger.LogError(ex, "Error processing consumer message batch.");
                 }
 
-                await Task.Delay(10, stoppingToken);
+                if (_fullTaskService.HasLessThenFullBatch)
+                {
+                    await Task.Delay(200, stoppingToken);
+                }
             }
         }
     }
-
 
     public class PerftFullTaskService
     {
@@ -130,11 +128,13 @@ namespace GrandChessTree.Api.Perft.V3
 
             }
         }
+        public bool HasLessThenFullBatch => CompletedTasks.Count < maxBatchSize;
 
+        public const int maxBatchSize = 100;
         public async Task Process(CancellationToken cancellationToken)
         {
             var taskBatch = new List<PerftCompletedFullTask>();
-            while(taskBatch.Count < 100 && CompletedTasks.TryDequeue(out var task))
+            while(taskBatch.Count <= maxBatchSize && CompletedTasks.TryDequeue(out var task))
             {
                 if(task.Attempts >= 4)
                 {

@@ -8,6 +8,7 @@ using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace GrandChessTree.Api.Perft.PerftNodes
 {
@@ -100,27 +101,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             return Ok();
         }
 
-        public class ProgressStatsModel
-        {
-            [Column("total_nodes")]
-            [JsonPropertyName("total_nodes")]
-            public ulong total_nodes { get; set; }
-        }
 
-        public class RealTimeStatsModel
-        {
-            [Column("nps")]
-            [JsonPropertyName("nps")]
-            public float nps { get; set; }
-        }
-        public class PerftStatsResponse
-        {
-            [JsonPropertyName("nps")]
-            public float Nps { get; set; }
-
-            [JsonPropertyName("total_nodes")]
-            public ulong TotalNodes { get; set; }
-        }
 
         public class PerftLeaderboardResponse
         {
@@ -146,44 +127,10 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         [OutputCache(Duration = 30)]
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
-            var realTimeStatsResult = await _dbContext.Database
-                .SqlQueryRaw<RealTimeStatsModel>(@"
-        SELECT
-    COALESCE(SUM(nodes * occurrences), 0) / 3600.0 AS nps
-FROM public.perft_readings 
-WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 1;
-")
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-
-            var progressStatsResult = await _dbContext.Database
-           .SqlQueryRaw<ProgressStatsModel>(@"
-       SELECT
-SUM(nodes * occurrences) AS total_nodes
-FROM public.perft_readings
-WHERE task_type = 1;")
-           .AsNoTracking()
-           .FirstOrDefaultAsync(cancellationToken);
-
-
-            var response = new PerftStatsResponse()
-            {
-                Nps = realTimeStatsResult?.nps ?? 0,
-                TotalNodes = progressStatsResult?.total_nodes ?? 0ul,
-            };
-            return Ok(response);
+            var result = await _perftReadings.GetTaskStats(PerftTaskType.Fast, cancellationToken);
+            return Ok(result);
         }
 
-        public class PerformanceChartEntry
-        {
-            [Column("timestamp")]
-            [JsonPropertyName("timestamp")]
-            public long timestamp { get; set; }
-            [Column("nps")]
-            [JsonPropertyName("nps")]
-            public float nps { get; set; }
-        }
 
 
         [HttpGet("stats/charts/performance")]
@@ -192,43 +139,17 @@ WHERE task_type = 1;")
         public async Task<IActionResult> GetPerformanceChart([FromQuery(Name = "account_id")] int? accountId,
             CancellationToken cancellationToken)
         {
-            // Build the SQL query with optional filtering by account_id.
-            string sql;
-            object[] sqlParams;
-
+            List<PerformanceChartEntry> results;
             if (accountId.HasValue)
             {
-                sql = @"
-                   SELECT 
-              time_bucket('15 minutes', time) AS timestamp,
-              SUM(nodes * occurrences)::numeric / 900.0 AS nps
-            FROM public.perft_readings
-            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 1
-              AND account_id = {0}
-            GROUP BY timestamp
-            ORDER BY timestamp;
-            ";
-                sqlParams = new object[] { accountId.Value };
+                results = await _perftReadings.GetAccountTaskPerformance(PerftTaskType.Fast, accountId.Value, cancellationToken);
             }
             else
             {
-                sql = @"
-                   SELECT 
-              time_bucket('15 minutes', time) AS timestamp,
-              SUM(nodes * occurrences)::numeric / 900.0 AS nps
-            FROM public.perft_readings
-            WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 1
-            GROUP BY timestamp
-            ORDER BY timestamp;";
-                sqlParams = new object[] { };
+                results = await _perftReadings.GetTaskPerformance(PerftTaskType.Fast, cancellationToken);
             }
 
-            var result = await _dbContext.Database
-                .SqlQueryRaw<PerformanceChartEntry>(sql, sqlParams)
-                .AsNoTracking()
-                .ToListAsync(cancellationToken);
-
-            return Ok(result);
+            return Ok(results);
         }
 
         [HttpGet("leaderboard")]

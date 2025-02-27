@@ -14,10 +14,10 @@ namespace GrandChessTree.Api.Controllers
     [Route("api/v2/perft/{positionId}/{depth}")]
     public class PerftPositionController : ControllerBase
     {     
-        private readonly ILogger<PerftController> _logger;
+        private readonly ILogger<PerftPositionController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
-        public PerftPositionController(ILogger<PerftController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
+        public PerftPositionController(ILogger<PerftPositionController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
         {
             _logger = logger;
             _dbContext = dbContext;

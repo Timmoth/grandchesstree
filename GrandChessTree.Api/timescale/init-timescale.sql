@@ -18,12 +18,11 @@ CREATE TABLE IF NOT EXISTS perft_readings (
 SELECT create_hypertable(
     'perft_readings', 
     'time',                               -- Partition by the time column
-    chunk_time_interval => INTERVAL '1 day',  -- Create chunks based on a daily interval
+    chunk_time_interval => INTERVAL '1 hour',  -- Create chunks based on a daily interval
     if_not_exists => TRUE
 );
 
 -- Create indexes
 CREATE INDEX idx_account_id ON perft_readings (account_id);
-CREATE INDEX idx_root_position_id ON perft_readings (root_position_id);
-CREATE INDEX idx_depth ON perft_readings (depth);
+CREATE INDEX idx_root_position_depth ON perft_readings (root_position_id, depth);
 CREATE INDEX idx_task_type ON perft_readings (task_type);
