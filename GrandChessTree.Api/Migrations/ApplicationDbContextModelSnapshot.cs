@@ -63,7 +63,7 @@ namespace GrandChessTree.Api.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("accounts");
+                    b.ToTable("accounts", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.ApiKeys.ApiKeyModel", b =>
@@ -105,7 +105,7 @@ namespace GrandChessTree.Api.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.ToTable("api_keys");
+                    b.ToTable("api_keys", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftItem", b =>
@@ -163,7 +163,7 @@ namespace GrandChessTree.Api.Migrations
                     b.HasIndex("Hash", "Depth")
                         .IsUnique();
 
-                    b.ToTable("perft_items");
+                    b.ToTable("perft_items", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftTask", b =>
@@ -272,7 +272,7 @@ namespace GrandChessTree.Api.Migrations
 
                     b.HasIndex("RootPositionId");
 
-                    b.ToTable("perft_tasks");
+                    b.ToTable("perft_tasks", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftTaskV3", b =>
@@ -466,7 +466,7 @@ namespace GrandChessTree.Api.Migrations
                     b.HasIndex("RootPositionId", "Depth", "Board")
                         .IsUnique();
 
-                    b.ToTable("perft_tasks_v3");
+                    b.ToTable("perft_tasks_v3", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.Perft.PerftNodes.PerftNodesTask", b =>
@@ -557,7 +557,7 @@ namespace GrandChessTree.Api.Migrations
                     b.HasIndex("Hash", "Depth")
                         .IsUnique();
 
-                    b.ToTable("perft_nodes_tasks");
+                    b.ToTable("perft_nodes_tasks", (string)null);
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.ApiKeys.ApiKeyModel", b =>

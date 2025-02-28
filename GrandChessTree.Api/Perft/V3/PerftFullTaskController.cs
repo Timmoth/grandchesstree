@@ -53,8 +53,8 @@ namespace GrandChessTree.Api.Controllers
                .FromSqlRaw(@"
                     SELECT * FROM public.perft_tasks_v3 
                     WHERE full_task_started_at <= {0} AND full_task_finished_at = 0
-                    ORDER BY depth ASC
-                    LIMIT 500 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
+                    ORDER BY depth ASC, id ASC
+                    LIMIT 1000 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
                .ToListAsync(cancellationToken);
 
             if (!tasks.Any())
@@ -166,6 +166,13 @@ namespace GrandChessTree.Api.Controllers
             {
                 results = await _perftReadings.GetTaskPerformance(PerftTaskType.Full, cancellationToken);
             }
+
+            if (results.Count >= 2)
+            {
+                // Hack, since the last element is only partially complete
+                results.RemoveAt(results.Count - 1);
+            }
+
             return Ok(results);
         }
 

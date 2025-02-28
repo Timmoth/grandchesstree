@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using SendGrid;
 
 namespace GrandChessTree.Api.Perft.PerftNodes
 {
@@ -54,7 +55,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                .FromSqlRaw(@"
                     SELECT * FROM public.perft_tasks_v3 
                     WHERE fast_task_started_at <= {0} AND fast_task_finished_at = 0
-                    ORDER BY depth ASC
+                    ORDER BY depth ASC, id ASC
                     LIMIT 500 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
                .ToListAsync(cancellationToken);
 
@@ -148,7 +149,11 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             {
                 results = await _perftReadings.GetTaskPerformance(PerftTaskType.Fast, cancellationToken);
             }
-
+            if (results.Count >= 2)
+            {
+                // Hack, since the last element is only partially complete
+                results.RemoveAt(results.Count - 1);
+            }
             return Ok(results);
         }
 

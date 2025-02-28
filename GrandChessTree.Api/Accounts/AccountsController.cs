@@ -125,34 +125,33 @@ namespace GrandChessTree.Api.Controllers
             }
             var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
 
-            var task0Stats = await _dbContext.PerftTasks
+            var task0Stats = await _dbContext.PerftTasksV3
                          .AsNoTracking()
-                         .Include(i => i.Account)
-                         .Where(i => i.FinishedAt > 0 && i.AccountId == id)
-                         .GroupBy(i => i.AccountId)
+                         .Include(i => i.FullTaskAccount)
+                         .Where(i => i.FullTaskFinishedAt > 0 && i.FullTaskAccountId == id)
+                         .GroupBy(i => i.FullTaskAccountId)
                          .Select(g => new AccountTaskStatsResponse()
                          {
-                             TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
-                             TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
+                             TotalNodes = (long)g.Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)),  // Total nodes produced
+                             TotalTimeSeconds = g.Sum(i => i.FullTaskFinishedAt - i.FullTaskStartedAt),  // Total time in seconds across all tasks
                              CompletedTasks = g.Count(),  // Number of tasks completed
-                             TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
-                             NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f
+                             TasksPerMinute = g.Count(i => i.FullTaskFinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
+                             NodesPerSecond = g.Where(i => i.FullTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)) / 3600.0f
                          })
                          .FirstOrDefaultAsync(cancellationToken);
 
-            var task1Stats = await _dbContext.PerftNodesTask
+            var task1Stats = await _dbContext.PerftTasksV3
                 .AsNoTracking()
-                .Include(i => i.Account)
-                .Where(i => i.FinishedAt > 0)
-                .Where(i => i.FinishedAt > 0 && i.AccountId == id)
-                .GroupBy(i => i.AccountId)
+                .Include(i => i.FastTaskAccount)
+                .Where(i => i.FastTaskFinishedAt > 0 && i.FastTaskAccountId == id)
+                .GroupBy(i => i.FastTaskAccountId)
                 .Select(g => new AccountTaskStatsResponse()
                 {
-                    TotalNodes = (long)g.Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)),  // Total nodes produced
-                    TotalTimeSeconds = g.Sum(i => i.FinishedAt - i.StartedAt),  // Total time in seconds across all tasks
+                    TotalNodes = (long)g.Sum(i => (float)i.FastTaskNps * (i.FastTaskFinishedAt - i.FastTaskStartedAt)),  // Total nodes produced
+                    TotalTimeSeconds = g.Sum(i => i.FastTaskFinishedAt - i.FastTaskStartedAt),  // Total time in seconds across all tasks
                     CompletedTasks = g.Count(),  // Number of tasks completed
-                    TasksPerMinute = g.Count(i => i.FinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
-                    NodesPerSecond = g.Where(i => i.FinishedAt >= oneHourAgo).Sum(i => (float)i.Nps * (i.FinishedAt - i.StartedAt)) / 3600.0f
+                    TasksPerMinute = g.Count(i => i.FastTaskFinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
+                    NodesPerSecond = g.Where(i => i.FastTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FastTaskNps * (i.FastTaskFinishedAt - i.FastTaskStartedAt)) / 3600.0f
                 })
                 .FirstOrDefaultAsync(cancellationToken);
 

@@ -24,6 +24,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("sub_task_cache_size")]
         public int SubTaskCacheSize { get; set; } = 1024;
+
+        [JsonPropertyName("sub_task_launch_depth")]
+        public int SubTaskLaunchDepth { get; set; } = 3;
     }
 
     public static class ConfigManager

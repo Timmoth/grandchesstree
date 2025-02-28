@@ -76,7 +76,11 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         public async Task<IActionResult> GetPerformanceChart(int positionId, int depth, CancellationToken cancellationToken)
         {
           var response = await _perftReadings.GetPerformanceChart(PerftTaskType.Fast, positionId, depth, cancellationToken);
-
+            if (response.Count >= 2)
+            {
+                // Hack, since the last element is only partially complete
+                response.RemoveAt(response.Count - 1);
+            }
             return Ok(response);
         }
 

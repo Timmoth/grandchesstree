@@ -61,7 +61,7 @@ namespace GrandChessTree.Client.Stats
             }
             else
             {
-                var subTaskSplitDepth = 2;
+                var subTaskSplitDepth = Math.Min(_config.SubTaskLaunchDepth, task.LaunchDepth - 2);
                 UniqueLeafNodeGenerator.PerftRootUniqueLeafNodes(ref board, subTaskSplitDepth, wtm);
                 var subTasks = UniqueLeafNodeGenerator.boards;
                 var leafNodeWhiteToMove = subTaskSplitDepth % 2 == 0 ? wtm : !wtm;

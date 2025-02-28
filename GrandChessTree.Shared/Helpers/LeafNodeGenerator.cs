@@ -125,9 +125,9 @@ public static unsafe class LeafNodeGenerator
         }
 
         var leafNodeWhiteToMove = depth % 2 == 0 ? whiteToMove : !whiteToMove;
-        var fens = new HashSet<string>();
 
-        var hashes = new Dictionary<string, int>();
+        var hashes = new Dictionary<string, (int order, int occurrences)>();
+        int order = 0;
         foreach (var b in boards)
         {
             var bb = b;
@@ -138,17 +138,17 @@ public static unsafe class LeafNodeGenerator
             }
 
             var boardState = BoardStateSerialization.Serialize(ref bb, leafNodeWhiteToMove);
-            if (hashes.TryGetValue(boardState, out var occurrences))
+            if (hashes.TryGetValue(boardState, out var entry))
             {
-                hashes[boardState] = occurrences + 1;
+                hashes[boardState] = (entry.order, entry.occurrences + 1);
             }
             else
             {
-                hashes[boardState] = 1;
+                hashes[boardState] = (order++, 1);
             }
         }
 
-        return hashes.Select(h => (h.Key, h.Value)).ToList();
+        return hashes.OrderBy(k => k.Value.order).Select(h => (h.Key, h.Value.occurrences)).ToList();
     }
 
 

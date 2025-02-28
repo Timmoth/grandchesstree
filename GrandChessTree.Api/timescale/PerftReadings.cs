@@ -1,10 +1,6 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using System.Threading;
 using GrandChessTree.Shared.Api;
-using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 namespace GrandChessTree.Api.timescale
@@ -64,7 +60,7 @@ namespace GrandChessTree.Api.timescale
             var now = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
             // Calculate the last complete 15-minute interval.
-            var end = ((now / 900) * 900) - 900;
+            var end = ((now / 900) * 900);
 
             // Set start as 12 hours (43200 seconds) before the end of the last full interval.
             var start = end - 43200;
@@ -225,7 +221,7 @@ namespace GrandChessTree.Api.timescale
             time_bucket('15 minutes', time) AS timestamp,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
-        WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 1
+        WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 1
         GROUP BY timestamp
         ORDER BY timestamp;" :
         @"
@@ -233,7 +229,7 @@ namespace GrandChessTree.Api.timescale
             time_bucket('15 minutes', time) AS timestamp,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
-        WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
+        WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 0
         GROUP BY timestamp
         ORDER BY timestamp;";
 
@@ -265,7 +261,7 @@ namespace GrandChessTree.Api.timescale
             time_bucket('15 minutes', time) AS timestamp,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
-        WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 1
+        WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 1
           AND account_id = @accountId
         GROUP BY timestamp
         ORDER BY timestamp;" : @"
@@ -273,7 +269,7 @@ namespace GrandChessTree.Api.timescale
             time_bucket('15 minutes', time) AS timestamp,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
-        WHERE time >= NOW() - INTERVAL '1 hour' AND task_type = 0
+        WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 0
           AND account_id = @accountId
         GROUP BY timestamp
         ORDER BY timestamp;"
