@@ -6,7 +6,6 @@ interface PerftLeaderboardResponse {
   account_id:number;
   account_name: string;
   total_nodes: number;
-  compute_time_seconds: number;
   completed_tasks: number;
   tpm: number;
   nps: number;
@@ -45,24 +44,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  }) => {
     fetchLeaderboard();
   }, [positionId, depth]); // Empty dependency array ensures this effect runs only once when the component mounts
 
-  // Format time to human-readable form (hours, minutes, seconds)
-  const formatTime = (seconds: number): string => {
-    if (seconds < 60) {
-      return `${seconds}s`; // Less than 1 minute
-    } else if (seconds < 3600) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes}m ${remainingSeconds}s`; // Less than 1 hour
-    } else if (seconds < 86400) {
-      const hours = Math.floor(seconds / 3600);
-      const remainingMinutes = Math.floor((seconds % 3600) / 60);
-      return `${hours}h ${remainingMinutes}m`; // Less than 1 day
-    } else {
-      const days = Math.floor(seconds / 86400);
-      return `${days}d`; // More than 1 day
-    }
-  };
-
   // Format large numbers (e.g., 1000 -> 1k, 1000000 -> 1m)
   const formatBigNumber = (num: number): string => {
     if (num >= 1e12) return (num / 1e12).toFixed(1) + "t"; // Trillion
@@ -100,9 +81,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  }) => {
                   Total Nodes
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Compute Time
-                </th>
-                <th scope="col" className="px-6 py-3">
                   Completed Tasks
                 </th>
                 <th scope="col" className="px-6 py-3">
@@ -129,9 +107,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  }) => {
                   <td className="px-6 py-4 ">{((item.nps) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
                     <td className="px-6 py-4">
                       {formatBigNumber(item.total_nodes)}
-                    </td>
-                    <td className="px-6 py-4">
-                      {formatTime(item.compute_time_seconds)}
                     </td>
                     <td className="px-6 py-4">
                       {formatBigNumber(item.completed_tasks)}

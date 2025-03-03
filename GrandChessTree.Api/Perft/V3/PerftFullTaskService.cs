@@ -50,6 +50,47 @@ namespace GrandChessTree.Api.Perft.V3
         public required ulong DirectDiscoverdMates { get; set; }
         [JsonPropertyName("double_discovered_mates")]
         public required ulong DoubleDiscoverdMates { get; set; }
+
+        public static PerftCompletedFullTask? Decompress(long timeStamp, long accountId, int workerId, ulong[] data)
+        {
+            // Verify the array length.
+            if (data.Length != 15)
+            {
+                return null;
+            }
+
+            // Calculate the checksum from data[1] to data[13].
+            var checkSum = data[1] ^ data[2] ^ data[3] ^ data[4] ^ data[5]
+                ^ data[6] ^ data[7] ^ data[8] ^ data[9]
+                ^ data[10] ^ data[11] ^ data[12] ^ data[13];
+
+            // Validate checksum.
+            if (checkSum != data[14])
+            {
+                return null;
+            }
+
+            return new PerftCompletedFullTask()
+            {
+                CompletedAt = timeStamp,
+                WorkerId = workerId,
+                AccountId = accountId,
+                TaskId = (long)data[0],
+                Nodes = data[1],
+                Captures = data[2],
+                Enpassants = data[3],
+                Castles = data[4],
+                Promotions = data[5],
+                DirectChecks = data[6],
+                SingleDiscoveredChecks = data[7],
+                DirectDiscoveredChecks = data[8],
+                DoubleDiscoveredChecks = data[9],
+                DirectMates = data[10],
+                SingleDiscoveredMates = data[11],
+                DirectDiscoverdMates = data[12],
+                DoubleDiscoverdMates = data[13]
+            };
+        }
     }
 
     public class PerftFullTaskBackgroundService : BackgroundService
@@ -88,18 +129,37 @@ namespace GrandChessTree.Api.Perft.V3
         private readonly TimeProvider _timeProvider;
         private readonly PerftReadings _perftReadings;
         private readonly IServiceScopeFactory _scopeFactory;
-
-        public PerftFullTaskService(ILogger<PerftFullTaskService> logger, TimeProvider timeProvider, PerftReadings perftReadings, IServiceScopeFactory scopeFactory)
+        private readonly PerftJobService _perftJobService;
+        private readonly PerftContributionService _perftContributionService;
+        public PerftFullTaskService(ILogger<PerftFullTaskService> logger, TimeProvider timeProvider, PerftReadings perftReadings, IServiceScopeFactory scopeFactory, PerftJobService perftJobService, PerftContributionService perftContributionService)
         {
             _logger = logger;
             _timeProvider = timeProvider;
             _perftReadings = perftReadings;
             _scopeFactory = scopeFactory;
+            _perftJobService = perftJobService;
+            _perftContributionService = perftContributionService;
         }
 
         private readonly static ConcurrentQueue<PerftCompletedFullTask> CompletedTasks = new();
 
         public void Enqueue(PerftFullTaskResultBatch batch, long accountId)
+        {
+            var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+
+            foreach (var result in batch.Results)
+            {
+                var taskData = PerftCompletedFullTask.Decompress(currentTimestamp, accountId, batch.WorkerId, result);
+                if(taskData == null)
+                {
+                    continue;
+                }
+
+                CompletedTasks.Enqueue(taskData);
+            }
+        }
+
+        public void Enqueue(PerftFullTaskResultBatchOld batch, long accountId)
         {
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
@@ -118,14 +178,13 @@ namespace GrandChessTree.Api.Perft.V3
                     Promotions = result.Promotions,
                     DirectChecks = result.DirectChecks,
                     SingleDiscoveredChecks = result.SingleDiscoveredChecks,
-                   DirectDiscoveredChecks = result.DirectDiscoveredChecks,
-                   DoubleDiscoveredChecks = result.DoubleDiscoveredChecks,
-                   DirectMates = result.DirectMates,
-                   SingleDiscoveredMates = result.SingleDiscoveredMates,
-                   DirectDiscoverdMates = result.DirectDiscoverdMates,
-                   DoubleDiscoverdMates = result.DoubleDiscoverdMates,
+                    DirectDiscoveredChecks = result.DirectDiscoveredChecks,
+                    DoubleDiscoveredChecks = result.DoubleDiscoveredChecks,
+                    DirectMates = result.DirectMates,
+                    SingleDiscoveredMates = result.SingleDiscoveredMates,
+                    DirectDiscoverdMates = result.DirectDiscoverdMates,
+                    DoubleDiscoverdMates = result.DoubleDiscoverdMates,
                 });
-
             }
         }
         public bool HasLessThenFullBatch => CompletedTasks.Count < maxBatchSize;
@@ -158,7 +217,6 @@ namespace GrandChessTree.Api.Perft.V3
 
                 var _dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>() ?? throw new Exception("failed to init dbcontext");
 
-
                 var taskIds = taskBatch.Select(r => r.TaskId).ToList();
                 var readings = new List<object[]>();
                 // Start a new transaction for each attempt.
@@ -174,7 +232,8 @@ namespace GrandChessTree.Api.Perft.V3
                     await transaction.RollbackAsync(cancellationToken);
                     throw new Exception("Couldn't find submitted tasks");
                 }
-
+                var taskUpdates = new List<TaskUpdate>();
+                var contributions = new List<PerftContributionUpdate>();
                 // Process each result.
                 foreach (var result in taskBatch)
                 {
@@ -185,8 +244,17 @@ namespace GrandChessTree.Api.Perft.V3
                         continue;
                     }
 
-                    task.FinishFullTask(result);
+                    taskUpdates.Add(task.FinishFullTask(result));
                     readings.Add(task.ToFullTaskReading());
+
+                    contributions.Add(new PerftContributionUpdate()
+                    {
+                        TaskType = PerftTaskType.Full,
+                        Depth = task.Depth,
+                        RootPositionId = task.RootPositionId,
+                        ComputedNodes = task.FullTaskNodes * (ulong)task.Occurrences,
+                        AccountId = result.AccountId,
+                    });
                 }
 
                 // Attempt to save changes.
@@ -196,6 +264,9 @@ namespace GrandChessTree.Api.Perft.V3
                 await transaction.CommitAsync(cancellationToken);
 
                 await _perftReadings.InsertReadings(readings, cancellationToken);
+
+                _perftJobService.AddUpdates(taskUpdates);
+                _perftContributionService.AddUpdates(contributions);
 
                 _logger.LogInformation("Processed: {} tasks {} in queue", readings.Count, CompletedTasks.Count);
             }

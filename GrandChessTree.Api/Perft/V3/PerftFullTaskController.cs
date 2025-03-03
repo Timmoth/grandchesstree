@@ -52,7 +52,7 @@ namespace GrandChessTree.Api.Controllers
             var tasks = await _dbContext.PerftTasksV3
                .FromSqlRaw(@"
                     SELECT * FROM public.perft_tasks_v3 
-                    WHERE full_task_started_at <= {0} AND full_task_finished_at = 0
+                    WHERE full_task_started_at = 0 AND full_task_finished_at = 0
                     ORDER BY depth ASC, id ASC
                     LIMIT 1000 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
                .ToListAsync(cancellationToken);
@@ -84,10 +84,27 @@ namespace GrandChessTree.Api.Controllers
         }
 
         [ApiKeyAuthorize]
-        [HttpPost("results")]
-        public async Task<IActionResult> SubmitResults(
+        [HttpPut("tasks")]
+        public async Task<IActionResult> SubmitCompletedTasks(
              [FromBody] PerftFullTaskResultBatch request,
              CancellationToken cancellationToken)
+        {
+            var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);
+            if (apiKey == null)
+            {
+                return Unauthorized();
+            }
+
+            _perftFullTaskService.Enqueue(request, apiKey.AccountId);
+
+            return Ok();
+        }
+
+        [ApiKeyAuthorize]
+        [HttpPost("results")]
+        public async Task<IActionResult> SubmitResults(
+         [FromBody] PerftFullTaskResultBatchOld request,
+         CancellationToken cancellationToken)
         {
             var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);
             if (apiKey == null)
@@ -122,23 +139,6 @@ namespace GrandChessTree.Api.Controllers
             public ulong TotalNodes { get; set; }
         }
 
-        public class PerftLeaderboardResponse
-        {
-            [JsonPropertyName("account_id")]
-            public long AccountId { get; set; }
-
-            [JsonPropertyName("account_name")]
-            public string AccountName { get; set; } = "Unknown";
-
-            [JsonPropertyName("total_nodes")]
-            public long TotalNodes { get; set; }
-
-            [JsonPropertyName("compute_time_seconds")]
-            public long TotalTimeSeconds { get; set; }
-
-            [JsonPropertyName("nps")]
-            public float NodesPerSecond { get; set; }
-        }
 
 
         [HttpGet("stats")]
@@ -149,8 +149,6 @@ namespace GrandChessTree.Api.Controllers
             var result = await _perftReadings.GetTaskStats(PerftTaskType.Full, cancellationToken);
             return Ok(result);
         }
-
-
 
         [HttpGet("stats/charts/performance")]
         [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "account_id" })]
@@ -181,25 +179,35 @@ namespace GrandChessTree.Api.Controllers
         [OutputCache(Duration = 120)]
         public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
         {
-            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).ToListAsync(cancellationToken);
 
-            var stats = await _dbContext.PerftTasksV3
-                .AsNoTracking()
-                .Include(i => i.FullTaskAccount)
-                .Where(i => i.FullTaskFinishedAt > 0)
-                .GroupBy(i => i.FullTaskAccountId)
-                .Select(g => new PerftLeaderboardResponse()
+            var results = await _perftReadings.GetLeaderboard(PerftTaskType.Full, cancellationToken);
+
+            var leaderboard = new List<PerftLeaderboardResponse>();
+
+            foreach (var contributor in contributors.GroupBy(c => c.Account))
+            {
+                if (contributor.Key == null)
                 {
-                    AccountId = g.Key.HasValue ? g.Key.Value : 0,
-                    AccountName = g.Select(i => i.FullTaskAccount != null ? i.FullTaskAccount.Name : "Unknown").FirstOrDefault(),
-                    TotalNodes = (long)g.Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)),  // Total nodes produced
-                    TotalTimeSeconds = g.Sum(i => i.FullTaskFinishedAt - i.FullTaskStartedAt),  // Total time in seconds across all tasks
-                    NodesPerSecond = g.Where(i => i.FullTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)) / 3600.0f
-                })
-                .ToArrayAsync(cancellationToken);
+                    continue;
+                }
 
+                results.TryGetValue(contributor.Key.Id, out var stats);
 
-            return Ok(stats);
+                leaderboard.Add(new PerftLeaderboardResponse()
+                {
+                    AccountId = contributor.Key.Id,
+                    AccountName = contributor.Key.Name,
+                    CompletedTasks = contributor.Sum(c => c.CompletedFullTasks),
+                    TotalTasks = contributor.Sum(c => c.CompletedFullTasks),
+                    NodesPerSecond = stats.nps,
+                    TasksPerMinute = stats.tpm,
+                    TotalNodes = (long)contributor.Sum(c => c.FullTaskNodes),
+                    TotalTimeSeconds = 0,
+                });
+            }
+
+            return Ok(leaderboard.Where(r => r.TotalTasks > 0));
         }
     }
 }

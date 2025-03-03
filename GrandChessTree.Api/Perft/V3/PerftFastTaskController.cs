@@ -54,9 +54,9 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             var tasks = await _dbContext.PerftTasksV3
                .FromSqlRaw(@"
                     SELECT * FROM public.perft_tasks_v3 
-                    WHERE fast_task_started_at <= {0} AND fast_task_finished_at = 0
+                    WHERE fast_task_started_at = 0 AND fast_task_finished_at = 0
                     ORDER BY depth ASC, id ASC
-                    LIMIT 500 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
+                    LIMIT 1000 FOR UPDATE SKIP LOCKED", expiredAtTimeStamp)
                .ToListAsync(cancellationToken);
 
             if (!tasks.Any())
@@ -102,27 +102,6 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             return Ok();
         }
 
-
-
-        public class PerftLeaderboardResponse
-        {
-            [JsonPropertyName("account_id")]
-            public long AccountId { get; set; }
-
-            [JsonPropertyName("account_name")]
-            public string AccountName { get; set; } = "Unknown";
-
-            [JsonPropertyName("total_nodes")]
-            public long TotalNodes { get; set; }
-
-            [JsonPropertyName("compute_time_seconds")]
-            public long TotalTimeSeconds { get; set; }
-
-            [JsonPropertyName("nps")]
-            public float NodesPerSecond { get; set; }
-        }
-
-
         [HttpGet("stats")]
         [ResponseCache(Duration = 30)]
         [OutputCache(Duration = 30)]
@@ -162,25 +141,35 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         [OutputCache(Duration = 120)]
         public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
         {
-            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).ToListAsync(cancellationToken);
 
-            var stats = await _dbContext.PerftTasksV3
-                .AsNoTracking()
-                .Include(i => i.FastTaskAccount)
-                .Where(i => i.FastTaskFinishedAt > 0)
-                .GroupBy(i => i.FastTaskAccountId)
-                .Select(g => new PerftLeaderboardResponse()
+            var results = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, cancellationToken);
+
+            var leaderboard = new List<PerftLeaderboardResponse>();
+
+            foreach (var contributor in contributors.GroupBy(c => c.Account))
+            {
+                if (contributor.Key == null)
                 {
-                    AccountId = g.Key.HasValue ? g.Key.Value : 0,
-                    AccountName = g.Select(i => i.FastTaskAccount != null ? i.FastTaskAccount.Name : "Unknown").FirstOrDefault(),
-                    TotalNodes = (long)g.Sum(i => ((float)i.FastTaskNodes * i.Occurrences)),  // Total nodes produced
-                    TotalTimeSeconds = g.Sum(i => i.FastTaskFinishedAt - i.FastTaskStartedAt),  // Total time in seconds across all tasks
-                    NodesPerSecond = g.Where(i => i.FastTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FastTaskNps * (i.FastTaskFinishedAt - i.FastTaskStartedAt)) / 3600.0f
-                })
-                .ToArrayAsync(cancellationToken);
+                    continue;
+                }
 
+                results.TryGetValue(contributor.Key.Id, out var stats);
 
-            return Ok(stats);
+                leaderboard.Add(new PerftLeaderboardResponse()
+                {
+                    AccountId = contributor.Key.Id,
+                    AccountName = contributor.Key.Name,
+                    CompletedTasks = contributor.Sum(c => c.CompletedFastTasks),
+                    TotalTasks = contributor.Sum(c => c.CompletedFastTasks),
+                    NodesPerSecond = stats.nps,
+                    TasksPerMinute = stats.tpm,
+                    TotalNodes = (long)contributor.Sum(c => c.FastTaskNodes),
+                    TotalTimeSeconds = 0,
+                });
+            }
+
+            return Ok(leaderboard.Where(r => r.TotalTasks > 0));
         }
     }
 }

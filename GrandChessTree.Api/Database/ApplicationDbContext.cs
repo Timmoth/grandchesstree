@@ -19,6 +19,8 @@ namespace GrandChessTree.Api.Database
         public DbSet<PerftNodesTask> PerftNodesTask { get; set; }
         public DbSet<ApiKeyModel> ApiKeys { get; set; }
         public DbSet<AccountModel> Accounts { get; set; }
+        public DbSet<PerftJob> PerftJobs { get; set; }
+        public DbSet<PerftContribution> PerftContributions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,6 +37,12 @@ namespace GrandChessTree.Api.Database
                 .WithOne(i => i.Account)
                 .HasForeignKey(t => t.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AccountModel>()
+                .HasMany(t => t.PerftContributions)
+                .WithOne(i => i.Account)
+                .HasForeignKey(t => t.AccountId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<AccountModel>()
                 .HasMany(t => t.SearchTasks)
@@ -70,6 +78,14 @@ namespace GrandChessTree.Api.Database
 
             modelBuilder.Entity<PerftItem>()
                 .HasIndex(p => p.RootPositionId);
+
+            modelBuilder.Entity<PerftContribution>()
+                .HasIndex(p => new { p.RootPositionId, p.Depth, p.AccountId })
+                .IsUnique();
+
+            modelBuilder.Entity<PerftJob>()
+                .HasIndex(p => new { p.RootPositionId, p.Depth })
+                .IsUnique();
 
             #region Perft Nodes Task
             modelBuilder.Entity<PerftNodesTask>()
@@ -134,6 +150,11 @@ namespace GrandChessTree.Api.Database
             modelBuilder.Entity<PerftTaskV3>()
                 .HasIndex(p => new { p.RootPositionId, p.Depth });
 
+            modelBuilder.Entity<PerftTaskV3>()
+                .HasIndex(p => new { p.FastTaskStartedAt, p.FastTaskFinishedAt, p.Depth, p.Id });
+
+            modelBuilder.Entity<PerftTaskV3>()
+                .HasIndex(p => new { p.FullTaskStartedAt, p.FullTaskFinishedAt, p.Depth, p.Id });
 
             modelBuilder.Entity<PerftTaskV3>()
      .HasIndex(p => p.FullTaskStartedAt);

@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using GrandChessTree.Shared.Api;
 using System.Diagnostics.Metrics;
 using GrandChessTree.Api.Perft.V3;
+using GrandChessTree.Api.timescale;
 
 namespace GrandChessTree.Api.D10Search
 {
@@ -85,7 +86,7 @@ namespace GrandChessTree.Api.D10Search
             FullTaskAccountId = accountId;
         }
 
-        public void FinishFullTask(
+        public TaskUpdate FinishFullTask(
             PerftCompletedFullTask result)
         {
             // Update the search item (parent)
@@ -121,6 +122,14 @@ namespace GrandChessTree.Api.D10Search
             DirectDiscoveredMates = result.DirectDiscoverdMates;
             DoubleDiscoveredMates = result.DoubleDiscoverdMates;
 
+            return new TaskUpdate()
+            {
+                Depth = Depth,
+                RootPositionId = RootPositionId,
+                IsVerified = FastTaskNodes == FullTaskNodes,
+                TaskType = PerftTaskType.Full,
+                ComputedNodes = FullTaskNodes * (ulong)Occurrences,
+            };
         }
 
 
@@ -155,7 +164,7 @@ namespace GrandChessTree.Api.D10Search
             FastTaskAccountId = accountId;
         }
 
-        public void FinishFastTask(
+        public TaskUpdate FinishFastTask(
             PerftCompletedFastTask result)
         {
             // Update the search item (parent)
@@ -176,6 +185,15 @@ namespace GrandChessTree.Api.D10Search
             }
 
             FastTaskNodes = result.Nodes;
+
+            return new TaskUpdate()
+            {
+                Depth = Depth,
+                RootPositionId = RootPositionId,
+                IsVerified = FastTaskNodes == FullTaskNodes,
+                TaskType = PerftTaskType.Fast,
+                ComputedNodes = FastTaskNodes * (ulong)Occurrences,
+            };
         }
 
         internal object[] ToFullTaskReading()

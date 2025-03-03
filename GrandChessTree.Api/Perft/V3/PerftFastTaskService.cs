@@ -32,6 +32,7 @@ namespace GrandChessTree.Api.Perft.V3
     {
         private readonly ILogger<PerftFastTaskBackgroundService> _logger;
         private readonly PerftFastTaskService _fastTaskService;
+
         public PerftFastTaskBackgroundService(ILogger<PerftFastTaskBackgroundService> logger, PerftFastTaskService fastTaskService)
         {
             _logger = logger;
@@ -63,13 +64,17 @@ namespace GrandChessTree.Api.Perft.V3
         private readonly TimeProvider _timeProvider;
         private readonly PerftReadings _perftReadings;
         private readonly IServiceScopeFactory _scopeFactory;
+        private readonly PerftJobService _perftJobService;
+        private readonly PerftContributionService _perftContributionService;
 
-        public PerftFastTaskService(ILogger<PerftFastTaskService> logger, IServiceScopeFactory scopeFactory, TimeProvider timeProvider, PerftReadings perftReadings)
+        public PerftFastTaskService(ILogger<PerftFastTaskService> logger, IServiceScopeFactory scopeFactory, TimeProvider timeProvider, PerftReadings perftReadings, PerftJobService perftJobService, PerftContributionService perftContributionService)
         {
             _logger = logger;
             _timeProvider = timeProvider;
             _perftReadings = perftReadings;
             _scopeFactory = scopeFactory;
+            _perftJobService = perftJobService;
+            _perftContributionService = perftContributionService;
         }
 
         private readonly static ConcurrentQueue<PerftCompletedFastTask> CompletedTasks = new();
@@ -137,6 +142,8 @@ namespace GrandChessTree.Api.Perft.V3
                     await transaction.RollbackAsync(cancellationToken);
                     throw new Exception("Couldn't find submitted tasks");
                 }
+                var taskUpdates = new List<TaskUpdate>();
+                var contributions = new List<PerftContributionUpdate>();
 
                 // Process each result.
                 foreach (var result in taskBatch)
@@ -148,8 +155,17 @@ namespace GrandChessTree.Api.Perft.V3
                         continue;
                     }
 
-                    task.FinishFastTask(result);
+                    taskUpdates.Add(task.FinishFastTask(result));
                     readings.Add(task.ToFastTaskReading());
+
+                    contributions.Add(new PerftContributionUpdate()
+                    {
+                        TaskType = PerftTaskType.Fast,
+                        Depth = task.Depth,
+                        RootPositionId = task.RootPositionId,
+                        ComputedNodes = task.FastTaskNodes * (ulong)task.Occurrences,
+                        AccountId = result.AccountId,
+                    });
                 }
 
                 // Attempt to save changes.
@@ -157,8 +173,11 @@ namespace GrandChessTree.Api.Perft.V3
 
                 // Commit the transaction.
                 await transaction.CommitAsync(cancellationToken);
-
                 await _perftReadings.InsertReadings(readings, cancellationToken);
+
+                _perftJobService.AddUpdates(taskUpdates);
+                _perftContributionService.AddUpdates(contributions);
+
                 _logger.LogInformation("Processed: {} tasks, {} in queue", readings.Count, CompletedTasks.Count);
             }
             catch (Exception ex) 

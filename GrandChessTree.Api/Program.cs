@@ -1,6 +1,5 @@
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.Database;
-using GrandChessTree.Api.Middleware;
 using GrandChessTree.Api.Perft.V3;
 using GrandChessTree.Api.timescale;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +21,13 @@ namespace GrandChessTree.Api
             services.AddScoped<PerftReadings>();
             services.AddScoped<PerftFullTaskService>();
             services.AddScoped<PerftFastTaskService>();
+            services.AddScoped<PerftJobService>();
+            services.AddScoped<PerftContributionService>();
+
             services.AddHostedService<PerftFullTaskBackgroundService>();
             services.AddHostedService<PerftFastTaskBackgroundService>();
+            services.AddHostedService<PerftJobBackgroundService>();
+            services.AddHostedService<PerftContributionBackgroundService>();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -85,7 +89,6 @@ namespace GrandChessTree.Api
             });
 
             var app = builder.Build();
-            app.UseMiddleware<RequestTimingMiddleware>();
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

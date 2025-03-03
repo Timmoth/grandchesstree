@@ -15,9 +15,6 @@ namespace GrandChessTree.Client;
 [JsonSerializable(typeof(PerftNodesTaskResponse[]))]
 [JsonSerializable(typeof(PerftNodesTaskResultBatch))]
 
-
-[JsonSerializable(typeof(PerftFullTaskResult))]
-[JsonSerializable(typeof(PerftFullTaskResult[]))]
 [JsonSerializable(typeof(PerftFullTaskResponse[]))]
 [JsonSerializable(typeof(PerftFullTaskResultBatch))]
 

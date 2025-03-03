@@ -58,5 +58,19 @@ namespace GrandChessTree.Client.Stats
             TotalCompletedTasks++;
             WorkerCpuTime += duration;
         }
+
+        internal void ResetStats()
+        {
+            TotalSubtasks = 0;
+            CompletedSubtasks = 0;
+            Nps = 0;
+            TotalCompletedTasks = 0;
+            TotalCompletedSubTasks = 0;
+            TotalCachedSubTasks = 0;
+            WorkerCpuTime = 0;
+            WorkerComputedNodes = 0;
+            TotalComputedNodes = 0;
+            TotalNodes = 0;
+        }
     }
 }

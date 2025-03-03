@@ -33,6 +33,9 @@ public class PerftLeaderboardResponse
     [JsonPropertyName("total_nodes")]
     public long TotalNodes { get; set; }
 
+    [JsonPropertyName("total_tasks")]
+    public long TotalTasks { get; set; }
+
     [JsonPropertyName("compute_time_seconds")]
     public long TotalTimeSeconds { get; set; }
 

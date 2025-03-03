@@ -96,6 +96,7 @@ namespace GrandChessTree.Api.Controllers
                 ApiKeyTail = tail,
                 CreatedAt = _timeProvider.GetUtcNow().ToUnixTimeSeconds(),
             };
+            _dbContext.ApiKeys.Add(apiKey);
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

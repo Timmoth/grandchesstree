@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 interface TaskData {
   total_nodes: number;
-  compute_time_seconds: number;
   completed_tasks: number;
   tpm: number;
   nps: number;
@@ -60,23 +59,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
     return num.toString(); // Return as is if it's less than 1000
   };
 
-  const formatTime = (seconds: number): string => {
-    if (seconds < 60) {
-      return `${seconds}s`; // Less than 1 minute
-    } else if (seconds < 3600) {
-      const minutes = Math.floor(seconds / 60);
-      const remainingSeconds = seconds % 60;
-      return `${minutes}m ${remainingSeconds}s`; // Less than 1 hour
-    } else if (seconds < 86400) {
-      const hours = Math.floor(seconds / 3600);
-      const remainingMinutes = Math.floor((seconds % 3600) / 60);
-      return `${hours}h ${remainingMinutes}m`; // Less than 1 day
-    } else {
-      const days = Math.floor(seconds / 86400);
-      return `${days}d`; // More than 1 day
-    }
-  };
-
   if (loading) return <p className="text-gray-500">Loading...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
@@ -99,13 +81,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
               <span className="text-md font-semibold">Completed Tasks</span>
               <span className="text-xl font-bold">
                 {account && formatBigNumber(account?.task_0.completed_tasks)}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center space-x-4">
-              <span className="text-md font-semibold">Compute Time</span>
-              <span className="text-xl font-bold">
-                {account && formatTime(account?.task_0.compute_time_seconds)}
               </span>
             </div>
 
@@ -136,13 +111,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
               <span className="text-md font-semibold">Completed Tasks</span>
               <span className="text-xl font-bold">
                 {account && formatBigNumber(account?.task_1.completed_tasks)}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center space-x-4">
-              <span className="text-md font-semibold">Compute Time</span>
-              <span className="text-xl font-bold">
-                {account && formatTime(account?.task_1.compute_time_seconds)}
               </span>
             </div>
 

@@ -6,7 +6,6 @@ interface PerftLeaderboardResponse {
   account_id:string;
   account_name: string;
   total_nodes: number;
-  compute_time_seconds: number;
   nps: number;
 }
 
@@ -16,7 +15,6 @@ interface PerftLeaderBoardEntry {
   account_name: string;
   perft_stats_task_nodes: number;
   perft_nodes_task_nodes: number;
-  compute_time_seconds: number;
   nps_stats_task: number;
   nps_nodes_task: number;
 }
@@ -56,7 +54,6 @@ const GlobalLeaderboard: React.FC = () => {
               account_name: entry.account_name,
               perft_stats_task_nodes: 0,
               perft_nodes_task_nodes: 0,
-              compute_time_seconds: 0,
               nps_stats_task: 0,
               nps_nodes_task: 0,
             };
@@ -70,7 +67,6 @@ const GlobalLeaderboard: React.FC = () => {
             target.perft_nodes_task_nodes = entry.total_nodes;
             target.nps_nodes_task = entry.nps;
           }
-          target.compute_time_seconds += entry.compute_time_seconds;
         };
 
         statsData.forEach((entry) => processEntry(entry, true));
@@ -86,14 +82,6 @@ const GlobalLeaderboard: React.FC = () => {
 
     fetchLeaderboards();
   }, []);
-
-  const formatTime = (seconds: number): string => {
-    if (seconds < 60) return `${seconds}s`;
-    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ${seconds % 60}s`;
-    if (seconds < 86400)
-      return `${Math.floor(seconds / 3600)}h ${Math.floor((seconds % 3600) / 60)}m`;
-    return `${Math.floor(seconds / 86400)}d`;
-  };
 
   const formatBigNumber = (num: number): string => {
     if (num >= 1e12) return (num / 1e12).toFixed(1) + "t";
@@ -115,7 +103,6 @@ const GlobalLeaderboard: React.FC = () => {
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Compute Time</th>
               <th className="px-6 py-3">Perft Stats Nodes</th>
               <th className="px-6 py-3">NPS Stats Task</th>
               <th className="px-6 py-3">Perft Nodes Task Nodes</th>
@@ -136,7 +123,6 @@ const GlobalLeaderboard: React.FC = () => {
                   </Link>
                  </td>
                   <td className="px-6 py-4 ">{((item.nps_stats_task + item.nps_nodes_task) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
-                  <td className="px-6 py-4">{formatTime(item.compute_time_seconds)}</td>
                   <td className="px-6 py-4">{formatBigNumber(item.perft_stats_task_nodes)}</td>
                   <td className="px-6 py-4">{formatBigNumber(item.nps_stats_task)}</td>
                   <td className="px-6 py-4">{formatBigNumber(item.perft_nodes_task_nodes)}</td>

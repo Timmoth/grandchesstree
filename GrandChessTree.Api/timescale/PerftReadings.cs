@@ -26,7 +26,11 @@ namespace GrandChessTree.Api.timescale
         public long timestamp { get; set; }
         [Column("nps")]
         [JsonPropertyName("nps")]
-        public float nps { get; set; }
+        public float nps { get; set; } 
+        
+        [Column("tpm")]
+        [JsonPropertyName("tpm")]
+        public float tpm { get; set; }
     }
 
 
@@ -54,6 +58,77 @@ namespace GrandChessTree.Api.timescale
             public float nps { get; set; }
         }
 
+        public async Task<Dictionary<long, (float nps, float tpm)>> GetLeaderboard(PerftTaskType taskType, int positionId, int depth, CancellationToken cancellationToken)
+        {
+            int taskTypeInt = taskType == PerftTaskType.Full ? 0 : 1;
+            string sql = @$" SELECT 
+        account_id,
+        SUM(nodes * occurrences) / 3600 AS nps,
+        COUNT(*) / 60 AS tpm
+    FROM public.perft_readings
+    WHERE time >= NOW() - INTERVAL '1 hour' and task_type = {taskTypeInt}
+            AND root_position_id = @positionId 
+            AND depth = @depth
+    GROUP BY account_id
+";
+
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var response = new Dictionary<long, (float nps, float tpm)>();
+
+            await using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+
+                await using (var reader = await cmd.ExecuteReaderAsync(cancellationToken))
+                {
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        response[reader.GetInt64(0)] = (reader.GetFloat(1), reader.GetFloat(2));
+                    }
+                }
+            }
+
+
+            return response;
+        }
+
+
+        public async Task<Dictionary<long, (float nps, float tpm)>> GetLeaderboard(PerftTaskType taskType, CancellationToken cancellationToken)
+        {
+            int taskTypeInt = taskType == PerftTaskType.Full ? 0 : 1;
+            string sql = @$"SELECT 
+                                account_id,
+                                SUM(nodes * occurrences) / 3600 AS nps,
+                                COUNT(*) / 60 AS tpm
+                            FROM public.perft_readings
+                            WHERE time >= NOW() - INTERVAL '1 hour' and task_type = {taskTypeInt}
+                            GROUP BY account_id
+                ";
+
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var response = new Dictionary<long, (float nps, float tpm)>();
+
+            await using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+
+                await using (var reader = await cmd.ExecuteReaderAsync(cancellationToken))
+                {
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        response[reader.GetInt64(0)] = (reader.GetFloat(1), reader.GetFloat(2));
+                    }
+                }
+            }
+
+
+            return response;
+        }
+
+
+
         public async Task<List<PerformanceChartEntry>> GetPerformanceChart(PerftTaskType taskType, int positionId, int depth, CancellationToken cancellationToken)
         {
             // Get the current Unix time in seconds.
@@ -68,6 +143,7 @@ namespace GrandChessTree.Api.timescale
             string sql = taskType == PerftTaskType.Fast ? @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time BETWEEN TO_TIMESTAMP(@start) AND TO_TIMESTAMP(@end)
@@ -79,6 +155,7 @@ namespace GrandChessTree.Api.timescale
          @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time BETWEEN TO_TIMESTAMP(@start) AND TO_TIMESTAMP(@end)
@@ -107,7 +184,8 @@ namespace GrandChessTree.Api.timescale
                         performanceEntries.Add(new PerformanceChartEntry
                         {
                             timestamp = new DateTimeOffset(reader.GetDateTime(0)).ToUnixTimeSeconds(),
-                            nps = reader.GetFloat(1)
+                            tpm = reader.GetFloat(1),
+                            nps = reader.GetFloat(2)
                         });
                     }
                 }
@@ -118,25 +196,10 @@ namespace GrandChessTree.Api.timescale
 
 
 
-        public async Task<PerftStatsResponse> GetTaskPerformance(PerftTaskType full, int positionId, int depth, CancellationToken cancellationToken)
+        public async Task<(float tpm, float nps)> GetTaskPerformance(PerftTaskType full, int positionId, int depth, CancellationToken cancellationToken)
         {
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync(cancellationToken);
-
-            // Query to count total tasks
-            const string totalTaskCountQuery = @"
-        SELECT COUNT(*) FROM public.perft_tasks_v3 
-        WHERE root_position_id = @positionId AND depth = @depth;";
-
-            int totalTaskCount = 0;
-            await using (var cmd = new NpgsqlCommand(totalTaskCountQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@positionId", positionId);
-                cmd.Parameters.AddWithValue("@depth", depth);
-
-                var result = await cmd.ExecuteScalarAsync(cancellationToken);
-                totalTaskCount = result != DBNull.Value ? Convert.ToInt32(result) : 0;
-            }
 
             // Query for real-time statistics
             string realTimeStatsQuery = full == PerftTaskType.Fast ? @"
@@ -171,46 +234,8 @@ namespace GrandChessTree.Api.timescale
                 }
             }
 
-            // Query for progress statistics
-            string progressStatsQuery = full == PerftTaskType.Fast ? @"
-        SELECT
-            COUNT(*) AS completed_tasks,
-            COALESCE(SUM(nodes * occurrences), 0) AS total_nodes
-        FROM public.perft_readings
-        WHERE root_position_id = @positionId AND depth = @depth AND task_type = 1;":
-        @"
-        SELECT
-            COUNT(*) AS completed_tasks,
-            COALESCE(SUM(nodes * occurrences), 0) AS total_nodes
-        FROM public.perft_readings
-        WHERE root_position_id = @positionId AND depth = @depth AND task_type = 0;";
+            return (tpm, nps);
 
-            ulong completedTasks = 0;
-            ulong totalNodes = 0;
-            await using (var cmd = new NpgsqlCommand(progressStatsQuery, conn))
-            {
-                cmd.Parameters.AddWithValue("@positionId", positionId);
-                cmd.Parameters.AddWithValue("@depth", depth);
-
-                await using (var reader = await cmd.ExecuteReaderAsync(cancellationToken))
-                {
-                    if (await reader.ReadAsync(cancellationToken))
-                    {
-                        completedTasks = (ulong)reader.GetInt64(0);
-                        totalNodes = (ulong)reader.GetInt64(1);
-                    }
-                }
-            }
-
-            return new PerftStatsResponse()
-            {
-                Nps = nps,
-                Tpm = tpm,
-                CompletedTasks = completedTasks,
-                TotalNodes = totalNodes,
-                PercentCompletedTasks = totalTaskCount > 0 ? (float)completedTasks / totalTaskCount * 100 : 0,
-                TotalTasks = totalTaskCount
-            };
         }
 
 
@@ -219,6 +244,7 @@ namespace GrandChessTree.Api.timescale
             string sql = full == PerftTaskType.Fast ? @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 1
@@ -227,6 +253,7 @@ namespace GrandChessTree.Api.timescale
         @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 0
@@ -246,7 +273,8 @@ namespace GrandChessTree.Api.timescale
                     performanceEntries.Add(new PerformanceChartEntry
                     {
                         timestamp = new DateTimeOffset(reader.GetDateTime(0)).ToUnixTimeSeconds(),
-                        nps = reader.GetFloat(1)
+                        tpm = reader.GetFloat(1),
+                        nps = reader.GetFloat(2)
                     });
                 }
             }
@@ -259,6 +287,7 @@ namespace GrandChessTree.Api.timescale
             string sql = full == PerftTaskType.Fast ? @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 1
@@ -267,6 +296,7 @@ namespace GrandChessTree.Api.timescale
         ORDER BY timestamp;" : @"
         SELECT 
             time_bucket('15 minutes', time) AS timestamp,
+            COUNT(*) AS tpm,
             SUM(nodes * occurrences)::numeric / 900.0 AS nps
         FROM public.perft_readings
         WHERE time >= NOW() - INTERVAL '24 hour' AND task_type = 0
@@ -291,7 +321,8 @@ namespace GrandChessTree.Api.timescale
                         performanceEntries.Add(new PerformanceChartEntry
                         {
                             timestamp = new DateTimeOffset(reader.GetDateTime(0)).ToUnixTimeSeconds(),
-                            nps = reader.GetFloat(1)
+                            tpm = reader.GetFloat(1),
+                            nps = reader.GetFloat(2)
                         });
                     }
                 }
@@ -353,7 +384,7 @@ namespace GrandChessTree.Api.timescale
        
 
         public async Task InsertReadings(
-            List<object[]> readings,
+            IEnumerable<object[]> readings,
                CancellationToken cancellationToken = default)
         {
             await using var conn = new NpgsqlConnection(_connectionString);

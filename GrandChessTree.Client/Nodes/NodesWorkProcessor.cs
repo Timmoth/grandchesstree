@@ -17,6 +17,7 @@ namespace GrandChessTree.Client.Stats
 
         private bool OutputFullDetails = false;
 
+        public bool IsPaused = false;
         public NodesWorkProcessor(NodesTaskOrchistrator searchItemOrchistrator, Config config)
         {
             _searchItemOrchistrator = searchItemOrchistrator;
@@ -53,6 +54,7 @@ namespace GrandChessTree.Client.Stats
             }
         }
 
+        public bool _resetStats = false;
         private void OutputStatsPeriodically()
         {
             ulong prevTotalNodes = 0;
@@ -61,6 +63,32 @@ namespace GrandChessTree.Client.Stats
             var start = DateTimeOffset.UtcNow;
             while (HasRunningWorkers)
             {
+                if (IsPaused)
+                {
+                    Thread.Sleep(500);
+                    _resetStats = true;
+                    Console.Clear();
+                    Console.WriteLine("'s' + enter to start");
+
+                    continue;
+                }
+
+                if (_resetStats)
+                {
+                    prevTotalNodes = 0;
+                    prevTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    startTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    start = DateTimeOffset.UtcNow;
+
+                    _searchItemOrchistrator.ResetStats();
+                    foreach (var w in _workerReports)
+                    {
+                        w.ResetStats();
+                    }
+                    _resetStats = false;
+                }
+
+
                 try
                 {
                     var sumCompletedTasks = 0;
@@ -138,6 +166,8 @@ namespace GrandChessTree.Client.Stats
                     {
                         Console.WriteLine("'q' + enter to quit");
                         Console.WriteLine("'d' + enter toggles worker details");
+                        Console.WriteLine("'s' + enter to start/stop");
+                        Console.WriteLine("'r' + enter to reset stats");
                     }
                 }
                 catch (Exception ex)
@@ -178,14 +208,21 @@ namespace GrandChessTree.Client.Stats
                     try
                     {
                         await _searchItemOrchistrator.SubmitToApi();
+                        if (_searchItemOrchistrator.PendingSubmission == 0)
+                        {
+                            await Task.Delay(100);
+                        }
+                        else
+                        {
+                            await Task.Delay(5000);
+                        }
+
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine(ex.ToString());
                         await Task.Delay(TimeSpan.FromSeconds(1));
                     }
-
-                    await Task.Delay(1000);
                 }
             });
         }
@@ -301,6 +338,16 @@ namespace GrandChessTree.Client.Stats
         internal void ToggleOutputDetails()
         {
             OutputFullDetails = !OutputFullDetails;
+        }
+
+        internal void TogglePause()
+        {
+            IsPaused = !IsPaused;
+        }
+        
+        internal void ResetStats()
+        {
+            _resetStats = true;
         }
     }
 }

@@ -33,6 +33,7 @@ namespace GrandChessTree.Api.Accounts
         [JsonIgnore] public ICollection<ApiKeyModel> ApiKeys { get; set; } = default!;
         [JsonIgnore] public ICollection<PerftTask> SearchTasks { get; set; } = default!;
         [JsonIgnore] public ICollection<PerftNodesTask> PerftNodesTasks { get; set; } = default!;
+        [JsonIgnore] public ICollection<PerftContribution> PerftContributions { get; set; } = default!;
 
         #region Versioning
 

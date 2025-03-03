@@ -319,8 +319,41 @@
           "compute_time": 1352954
         }
       ]
-    }
-  ],
+    },
+    {
+      "position": 1,
+      "depth": 10,
+      "nodes":29344805396643919,
+      "captures":5959928383894810,
+      "enpassants":11394307136496,
+      "castles":395107667957400,
+      "promotions":364355113900536,
+      "direct_checks":631678887233200,
+      "single_discovered_checks":11676589649334,
+      "direct_discovered_checks":958611880677,
+      "double_discovered_checks":774,
+      "direct_mates":5370315185664,
+      "single_discovered_mates":6588607239,
+      "direct_discovered_mates":13006529799,
+      "double_discovered_mates":0,
+      "started_at":1740610416,
+      "finished_at":1741015671,
+      "total_checks":644314088763985,
+      "total_mates":5389910322702,
+      "total_tasks": 1374152,
+      "contributors": [
+    {"id":1,"name":"Timmoth","nodes":17684395088076503,"tasks":817510,"fast_nodes":27300740353121281,"fast_tasks":1267569,"compute_time":0},
+    {"id":12,"name":"xyzzy","nodes":6487584778853696,"tasks":303744,"fast_nodes":0,"fast_tasks":0,"compute_time":0},
+      {"id":11,"name":"prljav","nodes":3294939168660007,"tasks":160525,"fast_nodes":0,"fast_tasks":0,"compute_time":0},
+      {"id":9,"name":"HansTibberio","nodes":1047487204840531,"tasks":51811,"fast_nodes":1456011339888683,"fast_tasks":71904,"compute_time":0},
+      {"id":15,"name":"McTwist","nodes":755284533438345,"tasks":35948,"fast_nodes":0.0,"fast_tasks":0,"compute_time":0},
+      {"id":16,"name":"OWR","nodes":39436816477632,"tasks":3000,"fast_nodes":0.0,"fast_tasks":0,"compute_time":0},
+      {"id":10,"name":"madbot","nodes":23111848596721,"tasks":1226,"fast_nodes":0.0,"fast_tasks":0,"compute_time":0},
+      {"id":7,"name":"Chester-alt","nodes":12565957700484,"tasks":388,"fast_nodes":588053703633955,"fast_tasks":34679,"compute_time":0}
+    
+    
+    ]
+  }],
   "unique_positions": [
     1, 48, 2038, 57548, 1374152, 27404650, 472499859
   ]

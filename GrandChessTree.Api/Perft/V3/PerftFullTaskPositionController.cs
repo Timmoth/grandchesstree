@@ -53,8 +53,26 @@ namespace GrandChessTree.Api.Controllers
 
         public async Task<IActionResult> GetStats(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var response = await _perftReadings.GetTaskPerformance(PerftTaskType.Full, positionId, depth, cancellationToken);
-            return Ok(response);
+            var job = await _dbContext.PerftJobs.FirstOrDefaultAsync(j => j.RootPositionId == positionId && j.Depth == depth);
+            if (job == null)
+            {
+                return NotFound();
+            }
+
+            var (tpm, nps) = await _perftReadings.GetTaskPerformance(PerftTaskType.Full, positionId, depth, cancellationToken);
+
+            var completedTasks = job.CompletedFullTasks;
+            var totalNodes = job.FullTaskNodes;
+            var taskCount = job.TotalTasks;
+            return Ok(new PerftStatsResponse()
+            {
+                Nps = nps,
+                Tpm = tpm,
+                CompletedTasks = (ulong)completedTasks,
+                TotalNodes = (ulong)totalNodes,
+                PercentCompletedTasks = taskCount > 0 ? (float)completedTasks / taskCount * 100 : 0,
+                TotalTasks = (int)taskCount
+            });
         }
 
         public class PerformanceChartEntry
@@ -90,27 +108,35 @@ namespace GrandChessTree.Api.Controllers
         [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetLeaderboard(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
+            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).Where(c => c.RootPositionId == positionId && c.Depth == depth).ToListAsync(cancellationToken);
 
-            var stats = await _dbContext.PerftTasksV3
-                .AsNoTracking()
-                .Include(i => i.FullTaskAccount)
-                .Where(i => i.FullTaskFinishedAt > 0 && i.RootPositionId == positionId && i.Depth == depth)
-                .GroupBy(i => i.FullTaskAccountId)
-                .Select(g => new PerftLeaderboardResponse()
+            var results = await _perftReadings.GetLeaderboard(PerftTaskType.Full, cancellationToken);
+
+            var leaderboard = new List<PerftLeaderboardResponse>();
+
+            foreach (var contributor in contributors)
+            {
+                if (contributor.Account == null)
                 {
-                    AccountId = g.Key.HasValue ? g.Key.Value : 0,
-                    AccountName = g.Select(i => i.FullTaskAccount != null ? i.FullTaskAccount.Name : "Unknown").FirstOrDefault(),
-                    TotalNodes = (long)g.Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)),  // Total nodes produced
-                    TotalTimeSeconds = g.Sum(i => i.FullTaskFinishedAt - i.FullTaskStartedAt),  // Total time in seconds across all tasks
-                    CompletedTasks = g.Count(),  // Number of tasks completed
-                    TasksPerMinute = g.Count(i => i.FullTaskFinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
-                    NodesPerSecond = g.Where(i => i.FullTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)) / 3600.0f
-                })
-                .ToArrayAsync(cancellationToken);
+                    continue;
+                }
 
+                results.TryGetValue(contributor.Account.Id, out var stats);
 
-            return Ok(stats);
+                leaderboard.Add(new PerftLeaderboardResponse()
+                {
+                    AccountId = contributor.Account.Id,
+                    AccountName = contributor.Account.Name,
+                    CompletedTasks = contributor.CompletedFullTasks,
+                    TotalTasks = contributor.CompletedFullTasks,
+                    NodesPerSecond = stats.nps,
+                    TasksPerMinute = stats.tpm,
+                    TotalNodes = (long)contributor.FullTaskNodes,
+                    TotalTimeSeconds = 0,
+                });
+            }
+
+            return Ok(leaderboard.Where(r => r.TotalTasks > 0));
         }
 
 

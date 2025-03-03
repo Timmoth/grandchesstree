@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace GrandChessTree.Client.Stats
 {
@@ -56,6 +57,20 @@ namespace GrandChessTree.Client.Stats
             CompletedSubtasks = task.CompletedSubTaskResults.Count;
             TotalCompletedTasks++;
             WorkerCpuTime += duration;
+        }
+
+        internal void ResetStats()
+        {
+            TotalSubtasks = 0;
+            CompletedSubtasks = 0;
+            Nps = 0;
+            TotalCompletedTasks = 0;
+            TotalCompletedSubTasks = 0;
+            TotalCachedSubTasks = 0;
+            WorkerCpuTime = 0; 
+            WorkerComputedNodes = 0;
+            TotalComputedNodes = 0;
+            TotalNodes = 0;
         }
     }
 }

@@ -1,4 +1,7 @@
 ﻿using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Api;
 
@@ -89,30 +92,27 @@ namespace GrandChessTree.Client.Stats
             return true;
         }
 
-        public PerftFullTaskResult? ToSubmission()
+        public ulong[]? ToSubmission()
         {
             if (!IsCompleted())
             {
                 return null;
             }
 
-            var request = new PerftFullTaskResult()
-            {
-                TaskId = PerftTaskId,
-                Nodes = 0,
-                Captures = 0,
-                Enpassants = 0,
-                Castles = 0,
-                Promotions = 0,
-                DirectChecks = 0,
-                SingleDiscoveredChecks = 0,
-                DirectDiscoveredChecks = 0,
-                DoubleDiscoveredChecks = 0,
-                DirectMates = 0,
-                SingleDiscoveredMates = 0,
-                DirectDiscoverdMates = 0,
-                DoubleDiscoverdMates = 0,
-            };
+            var TaskId = PerftTaskId;
+            var Nodes = 0ul;
+            var Captures = 0ul;
+            var Enpassants = 0ul;
+            var Castles = 0ul;
+            var Promotions = 0ul;
+            var DirectChecks = 0ul;
+            var SingleDiscoveredChecks = 0ul;
+            var DirectDiscoveredChecks = 0ul;
+            var DoubleDiscoveredChecks = 0ul;
+            var DirectMates = 0ul;
+            var SingleDiscoveredMates = 0ul;
+            var DirectDiscoverdMates = 0ul;
+            var DoubleDiscoverdMates = 0ul;
 
             foreach (var result in CompletedSubTaskResults)
             {
@@ -123,22 +123,25 @@ namespace GrandChessTree.Client.Stats
                     return null;
                 }
 
-                request.Nodes += results[0] * (ulong)occurrences;
-                request.Captures += results[1] * (ulong)occurrences;
-                request.Enpassants += results[2] * (ulong)occurrences;
-                request.Castles += results[3] * (ulong)occurrences;
-                request.Promotions += results[4] * (ulong)occurrences;
-                request.DirectChecks += results[5] * (ulong)occurrences;
-                request.SingleDiscoveredChecks += results[6] * (ulong)occurrences;
-                request.DirectDiscoveredChecks += results[7] * (ulong)occurrences;
-                request.DoubleDiscoveredChecks += results[8] * (ulong)occurrences;
-                request.DirectMates += results[9] * (ulong)occurrences;
-                request.SingleDiscoveredMates += results[10] * (ulong)occurrences;
-                request.DirectDiscoverdMates += results[11] * (ulong)occurrences;
-                request.DoubleDiscoverdMates += results[12] * (ulong)occurrences;
+                Nodes += results[0] * (ulong)occurrences;
+                Captures += results[1] * (ulong)occurrences;
+                Enpassants += results[2] * (ulong)occurrences;
+                Castles += results[3] * (ulong)occurrences;
+                Promotions += results[4] * (ulong)occurrences;
+                DirectChecks += results[5] * (ulong)occurrences;
+                SingleDiscoveredChecks += results[6] * (ulong)occurrences;
+                DirectDiscoveredChecks += results[7] * (ulong)occurrences;
+                DoubleDiscoveredChecks += results[8] * (ulong)occurrences;
+                DirectMates += results[9] * (ulong)occurrences;
+                SingleDiscoveredMates += results[10] * (ulong)occurrences;
+                DirectDiscoverdMates += results[11] * (ulong)occurrences;
+                DoubleDiscoverdMates += results[12] * (ulong)occurrences;
             }
 
-            return request;
+            return PerftFullTaskResultDecompressed.Compress(TaskId, 
+                Nodes, Captures, Enpassants, Castles, Promotions, 
+                DirectChecks, SingleDiscoveredChecks, DirectDiscoveredChecks, DoubleDiscoveredChecks, 
+                DirectMates, SingleDiscoveredMates, DirectDiscoverdMates, DoubleDiscoverdMates);
         }
     }
 }

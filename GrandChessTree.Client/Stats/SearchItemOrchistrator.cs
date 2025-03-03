@@ -2,7 +2,6 @@
 using System.Net.Http.Json;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Api;
-using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Client.Stats
@@ -91,8 +90,8 @@ namespace GrandChessTree.Client.Stats
             return searchTask;
         }
 
-        private readonly ConcurrentQueue<PerftFullTaskResult> _completedResults = new();
-        public void Submit(PerftFullTaskResult results)
+        private readonly ConcurrentQueue<ulong[]> _completedResults = new();
+        public void Submit(ulong[] results)
         {
             _completedResults.Enqueue(results);
         }
@@ -140,8 +139,8 @@ namespace GrandChessTree.Client.Stats
 
         public async Task<bool> SubmitToApi()
         {
-            var results = new List<PerftFullTaskResult>();
-            while (_completedResults.Any() && results.Count < 200)
+            var results = new List<ulong[]>();
+            while (_completedResults.Any() && results.Count < 100)
             {
                 if (_completedResults.TryDequeue(out var res))
                 {
@@ -156,7 +155,7 @@ namespace GrandChessTree.Client.Stats
                 return false;
             }
 
-            var response = await _httpClient.PostAsJsonAsync($"api/v3/perft/full/results", new PerftFullTaskResultBatch { WorkerId = _config.WorkerId, Results = [.. results] }, SourceGenerationContext.Default.PerftFullTaskResultBatch);
+            var response = await _httpClient.PutAsJsonAsync($"api/v3/perft/full/tasks", new PerftFullTaskResultBatch { WorkerId = _config.WorkerId, Results = [.. results] }, SourceGenerationContext.Default.PerftFullTaskResultBatch);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -176,6 +175,11 @@ namespace GrandChessTree.Client.Stats
         public void CacheCompletedSubtask(ulong hash, int depth, Summary summary)
         {
             SubTaskHashTable.Add(hash, depth, summary);
+        }
+
+        internal void ResetStats()
+        {
+            Submitted = 0;
         }
     }
 }

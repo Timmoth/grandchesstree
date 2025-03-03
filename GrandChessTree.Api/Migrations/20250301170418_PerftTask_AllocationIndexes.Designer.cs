@@ -2,6 +2,7 @@
 using GrandChessTree.Api.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,9 +11,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GrandChessTree.Api.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250301170418_PerftTask_AllocationIndexes")]
+    partial class PerftTask_AllocationIndexes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,54 +111,6 @@ namespace GrandChessTree.Api.Migrations
                     b.ToTable("api_keys");
                 });
 
-            modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftContribution", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("AccountId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("account_id")
-                        .HasAnnotation("Relational:JsonPropertyName", "account_id");
-
-                    b.Property<long>("CompletedFastTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("completed_fast_tasks");
-
-                    b.Property<long>("CompletedFullTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("completed_full_tasks");
-
-                    b.Property<int>("Depth")
-                        .HasColumnType("integer")
-                        .HasColumnName("depth");
-
-                    b.Property<decimal>("FastTaskNodes")
-                        .HasColumnType("numeric")
-                        .HasColumnName("fast_task_nodes");
-
-                    b.Property<decimal>("FullTaskNodes")
-                        .HasColumnType("numeric")
-                        .HasColumnName("full_task_nodes");
-
-                    b.Property<int>("RootPositionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("root_position_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("RootPositionId", "Depth", "AccountId")
-                        .IsUnique();
-
-                    b.ToTable("perft_contributions");
-                });
-
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftItem", b =>
                 {
                     b.Property<long>("Id")
@@ -212,59 +167,6 @@ namespace GrandChessTree.Api.Migrations
                         .IsUnique();
 
                     b.ToTable("perft_items");
-                });
-
-            modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftJob", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("CompletedFastTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("completed_fast_tasks");
-
-                    b.Property<long>("CompletedFullTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("completed_full_tasks");
-
-                    b.Property<int>("Depth")
-                        .HasColumnType("integer")
-                        .HasColumnName("depth");
-
-                    b.Property<decimal>("FastTaskNodes")
-                        .HasColumnType("numeric")
-                        .HasColumnName("fast_task_nodes");
-
-                    b.Property<decimal>("FullTaskNodes")
-                        .HasColumnType("numeric")
-                        .HasColumnName("full_task_nodes");
-
-                    b.Property<int>("LaunchDepth")
-                        .HasColumnType("integer")
-                        .HasColumnName("launch_depth");
-
-                    b.Property<int>("RootPositionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("root_position_id");
-
-                    b.Property<long>("TotalTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("total_tasks");
-
-                    b.Property<long>("VerifiedTasks")
-                        .HasColumnType("bigint")
-                        .HasColumnName("verified_tasks");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RootPositionId", "Depth")
-                        .IsUnique();
-
-                    b.ToTable("perft_jobs");
                 });
 
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftTask", b =>
@@ -676,16 +578,6 @@ namespace GrandChessTree.Api.Migrations
                     b.Navigation("Account");
                 });
 
-            modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftContribution", b =>
-                {
-                    b.HasOne("GrandChessTree.Api.Accounts.AccountModel", "Account")
-                        .WithMany("PerftContributions")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Account");
-                });
-
             modelBuilder.Entity("GrandChessTree.Api.D10Search.PerftTask", b =>
                 {
                     b.HasOne("GrandChessTree.Api.Accounts.AccountModel", "Account")
@@ -732,8 +624,6 @@ namespace GrandChessTree.Api.Migrations
             modelBuilder.Entity("GrandChessTree.Api.Accounts.AccountModel", b =>
                 {
                     b.Navigation("ApiKeys");
-
-                    b.Navigation("PerftContributions");
 
                     b.Navigation("PerftNodesTasks");
 

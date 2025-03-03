@@ -175,5 +175,10 @@ namespace GrandChessTree.Client.Stats
         {
             SubTaskHashTable.Add(hash, depth, nodes);
         }
+
+        internal void ResetStats()
+        {
+            Submitted = 0;
+        }
     }
 }

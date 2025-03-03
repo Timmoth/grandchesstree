@@ -1,4 +1,5 @@
-﻿using GrandChessTree.Shared.Helpers;
+﻿using GrandChessTree.Shared;
+using GrandChessTree.Shared.Helpers;
 using Npgsql;
 
 namespace GrandChessTree.Toolkit
@@ -7,17 +8,20 @@ namespace GrandChessTree.Toolkit
     {
         public static async Task SeedPosition(string fen, int depth, int launchDepth, int rootPositionId)
         {
+            const int BatchSize = 100000; // Adjust batch size as needed
+            const int MaxRetries = 3;     // Maximum number of retries per batch
+
             Console.WriteLine("Generating positions");
 
             var (initialBoard, whiteToMove) = FenParser.Parse(fen);
 
-            var boards = LeafNodeGenerator.GenerateCompressedLeafNodes(ref initialBoard, launchDepth, whiteToMove);
+            UniqueLeafNodeGeneratorCompressed.PerftRootCompressedUniqueLeafNodes(ref initialBoard, launchDepth, whiteToMove);
+            var boards = UniqueLeafNodeGeneratorCompressed.boards;
+            var total = boards.Values.Sum(b => (float)b.occurrences);
+            var unique = boards.Count;
 
-            var total = boards.Sum(b => b.occurrences);
-            var unique = boards.Count();
-            Console.WriteLine($"total positions: {total}");
-            Console.WriteLine($"uniques {unique}");
-          
+            Console.WriteLine($"Total positions: {total}");
+            Console.WriteLine($"Unique positions: {unique}");
 
             Console.WriteLine("Enter pgsql connection string...");
             var connectionString = Console.ReadLine();
@@ -26,20 +30,57 @@ namespace GrandChessTree.Toolkit
             {
                 connectionString = "Host=localhost;Port=4675;Database=application;Username=postgres;Password=chessrulz";
             }
-            // Open a connection to PostgreSQL
+
             await using var conn = new NpgsqlConnection(connectionString);
             await conn.OpenAsync();
-            Console.WriteLine($"Starting bulk insert of {boards.Count} rows...");
 
-            // Use COPY for bulk insert
-            await using var writer = await conn.BeginTextImportAsync("COPY perft_tasks_v3 (board, depth, occurrences, root_position_id, launch_depth) FROM STDIN (FORMAT csv)");
+            Console.WriteLine($"Starting bulk insert of {boards.Count} rows in batches...");
 
             try
             {
-                // Iterate over the dictionary and write each row to the COPY stream
-                foreach (var (board, occurrences) in boards)
+                var orderedBoards = boards.Values.OrderBy(b => b.order).ToList();
+                int totalBatches = (int)Math.Ceiling((double)orderedBoards.Count / BatchSize);
+
+                for (int i = 0; i < totalBatches; i++)
                 {
-                    await writer.WriteLineAsync($"{board},{depth},{occurrences},{rootPositionId},{depth - launchDepth}");
+                    bool batchInserted = false;
+                    int attempt = 0;
+                    while (!batchInserted && attempt < MaxRetries)
+                    {
+                        attempt++;
+                        try
+                        {
+                            // Check and re-open connection if necessary
+                            if (conn.State != System.Data.ConnectionState.Open)
+                            {
+                                Console.WriteLine("Connection closed, re-opening...");
+                                await conn.OpenAsync();
+                            }
+
+                            Console.WriteLine($"Processing batch {i + 1}/{totalBatches}, attempt {attempt}...");
+
+                            var batch = orderedBoards.Skip(i * BatchSize).Take(BatchSize);
+                            await using var writer = await conn.BeginTextImportAsync("COPY perft_tasks_v3 (board, depth, occurrences, root_position_id, launch_depth) FROM STDIN (FORMAT csv)");
+
+                            foreach (var entry in batch)
+                            {
+                                await writer.WriteLineAsync($"{entry.board},{depth},{entry.occurrences},{rootPositionId},{depth - launchDepth}");
+                            }
+
+                            batchInserted = true;
+                            Console.WriteLine($"Batch {i + 1}/{totalBatches} inserted successfully on attempt {attempt}.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error during batch {i + 1}/{totalBatches} on attempt {attempt}: {ex.Message}");
+                            // Optionally, add a delay before retrying:
+                            await Task.Delay(2000);
+                        }
+                    }
+                    if (!batchInserted)
+                    {
+                        throw new Exception($"Failed to insert batch {i + 1}/{totalBatches} after {MaxRetries} attempts.");
+                    }
                 }
 
                 Console.WriteLine("Bulk insert completed successfully.");
@@ -49,5 +90,6 @@ namespace GrandChessTree.Toolkit
                 Console.WriteLine($"Error during bulk insert: {ex.Message}");
             }
         }
+
     }
 }
