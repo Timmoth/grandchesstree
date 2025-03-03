@@ -209,7 +209,7 @@ namespace GrandChessTree.Client.Stats
                     try
                     {
                         await _searchItemOrchistrator.SubmitToApi();
-                        if (_searchItemOrchistrator.PendingSubmission > 0)
+                        if (_searchItemOrchistrator.PendingSubmission > 100)
                         {
                             await Task.Delay(100);
                         }
