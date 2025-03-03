@@ -140,7 +140,7 @@ namespace GrandChessTree.Client.Stats
         public async Task<bool> SubmitToApi()
         {
             var results = new List<ulong[]>();
-            while (_completedResults.Any() && results.Count < 100)
+            while (_completedResults.Any() && results.Count < 200)
             {
                 if (_completedResults.TryDequeue(out var res))
                 {
