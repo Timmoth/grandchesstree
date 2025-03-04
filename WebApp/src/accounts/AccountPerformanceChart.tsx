@@ -126,13 +126,13 @@ const AccountPerformanceChart: React.FC<AccountPerformanceChartProps> = ({accoun
               yAxisId="left"
               orientation="left"
               tickFormatter={formatBigNumber}
-              label={{ value: "NPS Stats Task", angle: -90, position: "insideLeft" }}
+              label={{ value: "Full task nps", angle: -90, position: "insideLeft" }}
             />
             <YAxis
               yAxisId="right"
               orientation="right"
               tickFormatter={formatBigNumber}
-              label={{ value: "NPS Nodes Task", angle: 90, position: "insideRight" }}
+              label={{ value: "Fast task nps", angle: 90, position: "insideRight" }}
             />
             <Tooltip labelFormatter={formatTime} />
             <Legend />
@@ -141,14 +141,14 @@ const AccountPerformanceChart: React.FC<AccountPerformanceChartProps> = ({accoun
               type="monotone"
               dataKey="nps_stats_task"
               stroke="#82ca9d"
-              name="NPS Stats Task"
+              name="Full task nps"
             />
             <Line
               yAxisId="right"
               type="monotone"
               dataKey="nps_nodes_task"
               stroke="#8884d8"
-              name="NPS Nodes Task"
+              name="Fast task nps"
             />
           </LineChart>
         </ResponsiveContainer>

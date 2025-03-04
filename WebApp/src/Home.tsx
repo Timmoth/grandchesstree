@@ -47,20 +47,20 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
-                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9,10,11,12]</span>
+                <span className="text-xs">Completed perft [0,..,12]</span>
                 <div className="flex flex-col text-sm font-medium space-y-1">
                   <span className="text-sm font-semibold">In Progress:</span>
                   <Link
                     className=" text-blue-600 hover:underline"
                     to="/perft/full/0/13"
                   >
-                    perft full(13)
+                    full task (13)
                   </Link>
                   <Link
                     className=" text-blue-600 hover:underline"
                     to="/perft/fast/0/13"
                   >
-                    perft fast(13)
+                    fast task (13)
                   </Link>
                 </div>
                 </div>
@@ -81,7 +81,7 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
-                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9]</span>              
+                <span className="text-xs">Completed perft [0,..,10]</span>              
               </div>
             </div>
             <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700 flex flex-col justify-between items-center space-x-4">
@@ -102,7 +102,7 @@ const Home: React.FC = () => {
                     Results table / summary
                   </Link>
                 </span>
-                <span className="text-xs">Completed perft [0,1,2,3,4,5,6,7,8,9]</span>
+                <span className="text-xs">Completed perft [0,..,9]</span>
               </div>
             </div>
           </div>

@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
-using System.Threading.Tasks;
-using GrandChessTree.Client;
+﻿using GrandChessTree.Client;
 using GrandChessTree.Client.Stats;
-using GrandChessTree.Shared;
 using GrandChessTree.Shared.Precomputed;
 
 class Program
 {
-    // Mark Main with the HandleProcessCorruptedStateExceptions attribute so that even corrupted state exceptions
-    // can be caught by this method if necessary (you might need to adjust your .config file as well to allow this).
-    [HandleProcessCorruptedStateExceptions]
     static async Task Main(string[] args)
     {
         // Subscribe to global exception handlers.
@@ -24,7 +16,6 @@ class Program
             var containerized = Environment.GetEnvironmentVariable("containerized");
 
             Config config;
-            // Check if it's set and print it out (or use it in your logic)
             if (containerized != null && containerized == "true")
             {
                 Console.WriteLine("Running in container");
@@ -202,7 +193,6 @@ class Program
             // This catch block might not catch AccessViolationException unless properly configured,
             // but it's useful for other exceptions.
             Console.WriteLine("Caught exception in Main: " + ex.ToString());
-            // Optionally log to a file or event log here.
             throw;
         }
     }
@@ -214,10 +204,6 @@ class Program
         Exception ex = e.ExceptionObject as Exception;
         string message = $"Global Unhandled Exception: {ex?.ToString() ?? "Unknown exception"}";
         Console.WriteLine(message);
-
-        // Optionally write the details to the Windows Event Log or a file:
-        // For example:
-        // System.IO.File.AppendAllText("error.log", message);
 
         Environment.Exit(1);
     }

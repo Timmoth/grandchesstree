@@ -9,6 +9,7 @@ using GrandChessTree.Api.Accounts;
 using GrandChessTree.Shared.ApiKeys;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OutputCaching;
+using GrandChessTree.Api.timescale;
 
 namespace GrandChessTree.Api.Controllers
 {
@@ -53,11 +54,13 @@ namespace GrandChessTree.Api.Controllers
         private readonly ILogger<AccountsController> _logger;
         private readonly ApplicationDbContext _dbContext;
         private readonly TimeProvider _timeProvider;
-        public AccountsController(ILogger<AccountsController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider)
+        private readonly PerftReadings _perftReadings;
+        public AccountsController(ILogger<AccountsController> logger, ApplicationDbContext dbContext, TimeProvider timeProvider, PerftReadings perftReadings)
         {
             _logger = logger;
             _dbContext = dbContext;
             _timeProvider = timeProvider;
+            _perftReadings = perftReadings;
         }
 
         [HttpPost]
@@ -115,8 +118,8 @@ namespace GrandChessTree.Api.Controllers
 
 
         [HttpGet("{id}")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "id" })]
-        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "id" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "id" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "id" })]
         public async Task<IActionResult> GetAccount(long id, CancellationToken cancellationToken)
         {
             var account = await _dbContext.Accounts.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
@@ -124,45 +127,31 @@ namespace GrandChessTree.Api.Controllers
             {
                 return NotFound();
             }
-            var oneHourAgo = DateTimeOffset.UtcNow.ToUnixTimeSeconds() - 3600; // Get timestamp for one hour ago
 
-            var task0Stats = await _dbContext.PerftTasksV3
-                         .AsNoTracking()
-                         .Include(i => i.FullTaskAccount)
-                         .Where(i => i.FullTaskFinishedAt > 0 && i.FullTaskAccountId == id)
-                         .GroupBy(i => i.FullTaskAccountId)
-                         .Select(g => new AccountTaskStatsResponse()
-                         {
-                             TotalNodes = (long)g.Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)),  // Total nodes produced
-                             TotalTimeSeconds = g.Sum(i => i.FullTaskFinishedAt - i.FullTaskStartedAt),  // Total time in seconds across all tasks
-                             CompletedTasks = g.Count(),  // Number of tasks completed
-                             TasksPerMinute = g.Count(i => i.FullTaskFinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
-                             NodesPerSecond = g.Where(i => i.FullTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FullTaskNps * (i.FullTaskFinishedAt - i.FullTaskStartedAt)) / 3600.0f
-                         })
-                         .FirstOrDefaultAsync(cancellationToken);
-
-            var task1Stats = await _dbContext.PerftTasksV3
-                .AsNoTracking()
-                .Include(i => i.FastTaskAccount)
-                .Where(i => i.FastTaskFinishedAt > 0 && i.FastTaskAccountId == id)
-                .GroupBy(i => i.FastTaskAccountId)
-                .Select(g => new AccountTaskStatsResponse()
-                {
-                    TotalNodes = (long)g.Sum(i => (float)i.FastTaskNps * (i.FastTaskFinishedAt - i.FastTaskStartedAt)),  // Total nodes produced
-                    TotalTimeSeconds = g.Sum(i => i.FastTaskFinishedAt - i.FastTaskStartedAt),  // Total time in seconds across all tasks
-                    CompletedTasks = g.Count(),  // Number of tasks completed
-                    TasksPerMinute = g.Count(i => i.FastTaskFinishedAt >= oneHourAgo) / 60.0f,  // Tasks completed in last hour / 60
-                    NodesPerSecond = g.Where(i => i.FastTaskFinishedAt >= oneHourAgo).Sum(i => (float)i.FastTaskNps * (i.FastTaskFinishedAt - i.FastTaskStartedAt)) / 3600.0f
-                })
-                .FirstOrDefaultAsync(cancellationToken);
-
+            var contributions = await _dbContext.PerftContributions.AsNoTracking().Where(c => c.AccountId == account.Id).ToListAsync(cancellationToken);
+            var fastResults = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, (int)account.Id, cancellationToken);
+            var fullResults = await _perftReadings.GetLeaderboard(PerftTaskType.Full, (int)account.Id, cancellationToken);
 
             var response = new AccountResponse()
             {
                 Id = account.Id,
                 Name = account.Name,
-                Task0 = task0Stats ?? new AccountTaskStatsResponse(),
-                Task1 = task1Stats ?? new AccountTaskStatsResponse(),
+                Task0 = new AccountTaskStatsResponse()
+                {
+                    CompletedTasks = contributions.Sum(c => c.CompletedFullTasks),
+                    NodesPerSecond = fullResults.nps,
+                    TasksPerMinute = fullResults.tpm,
+                    TotalNodes = (long)contributions.Sum(c => c.FullTaskNodes),
+                    TotalTimeSeconds = 0,
+                },
+                Task1 = new AccountTaskStatsResponse()
+                {
+                    CompletedTasks = contributions.Sum(c => c.CompletedFastTasks),
+                    NodesPerSecond = fastResults.nps,
+                    TasksPerMinute = fastResults.tpm,
+                    TotalNodes = (long)contributions.Sum(c => c.FastTaskNodes),
+                    TotalTimeSeconds = 0,
+                },
             };
 
             return Ok(response);

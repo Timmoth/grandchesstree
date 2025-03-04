@@ -42,6 +42,7 @@ const PerftNodesRealtimeStats: React.FC<RealtimeStatsProps> = ({ positionId, dep
 
   // Format large numbers (e.g., 1000 -> 1k, 1000000 -> 1m)
   const formatBigNumber = (num: number): string => {
+    if (num >= 1e15) return (num / 1e15).toFixed(1) + "q"; // Trillion
     if (num >= 1e12) return (num / 1e12).toFixed(1) + "t"; // Trillion
     if (num >= 1e9) return (num / 1e9).toFixed(1) + "b"; // Billion
     if (num >= 1e6) return (num / 1e6).toFixed(1) + "m"; // Million
@@ -100,7 +101,7 @@ const PerftNodesRealtimeStats: React.FC<RealtimeStatsProps> = ({ positionId, dep
         <div className="flex justify-between items-center space-x-4">
           <span className="text-md font-semibold">Completed Tasks</span>
           <span className="text-xl font-bold">
-            {leaderboardData && leaderboardData?.completed_tasks} / {leaderboardData?.total_tasks}
+            {leaderboardData && formatBigNumber(leaderboardData?.completed_tasks)} / {formatBigNumber(leaderboardData!.total_tasks)}
           </span>
         </div>
 

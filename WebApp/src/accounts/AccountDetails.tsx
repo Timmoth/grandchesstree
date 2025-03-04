@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import FormattedNumber from "../FormattedNumber";
 
 interface TaskData {
   total_nodes: number;
@@ -50,15 +51,6 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
     fetchAccount();
   }, [accountId]);
 
-  // Format large numbers (e.g., 1000 -> 1k, 1000000 -> 1m)
-  const formatBigNumber = (num: number): string => {
-    if (num >= 1e12) return (num / 1e12).toFixed(1) + "t"; // Trillion
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + "b"; // Billion
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + "m"; // Million
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + "k"; // Thousand
-    return num.toString(); // Return as is if it's less than 1000
-  };
-
   if (loading) return <p className="text-gray-500">Loading...</p>;
   if (error) return <p className="text-red-500">Error: {error}</p>;
 
@@ -75,61 +67,61 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
         </div>
         <div className="flex items-stretch">
           <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700">
-            <span className="text-lg font-bold">Task 0 (stats)</span>
+            <span className="text-lg font-bold">Full task</span>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Completed Tasks</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_0.completed_tasks)}
+                {account && <FormattedNumber value={account?.task_0.completed_tasks} min={1e3} max={1e7}/>}
               </span>
             </div>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Total Nodes</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_0.total_nodes)}
+                {account && <FormattedNumber value={account?.task_0.total_nodes} min={1e9} max={1e16}/>}
               </span>
             </div>
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">NPS</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_0.nps)}
+                {account && <FormattedNumber value={account?.task_0.nps}min={1e4} max={1e14}/>}
               </span>
             </div>
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">TPM</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_0.tpm)}
+                {account && <FormattedNumber value={account?.task_0.tpm}min={1} max={1e4}/>}
               </span>
             </div>
           </div>
 
           <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700">
-            <span className="text-lg font-bold">Task 1 (nodes)</span>
+            <span className="text-lg font-bold">Fast task</span>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Completed Tasks</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_1.completed_tasks)}
+                {account && <FormattedNumber value={account?.task_1.completed_tasks} min={1e3} max={1e7}/>}
               </span>
             </div>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Total Nodes</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_1.total_nodes)}
+                {account && <FormattedNumber value={account?.task_1.total_nodes}min={1e9} max={1e16}/>}
               </span>
             </div>
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">NPS</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_1.nps)}
+                {account && <FormattedNumber value={account?.task_1.nps}min={1e4} max={1e14}/>}
               </span>
             </div>
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">TPM</span>
               <span className="text-xl font-bold">
-                {account && formatBigNumber(account?.task_1.tpm)}
+                {account && <FormattedNumber value={account?.task_1.tpm}min={1} max={1e4}/>}
               </span>
             </div>
           </div>

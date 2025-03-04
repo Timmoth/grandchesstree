@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FormattedNumber from "../FormattedNumber";
 
 // Type definition for the leaderboard response
 interface PerftLeaderboardResponse {
@@ -83,14 +84,6 @@ const GlobalLeaderboard: React.FC = () => {
     fetchLeaderboards();
   }, []);
 
-  const formatBigNumber = (num: number): string => {
-    if (num >= 1e12) return (num / 1e12).toFixed(1) + "t";
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + "b";
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + "m";
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + "k";
-    return num.toString();
-  };
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
 
@@ -103,10 +96,10 @@ const GlobalLeaderboard: React.FC = () => {
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Perft Stats Nodes</th>
-              <th className="px-6 py-3">NPS Stats Task</th>
-              <th className="px-6 py-3">Perft Nodes Task Nodes</th>
-              <th className="px-6 py-3">NPS Nodes Task</th>
+              <th className="px-6 py-3">Full task nodes</th>
+              <th className="px-6 py-3">Full task nps</th>
+              <th className="px-6 py-3">Fast task nodes</th>
+              <th className="px-6 py-3">Fast task nps</th>
             </tr>
           </thead>
           <tbody>
@@ -123,10 +116,10 @@ const GlobalLeaderboard: React.FC = () => {
                   </Link>
                  </td>
                   <td className="px-6 py-4 ">{((item.nps_stats_task + item.nps_nodes_task) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
-                  <td className="px-6 py-4">{formatBigNumber(item.perft_stats_task_nodes)}</td>
-                  <td className="px-6 py-4">{formatBigNumber(item.nps_stats_task)}</td>
-                  <td className="px-6 py-4">{formatBigNumber(item.perft_nodes_task_nodes)}</td>
-                  <td className="px-6 py-4">{formatBigNumber(item.nps_nodes_task)}</td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.perft_stats_task_nodes} min={1e9} max={1e16}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.nps_stats_task} min={1e8} max={1e11}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.perft_nodes_task_nodes} min={1e9} max={1e16}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.nps_nodes_task} min={1e8} max={1e12}/></td>
                 </tr>
               ))}
           </tbody>

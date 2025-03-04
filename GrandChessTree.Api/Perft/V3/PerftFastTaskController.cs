@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using GrandChessTree.Api.ApiKeys;
 using GrandChessTree.Api.Database;
 using GrandChessTree.Api.Perft.V3;
@@ -8,8 +6,6 @@ using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
-using Npgsql;
-using SendGrid;
 
 namespace GrandChessTree.Api.Perft.PerftNodes
 {
@@ -103,15 +99,13 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         }
 
         [HttpGet("stats")]
-        [ResponseCache(Duration = 30)]
-        [OutputCache(Duration = 30)]
+        [ResponseCache(Duration = 300)]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var result = await _perftReadings.GetTaskStats(PerftTaskType.Fast, cancellationToken);
             return Ok(result);
         }
-
-
 
         [HttpGet("stats/charts/performance")]
         [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "account_id" })]
@@ -137,29 +131,35 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         }
 
         [HttpGet("leaderboard")]
-        [ResponseCache(Duration = 120)]
-        [OutputCache(Duration = 120)]
+        [ResponseCache(Duration = 300)]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
         {
-            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).ToListAsync(cancellationToken);
+            var contributors = await _dbContext.PerftContributions.AsNoTracking().Include(c => c.Account).ToListAsync(cancellationToken);
 
             var results = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, cancellationToken);
 
             var leaderboard = new List<PerftLeaderboardResponse>();
 
-            foreach (var contributor in contributors.GroupBy(c => c.Account))
+            var accounts = contributors.Select(c => c.Account).DistinctBy(a => a?.Id).ToDictionary(a => a?.Id ?? -1, a => a);
+
+            foreach (var contributor in contributors.GroupBy(c => c.AccountId))
             {
                 if (contributor.Key == null)
                 {
                     continue;
                 }
 
-                results.TryGetValue(contributor.Key.Id, out var stats);
+                if(!accounts.TryGetValue(contributor.Key.Value, out var account) || account == null){
+                    continue;
+                }
+
+                results.TryGetValue(contributor.Key.Value, out var stats);
 
                 leaderboard.Add(new PerftLeaderboardResponse()
                 {
-                    AccountId = contributor.Key.Id,
-                    AccountName = contributor.Key.Name,
+                    AccountId = account.Id,
+                    AccountName = account.Name,
                     CompletedTasks = contributor.Sum(c => c.CompletedFastTasks),
                     TotalTasks = contributor.Sum(c => c.CompletedFastTasks),
                     NodesPerSecond = stats.nps,

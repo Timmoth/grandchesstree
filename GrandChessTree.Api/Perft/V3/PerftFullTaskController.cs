@@ -142,8 +142,8 @@ namespace GrandChessTree.Api.Controllers
 
 
         [HttpGet("stats")]
-        [ResponseCache(Duration = 30)]
-        [OutputCache(Duration = 30)]
+        [ResponseCache(Duration = 300)]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetStats(CancellationToken cancellationToken)
         {
             var result = await _perftReadings.GetTaskStats(PerftTaskType.Full, cancellationToken);
@@ -175,29 +175,32 @@ namespace GrandChessTree.Api.Controllers
         }
 
         [HttpGet("leaderboard")]
-        [ResponseCache(Duration = 120)]
-        [OutputCache(Duration = 120)]
+        [ResponseCache(Duration = 300)]
+        [OutputCache(Duration = 300)]
         public async Task<IActionResult> GetLeaderboard(CancellationToken cancellationToken)
         {
-            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).ToListAsync(cancellationToken);
-
+            var contributors = await _dbContext.PerftContributions.AsNoTracking().Include(c => c.Account).ToListAsync(cancellationToken);
             var results = await _perftReadings.GetLeaderboard(PerftTaskType.Full, cancellationToken);
-
+            var accounts = contributors.Select(c => c.Account).DistinctBy(a => a?.Id).ToDictionary(a => a?.Id ?? -1, a => a);
             var leaderboard = new List<PerftLeaderboardResponse>();
-
-            foreach (var contributor in contributors.GroupBy(c => c.Account))
+            foreach (var contributor in contributors.GroupBy(c => c.AccountId))
             {
                 if (contributor.Key == null)
                 {
                     continue;
                 }
 
-                results.TryGetValue(contributor.Key.Id, out var stats);
+                if (!accounts.TryGetValue(contributor.Key.Value, out var account) || account == null)
+                {
+                    continue;
+                }
+
+                results.TryGetValue(contributor.Key.Value, out var stats);
 
                 leaderboard.Add(new PerftLeaderboardResponse()
                 {
-                    AccountId = contributor.Key.Id,
-                    AccountName = contributor.Key.Name,
+                    AccountId = account.Id,
+                    AccountName = account.Name,
                     CompletedTasks = contributor.Sum(c => c.CompletedFullTasks),
                     TotalTasks = contributor.Sum(c => c.CompletedFullTasks),
                     NodesPerSecond = stats.nps,

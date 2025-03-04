@@ -7,7 +7,6 @@ using GrandChessTree.Shared.Api;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.EntityFrameworkCore;
-using SendGrid;
 
 namespace GrandChessTree.Api.Perft.PerftNodes
 {
@@ -52,7 +51,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         [OutputCache(Duration = 30, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetStats(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var job = await _dbContext.PerftJobs.FirstOrDefaultAsync(j => j.RootPositionId == positionId && j.Depth == depth);
+            var job = await _dbContext.PerftJobs.AsNoTracking().FirstOrDefaultAsync(j => j.RootPositionId == positionId && j.Depth == depth);
             if(job == null)
             {
                 return NotFound();
@@ -103,11 +102,11 @@ namespace GrandChessTree.Api.Perft.PerftNodes
         }
 
         [HttpGet("leaderboard")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetLeaderboard(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).Where(c => c.RootPositionId == positionId && c.Depth == depth).ToListAsync(cancellationToken);
+            var contributors = await _dbContext.PerftContributions.AsNoTracking().Include(c => c.Account).Where(c => c.RootPositionId == positionId && c.Depth == depth).ToListAsync(cancellationToken);
 
             var results = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, cancellationToken);
 
@@ -140,8 +139,8 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
 
         [HttpGet("results")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetResults(int positionId, int depth,
            CancellationToken cancellationToken)
         {

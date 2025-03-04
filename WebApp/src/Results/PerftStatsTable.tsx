@@ -1,5 +1,7 @@
 import React from "react";
 import { PerftSummary } from "./models/PerftSummary";
+import FormattedNumber from "../FormattedNumber";
+import { Link } from "react-router-dom";
 
 interface PerftStatsTableProps {
   summary: PerftSummary,
@@ -79,7 +81,21 @@ const PerftStatsTable: React.FC<PerftStatsTableProps> = ({ summary  }) => {
                   <td className="px-6 py-4">{formatBigNumber(parseInt(item.nodes))}</td>
                   <td className="px-6 py-4">{formatDuration(item.finished_at - item.started_at)}</td>
                   <td className="px-6 py-4">{item.total_tasks}</td>
-                  <td className="px-6 py-4">{item.contributors.sort((a, b) => b.tasks - a.tasks).map(c => `[${c.name} ${formatBigNumber(c.tasks)} ${c.tasks <= 1 ? "task" : "tasks"}]`).join(", ")}</td>
+                  <td className="px-6 py-4">
+                  {item.contributors
+    .sort((a, b) => b.tasks - a.tasks)
+    .map((c, index) => (
+      <span key={c.id} className="mr-2">
+        [
+        <Link className="font-medium text-blue-600 hover:underline" to={`/accounts/${c.id}`}>
+          {c.name}
+        </Link>{" "}
+        <FormattedNumber value={c.tasks} min={1e1} max={1e6} />
+        ]
+        {index !== item.contributors.length - 1 && ", "}
+      </span>
+    ))}
+                  </td>
                   <td className="px-6 py-4">{formatDate(item.started_at)}</td>
                   <td className="px-6 py-4">{formatDate(item.finished_at)}</td>
                 </tr>

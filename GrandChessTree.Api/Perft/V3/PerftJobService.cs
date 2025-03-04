@@ -1,12 +1,10 @@
 ﻿using System.Collections.Concurrent;
-using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
 using GrandChessTree.Api.timescale;
 using Microsoft.EntityFrameworkCore;
 
 namespace GrandChessTree.Api.Perft.V3
 {
-
     public class TaskUpdate
     {
         public required PerftTaskType TaskType { get; set; }

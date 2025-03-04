@@ -88,7 +88,7 @@ const PerftResults: React.FC = () => {
               {data.position_description}
             </span>
             <span className="text-xs">
-              Completed perft [{data.results.map(r => r.depth).join(", ")}]
+              Completed depth [{data.results.map(r => r.depth).join(", ")}]
             </span>
             <span className="text-xs">
               Total Nodes [{formatBigNumber(data.results.reduce((sum, r) => sum + parseInt(r.nodes), 0))}]

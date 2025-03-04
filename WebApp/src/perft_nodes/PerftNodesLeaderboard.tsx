@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import FormattedNumber from "../FormattedNumber";
 
 // Type definition for the leaderboard response
 interface PerftLeaderboardResponse {
@@ -43,15 +44,6 @@ const PerftNodesLeaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  
 
     fetchLeaderboard();
   }, [positionId, depth]); // Empty dependency array ensures this effect runs only once when the component mounts
-
-  // Format large numbers (e.g., 1000 -> 1k, 1000000 -> 1m)
-  const formatBigNumber = (num: number): string => {
-    if (num >= 1e12) return (num / 1e12).toFixed(1) + "t"; // Trillion
-    if (num >= 1e9) return (num / 1e9).toFixed(1) + "b"; // Billion
-    if (num >= 1e6) return (num / 1e6).toFixed(1) + "m"; // Million
-    if (num >= 1e3) return (num / 1e3).toFixed(1) + "k"; // Thousand
-    return num.toString(); // Return as is if it's less than 1000
-  };
 
   if (loading) {
     return <p>Loading...</p>;
@@ -105,14 +97,15 @@ const PerftNodesLeaderboard: React.FC<LeaderboardProps> = ({ positionId, depth  
                   </Link>
                  </td>
                   <td className="px-6 py-4 ">{((item.nps) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
-                    <td className="px-6 py-4">
-                      {formatBigNumber(item.total_nodes)}
+                  <td className="px-6 py-4">
+                    <FormattedNumber value={item.total_nodes} min={1e9} max={1e16}/>
                     </td>
                     <td className="px-6 py-4">
-                      {formatBigNumber(item.completed_tasks)}
+                      <FormattedNumber value={item.completed_tasks} min={1e3} max={1e7}/>
                     </td>
-                    <td className="px-6 py-4">{formatBigNumber(item.tpm)}</td>
-                    <td className="px-6 py-4">{formatBigNumber(item.nps)}</td>
+                    <td className="px-6 py-4"><FormattedNumber value={item.tpm} min={1} max={1e4}/></td>
+                    <td className="px-6 py-4"><FormattedNumber value={item.nps} min={1e8} max={1e12}/></td>
+
 
                   </tr>
                 ))}

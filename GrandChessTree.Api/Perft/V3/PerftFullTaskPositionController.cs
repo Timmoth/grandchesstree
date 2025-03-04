@@ -48,12 +48,12 @@ namespace GrandChessTree.Api.Controllers
         }
 
         [HttpGet("stats")]
-        [ResponseCache(Duration = 30, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 30, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
 
         public async Task<IActionResult> GetStats(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var job = await _dbContext.PerftJobs.FirstOrDefaultAsync(j => j.RootPositionId == positionId && j.Depth == depth);
+            var job = await _dbContext.PerftJobs.AsNoTracking().FirstOrDefaultAsync(j => j.RootPositionId == positionId && j.Depth == depth);
             if (job == null)
             {
                 return NotFound();
@@ -104,11 +104,11 @@ namespace GrandChessTree.Api.Controllers
         }
 
         [HttpGet("leaderboard")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetLeaderboard(int positionId, int depth, CancellationToken cancellationToken)
         {
-            var contributors = await _dbContext.PerftContributions.Include(c => c.Account).Where(c => c.RootPositionId == positionId && c.Depth == depth).ToListAsync(cancellationToken);
+            var contributors = await _dbContext.PerftContributions.AsNoTracking().Include(c => c.Account).Where(c => c.RootPositionId == positionId && c.Depth == depth).ToListAsync(cancellationToken);
 
             var results = await _perftReadings.GetLeaderboard(PerftTaskType.Full, cancellationToken);
 
@@ -141,8 +141,8 @@ namespace GrandChessTree.Api.Controllers
 
 
         [HttpGet("results")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 120, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
+        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
         public async Task<IActionResult> GetResults(int positionId, int depth,
            CancellationToken cancellationToken)
         {
