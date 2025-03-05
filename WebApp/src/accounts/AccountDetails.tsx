@@ -8,11 +8,19 @@ interface TaskData {
   nps: number;
 }
 
+interface WorkerStats {
+  worker_id: number;
+  task_type: number;
+  nps: number;
+  tpm: number;
+}
+
 interface AccountData {
   id: number;
   name: string;
   task_0: TaskData;
   task_1: TaskData;
+  workers: WorkerStats[];
 }
 
 interface AccountDetailsProps {
@@ -125,6 +133,37 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
               </span>
             </div>
           </div>
+
+          <div className="w-full overflow-x-auto">
+          <table className="min-w-[400px] text-sm text-left rtl:text-right text-gray-500">
+            <thead className="text-xs text-gray-700 uppercase">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Worker Id
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Task Type
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  TPM
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  NPS
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {account?.workers.map((item, index) => (
+                <tr key={index} className="bg-white border-b border-gray-200">
+                  <td className="px-6 py-4">{item.worker_id}</td>
+                  <td className="px-6 py-4">{item.task_type}</td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.tpm} min={1} max={1e4}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.nps} min={1e8} max={1e12}/></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         </div>
       </div>
     </>

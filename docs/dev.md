@@ -158,3 +158,26 @@ FROM (
 ) a;
 
 ```
+
+### Get Contributors json
+```
+WITH aggregated AS (
+SELECT 
+    a.id AS id,
+    a.name AS name,
+	p.full_task_nodes AS nodes,
+    p.completed_full_tasks AS tasks,
+	p.fast_task_nodes AS fast_nodes,
+    p.completed_fast_tasks AS fast_tasks,
+	0 as compute_time
+FROM public.perft_contributions p
+JOIN public.accounts a ON p.account_id = a.id
+WHERE p.depth = 10
+ORDER BY p.completed_full_tasks DESC
+)
+SELECT row_to_json(a) 
+FROM (
+    SELECT *
+    FROM aggregated
+) a;
+```

@@ -10,6 +10,7 @@ using GrandChessTree.Shared.ApiKeys;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OutputCaching;
 using GrandChessTree.Api.timescale;
+using GrandChessTree.Api.Migrations;
 
 namespace GrandChessTree.Api.Controllers
 {
@@ -26,6 +27,9 @@ namespace GrandChessTree.Api.Controllers
 
         [JsonPropertyName("task_1")]
         public required AccountTaskStatsResponse Task1 { get; set; }
+
+        [JsonPropertyName("workers")]
+        public required List<WorkerStats> Workers { get; set; }
     }
 
 
@@ -131,6 +135,7 @@ namespace GrandChessTree.Api.Controllers
             var contributions = await _dbContext.PerftContributions.AsNoTracking().Where(c => c.AccountId == account.Id).ToListAsync(cancellationToken);
             var fastResults = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, (int)account.Id, cancellationToken);
             var fullResults = await _perftReadings.GetLeaderboard(PerftTaskType.Full, (int)account.Id, cancellationToken);
+            var workerResults = await _perftReadings.GetWorkerStats((int)account.Id, cancellationToken);
 
             var response = new AccountResponse()
             {
@@ -152,6 +157,7 @@ namespace GrandChessTree.Api.Controllers
                     TotalNodes = (long)contributions.Sum(c => c.FastTaskNodes),
                     TotalTimeSeconds = 0,
                 },
+                Workers = workerResults,
             };
 
             return Ok(response);

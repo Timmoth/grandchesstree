@@ -8,6 +8,8 @@ interface PerftLeaderboardResponse {
   account_name: string;
   total_nodes: number;
   nps: number;
+  total_tasks: number;
+  tpm: number;
 }
 
 // New type for merged leaderboard entries
@@ -15,9 +17,14 @@ interface PerftLeaderBoardEntry {
   account_id:string;
   account_name: string;
   perft_stats_task_nodes: number;
+  perft_stats_tasks: number;
   perft_nodes_task_nodes: number;
+  perft_nodes_tasks: number;
   nps_stats_task: number;
+  tpm_stats_task: number;
   nps_nodes_task: number;
+  tpm_nodes_task: number;
+
 }
 
 const GlobalLeaderboard: React.FC = () => {
@@ -54,19 +61,27 @@ const GlobalLeaderboard: React.FC = () => {
               account_id: entry.account_id,
               account_name: entry.account_name,
               perft_stats_task_nodes: 0,
+              perft_stats_tasks: 0,
               perft_nodes_task_nodes: 0,
+              perft_nodes_tasks: 0,
               nps_stats_task: 0,
+              tpm_stats_task: 0,
               nps_nodes_task: 0,
+              tpm_nodes_task: 0,
             };
           }
 
           const target = mergedData[entry.account_name];
           if (isStats) {
             target.perft_stats_task_nodes = entry.total_nodes;
+            target.perft_stats_tasks = entry.total_tasks;
             target.nps_stats_task = entry.nps;
+            target.tpm_stats_task = entry.tpm;
           } else {
             target.perft_nodes_task_nodes = entry.total_nodes;
+            target.perft_nodes_tasks = entry.total_tasks;
             target.nps_nodes_task = entry.nps;
+            target.tpm_nodes_task = entry.tpm;
           }
         };
 
@@ -96,10 +111,14 @@ const GlobalLeaderboard: React.FC = () => {
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Status</th>
-              <th className="px-6 py-3">Full task nodes</th>
-              <th className="px-6 py-3">Full task nps</th>
-              <th className="px-6 py-3">Fast task nodes</th>
-              <th className="px-6 py-3">Fast task nps</th>
+              <th className="px-6 py-3">Full tasks</th>
+              <th className="px-6 py-3">tpm</th>
+              <th className="px-6 py-3">nodes</th>
+              <th className="px-6 py-3">nps</th>
+              <th className="px-6 py-3">Fast tasks</th>
+              <th className="px-6 py-3">tpm</th>
+              <th className="px-6 py-3">nodes</th>
+              <th className="px-6 py-3">nps</th>
             </tr>
           </thead>
           <tbody>
@@ -116,10 +135,14 @@ const GlobalLeaderboard: React.FC = () => {
                   </Link>
                  </td>
                   <td className="px-6 py-4 ">{((item.nps_stats_task + item.nps_nodes_task) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.perft_stats_tasks} min={1e1} max={1e7}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.tpm_stats_task} min={1e1} max={1e3}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.perft_stats_task_nodes} min={1e9} max={1e16}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.nps_stats_task} min={1e8} max={1e11}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.perft_nodes_tasks} min={1e1} max={1e7}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.tpm_nodes_task} min={1e1} max={1e3}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.perft_nodes_task_nodes} min={1e9} max={1e16}/></td>
-                  <td className="px-6 py-4"><FormattedNumber value={item.nps_nodes_task} min={1e8} max={1e12}/></td>
+                  <td className="px-6 py-4"><FormattedNumber value={item.nps_nodes_task} min={1e8} max={1e11}/></td>
                 </tr>
               ))}
           </tbody>

@@ -32,6 +32,20 @@ namespace GrandChessTree.Api.timescale
         public float tpm { get; set; }
     }
 
+    public class WorkerStats
+    {
+        [JsonPropertyName("worker_id")]
+        public float WorkerId { get; set; }
+
+        [JsonPropertyName("task_type")]
+        public float TaskType { get; set; }
+
+        [JsonPropertyName("nps")]
+        public float Nps { get; set; }
+
+        [JsonPropertyName("tpm")]
+        public float Tpm { get; set; }
+    }
 
     public class PerftReadings
     {
@@ -120,6 +134,49 @@ namespace GrandChessTree.Api.timescale
                     while (await reader.ReadAsync(cancellationToken))
                     {
                         response[reader.GetInt64(0)] = (reader.GetFloat(1), reader.GetFloat(2));
+                    }
+                }
+            }
+
+
+            return response;
+        }
+
+        public async Task<List<WorkerStats>> GetWorkerStats(int accountId, CancellationToken cancellationToken)
+        {
+            string sql = @$"SELECT 
+	                            worker_id,
+	                            task_type,
+	                            SUM(nodes * occurrences) / 3600 AS nps,
+	                            COUNT(*) / 60 AS tpm
+                            FROM public.perft_readings
+                            WHERE time >= NOW() - INTERVAL '1 hour'
+                            and account_id = @account_id
+                            GROUP BY worker_id, task_type
+                            order by worker_id, task_type desc
+                            ";
+
+            await using var conn = new NpgsqlConnection(_connectionString);
+            await conn.OpenAsync(cancellationToken);
+
+            var response = new List<WorkerStats>();
+
+            await using (var cmd = new NpgsqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@account_id", accountId);
+
+                await using (var reader = await cmd.ExecuteReaderAsync(cancellationToken))
+                {
+                    while (await reader.ReadAsync(cancellationToken))
+                    {
+                        response.Add(new WorkerStats()
+                        {
+                            WorkerId = reader.GetInt16(0),
+                            TaskType = reader.GetInt16(1),
+                            Nps = reader.GetFloat(2),
+                            Tpm = reader.GetInt64(3)
+                        });
+                                               
                     }
                 }
             }
