@@ -16,6 +16,7 @@ public unsafe class NodesSubTaskHashTable
     private FastTaskCacheEntry* HashTable;
     public uint HashTableMask;
     public int HashTableSize;
+    public static ulong AllocatedMb = 0;
 
     private static unsafe uint CalculateHashTableEntries(int sizeInMb)
     {
@@ -37,6 +38,7 @@ public unsafe class NodesSubTaskHashTable
     public void AllocateHashTable(int sizeInMb = 512)
     {
         var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        AllocatedMb = (ulong)newHashTableSize * (ulong)sizeof(FastTaskCacheEntry) / 1024ul / 1024ul;
 
         if (HashTable != null && HashTableSize == newHashTableSize)
         {

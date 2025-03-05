@@ -8,7 +8,7 @@ namespace GrandChessTree.Client.Stats
     {
         private readonly int _workerCount;
         private readonly NodesTaskOrchistrator _searchItemOrchistrator;
-
+        private readonly Config _config;
         private bool KeepRequestingWork { get; set; } = true;
 
         public NodesWorkerReport[] _workerReports;
@@ -20,6 +20,7 @@ namespace GrandChessTree.Client.Stats
         public bool IsPaused = false;
         public NodesWorkProcessor(NodesTaskOrchistrator searchItemOrchistrator, Config config)
         {
+            _config = config;
             _searchItemOrchistrator = searchItemOrchistrator;
             _workerCount = config.Workers;
             _workerReports = new NodesWorkerReport[_workerCount];
@@ -150,6 +151,7 @@ namespace GrandChessTree.Client.Stats
                     Console.WriteLine($"{_searchItemOrchistrator.TaskQueueLength} queued tasks");
                     Console.WriteLine($"{_workerReports.Length} workers, avg {(_workerReports.Sum(w => (float)w.TotalComputedNodes) / _workerReports.Length / deltaT * 1000).FormatBigNumber()}nps");
                     Console.WriteLine($"[{totalComputedNodes.FormatBigNumber()} nodes] [{(totalComputedNodes / (float)deltaT * 1000).FormatBigNumber()}nps] [{tpm.RoundToSignificantFigures(2)}tpm]");
+                    Console.WriteLine($"worker id: {_config.WorkerId} subtask cache: {NodesSubTaskHashTable.AllocatedMb}MB worker cache: {PerftBulk.AllocatedMb}MB");
 
                     string formattedTime = dt.TotalDays >= 1
                         ? dt.ToString(@"d\.hh\:mm\:ss")
@@ -229,7 +231,7 @@ namespace GrandChessTree.Client.Stats
 
         private unsafe void ThreadWork(int index)
         {
-            PerftBulk.AllocateHashTable();
+            PerftBulk.AllocateHashTable(_config.MbHash);
 
             var workerReport = _workerReports[index];
             workerReport.IsRunning = true;

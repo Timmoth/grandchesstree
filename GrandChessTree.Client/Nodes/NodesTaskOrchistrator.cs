@@ -153,8 +153,15 @@ namespace GrandChessTree.Client.Stats
             {
                 return false;
             }
+            var resultData = new ulong[results.Count * 2];
+            var index = 0;
+            foreach (var result in results)
+            {
+                resultData[index++] = (ulong)result.TaskId;
+                resultData[index++] = result.Nodes;
+            }
 
-            var response = await _httpClient.PostAsJsonAsync($"api/v3/perft/fast/results", new PerftFastTaskResultBatch { WorkerId = _config.WorkerId, Results = [.. results] }, SourceGenerationContext.Default.PerftFastTaskResultBatch);
+            var response = await _httpClient.PutAsJsonAsync($"api/v3/perft/fast/tasks", new PerftFastTaskResultBatch { WorkerId = _config.WorkerId, Results = resultData }, SourceGenerationContext.Default.PerftFastTaskResultBatch);
 
             if (!response.IsSuccessStatusCode)
             {

@@ -41,13 +41,27 @@ class Program
                     return;
                 }
 
+                var mbHashEnvVar = Environment.GetEnvironmentVariable("mb_hash");
+                if (!int.TryParse(mbHashEnvVar, out var mbHash))
+                {
+                    mbHash = 1024;
+                }
+
+                var subTaskCacheEnvVar = Environment.GetEnvironmentVariable("sub_task_cache_size");
+                if (!int.TryParse(subTaskCacheEnvVar, out var subTaskCacheSize))
+                {
+                    subTaskCacheSize = 1024;
+                }
+
                 config = new Config()
                 {
                     ApiKey = Environment.GetEnvironmentVariable("api_key") ?? "",
                     ApiUrl = Environment.GetEnvironmentVariable("api_url") ?? "",
                     Workers = workerCount,
                     WorkerId = workerId,
-                    TaskType = taskType
+                    TaskType = taskType,
+                    MbHash = mbHash,
+                    SubTaskCacheSize = subTaskCacheSize,
                 };
             }
             else

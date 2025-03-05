@@ -18,7 +18,7 @@ namespace GrandChessTree.Client.Stats
         private FullTaskCacheEntry* HashTable;
         public uint HashTableMask;
         public int HashTableSize;
-
+        public static ulong AllocatedMb = 0;
         private static unsafe uint CalculateHashTableEntries(int sizeInMb)
         {
             var transpositionCount = (ulong)sizeInMb * 1024ul * 1024ul / (ulong)sizeof(FullTaskCacheEntry);
@@ -37,6 +37,7 @@ namespace GrandChessTree.Client.Stats
         public void AllocateHashTable(int sizeInMb = 512)
         {
             var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+            AllocatedMb = (ulong)newHashTableSize * (ulong)sizeof(FullTaskCacheEntry) / 1024ul / 1024ul;
 
             if (HashTable != null && HashTableSize == newHashTableSize)
             {

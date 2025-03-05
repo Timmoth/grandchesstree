@@ -152,6 +152,8 @@ namespace GrandChessTree.Client.Stats
                     Console.WriteLine($"{_searchItemOrchistrator.TaskQueueLength} queued tasks");
                     Console.WriteLine($"{_workerReports.Length} workers, avg {(_workerReports.Sum(w => (float)w.TotalComputedNodes) / _workerReports.Length / deltaT * 1000).FormatBigNumber()}nps");
                     Console.WriteLine($"[{totalComputedNodes.FormatBigNumber()} nodes] [{(totalComputedNodes / (float)deltaT * 1000).FormatBigNumber()}nps] [{tpm.RoundToSignificantFigures(2)}tpm]");
+                    Console.WriteLine($"worker id: {_config.WorkerId} subtask cache: {SubTaskHashTable.AllocatedMb}MB worker cache: {Perft.AllocatedMb}MB");
+
                     string formattedTime = dt.TotalDays >= 1
                         ? dt.ToString(@"d\.hh\:mm\:ss")
                         : dt.ToString(@"hh\:mm\:ss");

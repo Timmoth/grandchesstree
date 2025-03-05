@@ -81,10 +81,28 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             }));
         }
 
+
+        [ApiKeyAuthorize]
+        [HttpPut("tasks")]
+        public async Task<IActionResult> SubmitResults(
+            [FromBody] PerftFastTaskResultBatch request,
+            CancellationToken cancellationToken)
+        {
+            var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);
+            if (apiKey == null)
+            {
+                return Unauthorized();
+            }
+
+            _perftFastTaskService.Enqueue(request, apiKey.AccountId);
+
+            return Ok();
+        }
+
         [ApiKeyAuthorize]
         [HttpPost("results")]
         public async Task<IActionResult> SubmitResults(
-            [FromBody] PerftFastTaskResultBatch request,
+            [FromBody] PerftFastTaskResultBatchOld request,
             CancellationToken cancellationToken)
         {
             var apiKey = await _apiKeyAuthenticator.GetApiKey(HttpContext, cancellationToken);

@@ -70,7 +70,6 @@ namespace GrandChessTree.Client
                 isValid = false;
             }
 
-
             if (config.SubTaskCacheSize < 256)
             {
                 Console.WriteLine("Error: Sub task cache size must be at least 256.");

@@ -85,6 +85,23 @@ namespace GrandChessTree.Api.Perft.V3
         {
             var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
 
+            for(int i = 0; i < batch.Results.Length; i += 2)
+            {
+                CompletedTasks.Enqueue(new PerftCompletedFastTask()
+                {
+                    CompletedAt = currentTimestamp,
+                    TaskId = (int)batch.Results[i],
+                    WorkerId = batch.WorkerId,
+                    AccountId = accountId,
+                    Nodes = batch.Results[i+1],
+                });
+            }
+        }
+
+        public void Enqueue(PerftFastTaskResultBatchOld batch, long accountId)
+        {
+            var currentTimestamp = _timeProvider.GetUtcNow().ToUnixTimeSeconds();
+
             foreach (var result in batch.Results)
             {
                 CompletedTasks.Enqueue(new PerftCompletedFastTask()

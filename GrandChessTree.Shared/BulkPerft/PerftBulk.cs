@@ -17,6 +17,7 @@ public static unsafe class PerftBulk
     #region HashTable
     public static uint HashTableMask;   
     public static int HashTableSize;
+    public static ulong AllocatedMb = 0; 
 
     [ThreadStatic] public static PerftBulkHashEntry* HashTable;
 
@@ -43,6 +44,7 @@ public static unsafe class PerftBulk
     public static void AllocateHashTable(int sizeInMb = 512)
     {
         var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+        AllocatedMb = (ulong)newHashTableSize * (ulong)sizeof(PerftBulkHashEntry) / 1024ul / 1024ul;
 
         if (HashTable != null && HashTableSize == newHashTableSize)
         {
