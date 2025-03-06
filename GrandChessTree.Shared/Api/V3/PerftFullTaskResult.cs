@@ -16,6 +16,15 @@ public class PerftFullTaskResultBatch
     [JsonPropertyName("worker_id")]
     public int WorkerId { get; set; } = 0;
 
+    [JsonPropertyName("allocated_mb")]
+    public int AllocatedMb { get; set; } = 0;
+
+    [JsonPropertyName("threads")]
+    public int Threads { get; set; } = 0;
+
+    [JsonPropertyName("mips")]
+    public float Mips { get; set; } = 0;
+
     [JsonPropertyName("results")]
     public required ulong[][] Results { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using GrandChessTree.Client;
+﻿using System.Runtime.Intrinsics.X86;
+using GrandChessTree.Client;
 using GrandChessTree.Client.Stats;
 using GrandChessTree.Shared.Precomputed;
 
@@ -6,6 +7,13 @@ class Program
 {
     static async Task Main(string[] args)
     {
+        #if !ARM
+            if (!Bmi2.X64.IsSupported)
+            {
+                Console.WriteLine("Bmi2.X64 is not supported on this platform.");
+            }
+        #endif
+
         // Subscribe to global exception handlers.
         AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
@@ -53,6 +61,12 @@ class Program
                     subTaskCacheSize = 1024;
                 }
 
+                var silentEnvVar = Environment.GetEnvironmentVariable("silent");
+                if (!bool.TryParse(silentEnvVar, out var silentMode))
+                {
+                    silentMode = false;
+                }
+
                 config = new Config()
                 {
                     ApiKey = Environment.GetEnvironmentVariable("api_key") ?? "",
@@ -62,6 +76,7 @@ class Program
                     TaskType = taskType,
                     MbHash = mbHash,
                     SubTaskCacheSize = subTaskCacheSize,
+                    Silent = silentMode
                 };
             }
             else
@@ -73,6 +88,8 @@ class Program
             {
                 return;
             }
+
+            Benchmarks.RunBenchmark(config.Workers, 200_000_000);
 
             if (config.TaskType == 0)
             {

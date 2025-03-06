@@ -94,6 +94,11 @@ namespace GrandChessTree.Engine
                 {
                     RunUniqueMt(commandParts);
                 }
+                else if (command == "decode_fen")
+                {
+                    var (brd, wtm) = BoardStateSerialization.Deserialize(commandParts[1]);
+                    Console.WriteLine(brd.ToFen(wtm, 0, 1));
+                }
             }           
         }
 

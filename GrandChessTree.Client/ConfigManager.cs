@@ -27,6 +27,9 @@ namespace GrandChessTree.Client
 
         [JsonPropertyName("sub_task_launch_depth")]
         public int SubTaskLaunchDepth { get; set; } = 3;
+
+        [JsonPropertyName("silent")]
+        public bool Silent { get; set; } = false;
     }
 
     public static class ConfigManager

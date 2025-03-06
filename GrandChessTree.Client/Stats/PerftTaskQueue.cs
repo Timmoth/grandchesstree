@@ -5,14 +5,14 @@ namespace GrandChessTree.Client.Stats
 {
     public class PerftTaskQueue
     {
-        private readonly ConcurrentQueue<PerftFullTaskResponse> _taskQueue = new();
+        private readonly ConcurrentQueue<PerftTaskResponse> _taskQueue = new();
 
         public PerftTaskQueue()
         {
 
         }
 
-        public void Enqueue(PerftFullTaskResponse[] tasks)
+        public void Enqueue(PerftTaskResponse[] tasks)
         {
             foreach (var newTask in tasks)
             {
@@ -20,7 +20,7 @@ namespace GrandChessTree.Client.Stats
             }
         }
 
-        public PerftFullTaskResponse? Dequeue()
+        public PerftTaskResponse? Dequeue()
         {
             if (!_taskQueue.TryDequeue(out var task))
             {

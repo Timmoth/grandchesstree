@@ -1,8 +1,7 @@
 ﻿using System.Collections.Concurrent;
-using System.Net.Http.Json;
+using System.Net.Http.Headers;
 using GrandChessTree.Shared;
 using GrandChessTree.Shared.Api;
-using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
 
 namespace GrandChessTree.Client.Stats
@@ -117,13 +116,17 @@ namespace GrandChessTree.Client.Stats
             return true;
         }
 
-        private static async Task<PerftFastTaskResponse[]?> RequestNewTask(HttpClient httpClient)
+        private static async Task<PerftTaskResponse[]?> RequestNewTask(HttpClient httpClient)
         {
-            var response = await httpClient.PostAsync($"api/v3/perft/fast/tasks", null);
+            var response = await httpClient.PostAsync("api/v4/perft/fast/tasks", null);
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync(jsonTypeInfo: SourceGenerationContext.Default.PerftFastTaskResponseArray);
+                // Read the binary content from the response
+                var binaryData = await response.Content.ReadAsByteArrayAsync();
+
+                // Decode the binary data into the PerftFastTaskResponse array
+                return PerftTasksBinaryConverter.Decode(binaryData).ToArray();
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
             {
@@ -161,7 +164,24 @@ namespace GrandChessTree.Client.Stats
                 resultData[index++] = result.Nodes;
             }
 
-            var response = await _httpClient.PutAsJsonAsync($"api/v3/perft/fast/tasks", new PerftFastTaskResultBatch { WorkerId = _config.WorkerId, Results = resultData }, SourceGenerationContext.Default.PerftFastTaskResultBatch);
+            var batch = new PerftFastTaskResultBatch
+            {
+                WorkerId = _config.WorkerId,
+                AllocatedMb = (int)PerftBulk.AllocatedMb * _config.Workers + (int)NodesSubTaskHashTable.AllocatedMb,
+                Threads = _config.Workers,
+                Mips = Benchmarks.Mips,
+                Results = resultData
+            };
+
+            // Encode the batch as binary
+            var binaryData = PerftFastTaskResultBatchBinaryConverter.Encode(batch);
+
+            using var content = new ByteArrayContent(binaryData);
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+            // Send the request
+            var response = await _httpClient.PutAsync("api/v4/perft/fast/tasks", content);
+
 
             if (!response.IsSuccessStatusCode)
             {
