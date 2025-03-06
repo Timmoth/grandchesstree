@@ -177,6 +177,8 @@ namespace GrandChessTree.Api.Controllers
             var results = await _perftReadings.GetLeaderboard(PerftTaskType.Full, cancellationToken);
             var accounts = contributors.Select(c => c.Account).DistinctBy(a => a?.Id).ToDictionary(a => a?.Id ?? -1, a => a);
             var leaderboard = new List<PerftLeaderboardResponse>();
+
+            var totals = PerformanceStatsService.GetFullTaskTotals(_timeProvider.GetUtcNow().ToUnixTimeSeconds());
             foreach (var contributor in contributors.GroupBy(c => c.AccountId))
             {
                 if (contributor.Key == null)
@@ -188,6 +190,8 @@ namespace GrandChessTree.Api.Controllers
                 {
                     continue;
                 }
+
+                totals.TryGetValue(contributor.Key.Value, out var total);
 
                 results.TryGetValue(contributor.Key.Value, out var stats);
 
@@ -201,6 +205,10 @@ namespace GrandChessTree.Api.Controllers
                     TasksPerMinute = stats.tpm,
                     TotalNodes = (long)contributor.Sum(c => c.FullTaskNodes),
                     TotalTimeSeconds = 0,
+                    Threads = total?.Threads ?? 0,
+                    Mips = total?.Mips ?? 0,
+                    Workers = total?.Workers ?? 0,
+                    AllocatedMb = total?.AllocatedMb ?? 0,
                 });
             }
 

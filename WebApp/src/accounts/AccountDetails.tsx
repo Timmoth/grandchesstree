@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import FormattedNumber from "../FormattedNumber";
+import { formatBigNumber, FormatMB } from "../Utils";
 
 interface TaskData {
   total_nodes: number;
@@ -13,6 +14,9 @@ interface WorkerStats {
   task_type: number;
   nps: number;
   tpm: number;
+  threads: number;
+  allocated_mb: number;
+  mips: number;
 }
 
 interface AccountData {
@@ -65,17 +69,31 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
   return (
     <>
       <div className="flex flex-col space-x-4 p-4 bg-gray-100 rounded-lg text-gray-700">
-        <div className="flex justify-between items-center space-x-4">
+      <div>
+
+        <div className="flex space-x-4">
           <span className="text-md font-semibold">Name</span>
           <span className="text-xl font-bold">{account?.name}</span>
         </div>
-        <div className="flex justify-between items-center space-x-4">
+        <div className="flex space-x-4">
           <span className="text-md font-semibold">Status</span>
           <span className="text-xl font-bold">{((account!.task_0.nps + account!.task_1.nps) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</span>
         </div>
+        <div className="flex space-x-4">
+          <span className="text-md font-semibold">Threads</span>
+          <span className="text-xl font-bold">{account?.workers.reduce((sum, worker) => sum + worker.threads, 0)}</span>
+        </div>
+        <div className="flex space-x-4">
+          <span className="text-md font-semibold">Memory</span>
+          <span className="text-xl font-bold">{FormatMB(account?.workers.reduce((sum, worker) => sum + worker.allocated_mb, 0) ?? 0)}</span>
+        </div>
+        <div className="flex space-x-4">
+          <span className="text-md font-semibold">MIPS</span>
+          <span className="text-xl font-bold">{formatBigNumber(account?.workers.reduce((sum, worker) => sum + worker.mips, 0) ?? 0)}</span>
+        </div>
         <div className="flex items-stretch">
           <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700">
-            <span className="text-lg font-bold">Full task</span>
+            <span className="text-lg font-bold">Full task stats</span>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Completed Tasks</span>
@@ -105,7 +123,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
           </div>
 
           <div className="space-y-4 p-4 bg-gray-100 rounded-lg text-gray-700">
-            <span className="text-lg font-bold">Fast task</span>
+            <span className="text-lg font-bold">Fast task stats</span>
 
             <div className="flex justify-between items-center space-x-4">
               <span className="text-md font-semibold">Completed Tasks</span>
@@ -133,7 +151,7 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
               </span>
             </div>
           </div>
-
+        </div>
           <div className="w-full overflow-x-auto">
           <table className="min-w-[400px] text-sm text-left rtl:text-right text-gray-500">
             <thead className="text-xs text-gray-700 uppercase">
@@ -143,6 +161,15 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Task Type
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Threads
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Allocated Memory
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Mips
                 </th>
                 <th scope="col" className="px-6 py-3">
                   TPM
@@ -157,6 +184,9 @@ const AccountDetails: React.FC<AccountDetailsProps> = ({ accountId }) => {
                 <tr key={index} className="bg-white border-b border-gray-200">
                   <td className="px-6 py-4">{item.worker_id}</td>
                   <td className="px-6 py-4">{item.task_type}</td>
+                  <td className="px-6 py-4">{item.threads}</td>
+                  <td className="px-6 py-4">{FormatMB(item.allocated_mb)}</td>
+                  <td className="px-6 py-4">{formatBigNumber(item.mips)}</td>
                   <td className="px-6 py-4"><FormattedNumber value={item.tpm} min={1} max={1e4}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.nps} min={1e8} max={1e12}/></td>
                 </tr>

@@ -156,6 +156,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
             var leaderboard = new List<PerftLeaderboardResponse>();
 
             var accounts = contributors.Select(c => c.Account).DistinctBy(a => a?.Id).ToDictionary(a => a?.Id ?? -1, a => a);
+            var totals = PerformanceStatsService.GetFastTaskTotals(_timeProvider.GetUtcNow().ToUnixTimeSeconds());
 
             foreach (var contributor in contributors.GroupBy(c => c.AccountId))
             {
@@ -167,6 +168,7 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                 if(!accounts.TryGetValue(contributor.Key.Value, out var account) || account == null){
                     continue;
                 }
+                totals.TryGetValue(contributor.Key.Value, out var total);
 
                 results.TryGetValue(contributor.Key.Value, out var stats);
 
@@ -180,6 +182,10 @@ namespace GrandChessTree.Api.Perft.PerftNodes
                     TasksPerMinute = stats.tpm,
                     TotalNodes = (long)contributor.Sum(c => c.FastTaskNodes),
                     TotalTimeSeconds = 0,
+                    Threads = total?.Threads ?? 0,
+                    Mips = total?.Mips ?? 0,
+                    Workers = total?.Workers ?? 0,
+                    AllocatedMb = total?.AllocatedMb ?? 0,
                 });
             }
 

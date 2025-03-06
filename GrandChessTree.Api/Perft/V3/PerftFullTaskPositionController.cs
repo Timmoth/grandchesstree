@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
-using GrandChessTree.Api.D10Search;
 using GrandChessTree.Api.Database;
 using GrandChessTree.Api.timescale;
 using GrandChessTree.Shared.Api;
@@ -138,42 +137,5 @@ namespace GrandChessTree.Api.Controllers
 
             return Ok(leaderboard.Where(r => r.TotalTasks > 0));
         }
-
-
-        [HttpGet("results")]
-        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        public async Task<IActionResult> GetResults(int positionId, int depth,
-           CancellationToken cancellationToken)
-        {
-            var result = await _dbContext.Database
-                .SqlQueryRaw<PerftResultV3>(@"
-            SELECT 
-                SUM(t.full_task_nodes * t.occurrences) AS nodes,
-                SUM(t.captures * t.occurrences) AS captures,
-                SUM(t.enpassants * t.occurrences) AS enpassants,
-                SUM(t.castles * t.occurrences) AS castles,
-                SUM(t.promotions * t.occurrences) AS promotions,
-                SUM(t.direct_checks * t.occurrences) AS direct_checks,
-                SUM(t.single_discovered_checks * t.occurrences) AS single_discovered_checks,
-                SUM(t.direct_discovered_checks * t.occurrences) AS direct_discovered_checks,
-                SUM(t.double_discovered_checks * t.occurrences) AS double_discovered_checks,
-                SUM(t.direct_mates * t.occurrences) AS direct_mates,
-                SUM(t.single_discovered_mates * t.occurrences) AS single_discovered_mates,
-                SUM(t.direct_discovered_mates * t.occurrences) AS direct_discovered_mates,
-                SUM(t.double_discovered_mates * t.occurrences) AS double_discovered_mates
-            FROM public.perft_tasks_v3 t
-            WHERE t.root_position_id = {0} AND t.depth = {1}", positionId, depth)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
-
     }
 }

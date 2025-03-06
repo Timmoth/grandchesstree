@@ -144,29 +144,10 @@ namespace GrandChessTree.Api.Database
             #region V3
 
             modelBuilder.Entity<PerftTaskV3>()
-               .HasIndex(p => new { p.RootPositionId, p.Depth, p.Board })
-               .IsUnique();
-
-            modelBuilder.Entity<PerftTaskV3>()
-                .HasIndex(p => new { p.RootPositionId, p.Depth });
-
-            modelBuilder.Entity<PerftTaskV3>()
                 .HasIndex(p => new { p.FastTaskStartedAt, p.FastTaskFinishedAt, p.Depth, p.Id });
 
             modelBuilder.Entity<PerftTaskV3>()
                 .HasIndex(p => new { p.FullTaskStartedAt, p.FullTaskFinishedAt, p.Depth, p.Id });
-
-            modelBuilder.Entity<PerftTaskV3>()
-     .HasIndex(p => p.FullTaskStartedAt);
-
-            modelBuilder.Entity<PerftTaskV3>()
-.HasIndex(p => p.FullTaskFinishedAt);
-
-            modelBuilder.Entity<PerftTaskV3>()
-.HasIndex(p => p.FastTaskStartedAt);
-
-            modelBuilder.Entity<PerftTaskV3>()
-.HasIndex(p => p.FastTaskFinishedAt);
 
             modelBuilder.Entity<PerftTaskV3>()
                  .Property(e => e.FullTaskStartedAt)

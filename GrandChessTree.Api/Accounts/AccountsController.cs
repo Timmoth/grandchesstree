@@ -10,7 +10,7 @@ using GrandChessTree.Shared.ApiKeys;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.OutputCaching;
 using GrandChessTree.Api.timescale;
-using GrandChessTree.Api.Migrations;
+using GrandChessTree.Api.Performance;
 
 namespace GrandChessTree.Api.Controllers
 {
@@ -29,7 +29,7 @@ namespace GrandChessTree.Api.Controllers
         public required AccountTaskStatsResponse Task1 { get; set; }
 
         [JsonPropertyName("workers")]
-        public required List<WorkerStats> Workers { get; set; }
+        public required List<WorkerStatsResponse> Workers { get; set; }
     }
 
 
@@ -136,6 +136,17 @@ namespace GrandChessTree.Api.Controllers
             var fastResults = await _perftReadings.GetLeaderboard(PerftTaskType.Fast, (int)account.Id, cancellationToken);
             var fullResults = await _perftReadings.GetLeaderboard(PerftTaskType.Full, (int)account.Id, cancellationToken);
             var workerResults = await _perftReadings.GetWorkerStats((int)account.Id, cancellationToken);
+
+            foreach(var workerResult in workerResults)
+            {
+                var stats = PerformanceStatsService.Get(account.Id, workerResult.WorkerId);
+                if (stats != null)
+                {
+                    workerResult.AllocatedMb = stats.AllocatedMb;
+                    workerResult.Threads = stats.Threads;
+                    workerResult.Mips = stats.Mips;
+                }
+            }
 
             var response = new AccountResponse()
             {

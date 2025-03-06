@@ -1,4 +1,5 @@
 import React from "react";
+import { formatBigNumber } from "./Utils";
 
 interface FormattedNumberProps {
   value: number;
@@ -25,15 +26,6 @@ const interpolateColor = (num: number, min: number, max: number): string => {
   
   const index = Math.floor(scale * (predefinedClasses.length - 1));
   return predefinedClasses[index];
-};
-
-const formatBigNumber = (num: number): string => {
-  if (num >= 1e15) return (num / 1e15).toFixed(1) + "q"; // Quadrillion
-  if (num >= 1e12) return (num / 1e12).toFixed(1) + "t"; // Trillion
-  if (num >= 1e9) return (num / 1e9).toFixed(1) + "b"; // Billion
-  if (num >= 1e6) return (num / 1e6).toFixed(1) + "m"; // Million
-  if (num >= 1e3) return (num / 1e3).toFixed(1) + "k"; // Thousand
-  return num.toString(); // Return as is if it's less than 1000
 };
 
 const FormattedNumber: React.FC<FormattedNumberProps> = ({ value, min, max }) => {

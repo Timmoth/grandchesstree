@@ -136,30 +136,5 @@ namespace GrandChessTree.Api.Perft.PerftNodes
 
             return Ok(leaderboard.Where(r => r.TotalTasks > 0));
         }
-
-
-        [HttpGet("results")]
-        [ResponseCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        [OutputCache(Duration = 300, VaryByQueryKeys = new[] { "positionId", "depth" })]
-        public async Task<IActionResult> GetResults(int positionId, int depth,
-           CancellationToken cancellationToken)
-        {
-            var result = await _dbContext.Database
-                .SqlQueryRaw<PerftNodesResult>(@"
-            SELECT 
-                SUM(t.fast_task_nodes * t.occurrences) AS nodes
-            FROM public.perft_tasks_v3 t
-            WHERE t.root_position_id = {0} AND t.depth = {1}", positionId, depth)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
-        }
-
     }
 }

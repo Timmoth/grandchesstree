@@ -4,6 +4,7 @@ import AboutCard from "./AboutCard";
 import { Link } from "react-router-dom";
 import GlobalPerformanceChart from "./perft_stats/GlobalPerformanceChart";
 import GlobalLeaderboard from "./perft_stats/GlobalLeaderboard";
+import GlobalPerformance from "./GlobalPerformance";
 
 const Home: React.FC = () => {
   return (
@@ -105,6 +106,7 @@ const Home: React.FC = () => {
                 <span className="text-xs">Completed perft [0,..,9]</span>
               </div>
             </div>
+            <GlobalPerformance/>
           </div>
           <GlobalPerformanceChart/>
           <GlobalLeaderboard/>

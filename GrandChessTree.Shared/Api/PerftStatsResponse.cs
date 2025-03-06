@@ -47,4 +47,16 @@ public class PerftLeaderboardResponse
 
     [JsonPropertyName("nps")]
     public float NodesPerSecond { get; set; }
+
+    [JsonPropertyName("workers")]
+    public int Workers { get; set; }
+    
+    [JsonPropertyName("threads")]
+    public int Threads { get; set; }
+    
+    [JsonPropertyName("allocated_mb")]
+    public int AllocatedMb { get; set; }
+
+    [JsonPropertyName("mips")]
+    public float Mips { get; set; }
 }

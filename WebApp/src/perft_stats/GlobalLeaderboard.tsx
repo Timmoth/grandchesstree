@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FormattedNumber from "../FormattedNumber";
+import { formatBigNumber, FormatMB } from "../Utils";
 
 // Type definition for the leaderboard response
 interface PerftLeaderboardResponse {
@@ -10,6 +11,10 @@ interface PerftLeaderboardResponse {
   nps: number;
   total_tasks: number;
   tpm: number;
+  workers: number;
+  threads: number;
+  allocated_mb: number;
+  mips: number;
 }
 
 // New type for merged leaderboard entries
@@ -24,7 +29,10 @@ interface PerftLeaderBoardEntry {
   tpm_stats_task: number;
   nps_nodes_task: number;
   tpm_nodes_task: number;
-
+  workers: number;
+  threads: number;
+  allocated_mb: number;
+  mips: number;
 }
 
 const GlobalLeaderboard: React.FC = () => {
@@ -38,8 +46,8 @@ const GlobalLeaderboard: React.FC = () => {
     const fetchLeaderboards = async () => {
       try {
         const [statsResponse, nodesResponse] = await Promise.all([
-          fetch("https://api.grandchesstree.com/api/v3/perft/full/leaderboard"),
-          fetch("https://api.grandchesstree.com/api/v3/perft/fast/leaderboard"),
+          fetch("https://api.grandchesstree.com/api/v4/perft/full/leaderboard"),
+          fetch("https://api.grandchesstree.com/api/v4/perft/fast/leaderboard"),
         ]);
 
         if (!statsResponse.ok || !nodesResponse.ok) {
@@ -68,10 +76,20 @@ const GlobalLeaderboard: React.FC = () => {
               tpm_stats_task: 0,
               nps_nodes_task: 0,
               tpm_nodes_task: 0,
+              workers: 0,
+              threads: 0,
+              allocated_mb: 0,
+              mips: 0,
             };
           }
 
           const target = mergedData[entry.account_name];
+
+          target.workers += entry.workers;
+          target.threads += entry.threads;
+          target.allocated_mb += entry.allocated_mb;
+          target.mips += entry.mips;
+
           if (isStats) {
             target.perft_stats_task_nodes = entry.total_nodes;
             target.perft_stats_tasks = entry.total_tasks;
@@ -111,6 +129,9 @@ const GlobalLeaderboard: React.FC = () => {
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Status</th>
+              <th className="px-6 py-3">Threads</th>
+              <th className="px-6 py-3">Memory</th>
+              <th className="px-6 py-3">MIPS</th>
               <th className="px-6 py-3">Full tasks</th>
               <th className="px-6 py-3">tpm</th>
               <th className="px-6 py-3">nodes</th>
@@ -135,6 +156,9 @@ const GlobalLeaderboard: React.FC = () => {
                   </Link>
                  </td>
                   <td className="px-6 py-4 ">{((item.nps_stats_task + item.nps_nodes_task) > 0 ? <span className="text-green-500">active</span>:<span>offline</span>)}</td>
+                  <td className="px-6 py-4">{item.threads}</td>
+                  <td className="px-6 py-4">{FormatMB(item.allocated_mb)}</td>
+                  <td className="px-6 py-4">{formatBigNumber(item.mips)}</td>
                   <td className="px-6 py-4"><FormattedNumber value={item.perft_stats_tasks} min={1e1} max={1e7}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.tpm_stats_task} min={1e1} max={1e3}/></td>
                   <td className="px-6 py-4"><FormattedNumber value={item.perft_stats_task_nodes} min={1e9} max={1e16}/></td>

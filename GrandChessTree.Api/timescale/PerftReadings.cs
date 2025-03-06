@@ -32,19 +32,28 @@ namespace GrandChessTree.Api.timescale
         public float tpm { get; set; }
     }
 
-    public class WorkerStats
+    public class WorkerStatsResponse
     {
         [JsonPropertyName("worker_id")]
-        public float WorkerId { get; set; }
+        public int WorkerId { get; set; }
 
         [JsonPropertyName("task_type")]
-        public float TaskType { get; set; }
+        public int TaskType { get; set; }
 
         [JsonPropertyName("nps")]
         public float Nps { get; set; }
 
         [JsonPropertyName("tpm")]
         public float Tpm { get; set; }
+
+        [JsonPropertyName("threads")]
+        public int Threads { get; set; }
+
+        [JsonPropertyName("allocated_mb")]
+        public int AllocatedMb { get; set; }
+
+        [JsonPropertyName("mips")]
+        public float Mips { get; set; }
     }
 
     public class PerftReadings
@@ -142,7 +151,7 @@ namespace GrandChessTree.Api.timescale
             return response;
         }
 
-        public async Task<List<WorkerStats>> GetWorkerStats(int accountId, CancellationToken cancellationToken)
+        public async Task<List<WorkerStatsResponse>> GetWorkerStats(int accountId, CancellationToken cancellationToken)
         {
             string sql = @$"SELECT 
 	                            worker_id,
@@ -159,7 +168,7 @@ namespace GrandChessTree.Api.timescale
             await using var conn = new NpgsqlConnection(_connectionString);
             await conn.OpenAsync(cancellationToken);
 
-            var response = new List<WorkerStats>();
+            var response = new List<WorkerStatsResponse>();
 
             await using (var cmd = new NpgsqlCommand(sql, conn))
             {
@@ -169,14 +178,13 @@ namespace GrandChessTree.Api.timescale
                 {
                     while (await reader.ReadAsync(cancellationToken))
                     {
-                        response.Add(new WorkerStats()
+                        response.Add(new WorkerStatsResponse()
                         {
                             WorkerId = reader.GetInt16(0),
                             TaskType = reader.GetInt16(1),
                             Nps = reader.GetFloat(2),
                             Tpm = reader.GetInt64(3)
-                        });
-                                               
+                        });                
                     }
                 }
             }
