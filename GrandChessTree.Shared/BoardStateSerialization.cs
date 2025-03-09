@@ -17,6 +17,16 @@ namespace GrandChessTree.Shared
             return Convert.ToBase64String(buffer);
         }
 
+        public static byte[] ToByteArray(this ref Board board, bool whiteToMove)
+        {
+            var buffer = new byte[StructSize];
+            WriteToSpan(ref board, buffer, whiteToMove);
+            return buffer;
+        }
+        public static (Board board, bool whiteToMove) FromByteArray(byte[] buffer)
+        {
+            return ReadFromSpan(buffer);
+        }
         // Deserialize from a Base64 string
         public static (Board board, bool whiteToMove) Deserialize(string base64)
         {

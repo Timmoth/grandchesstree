@@ -181,3 +181,22 @@ FROM (
     FROM aggregated
 ) a;
 ```
+
+## Table Size
+```
+SELECT 
+  pg_size_pretty(pg_total_relation_size('perft_tasks_v3')) AS total_table_size,
+  pg_size_pretty(pg_relation_size('perft_tasks_v3')) AS table_size,
+  pg_size_pretty(pg_total_relation_size('perft_tasks_v3') - pg_relation_size('perft_tasks_v3')) AS toast_size,
+  pg_size_pretty(pg_indexes_size('perft_tasks_v3')) AS index_size
+FROM pg_class 
+WHERE relname = 'perft_tasks_v3';
+```
+
+Size per row
+```
+SELECT 
+  (pg_total_relation_size('perft_tasks_v3') + pg_indexes_size('perft_tasks_v3')) / NULLIF(reltuples, 0) AS avg_row_size_with_indexes
+FROM pg_class 
+WHERE relname = 'perft_tasks_v3';
+```

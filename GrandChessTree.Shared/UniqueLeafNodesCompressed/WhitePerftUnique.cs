@@ -6,7 +6,6 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 public partial struct Board
 {
-
     private unsafe void AccumulateWhiteCompressedUniqueLeafNodes(int depth)
     {
         if (depth == 0)
@@ -21,15 +20,15 @@ public partial struct Board
 
             if (UniqueLeafNodeGeneratorCompressed.boards.TryGetValue(hash, out var entry))
             {
-                entry.occurrences++;
+                entry.occurrences += UniqueLeafNodeGeneratorCompressed.Occurrences;
             }
             else
             {
                 UniqueLeafNodeGeneratorCompressed.boards[hash] = new UniqueLeafNodeGeneratorCompressedEntry()
                 {
-                    board = BoardStateSerialization.Serialize(ref this, true),
-                    order = 1,
-                    occurrences = 1
+                    board = BoardStateSerialization.ToByteArray(ref this, true),
+                    order = UniqueLeafNodeGeneratorCompressed.Order++,
+                    occurrences = UniqueLeafNodeGeneratorCompressed.Occurrences
                 };
             }
             return;

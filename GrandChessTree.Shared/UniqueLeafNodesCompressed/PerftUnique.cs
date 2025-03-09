@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Collections.Concurrent;
+using System.Numerics;
 using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Precomputed;
 
@@ -6,23 +7,21 @@ namespace GrandChessTree.Shared;
 
 public class UniqueLeafNodeGeneratorCompressedEntry
 {
-    public string board;
-    public int order;
+    public byte[] board;
+    public ulong order;
     public int occurrences;
 }
 public static unsafe class UniqueLeafNodeGeneratorCompressed
 {
-    [ThreadStatic] public static Dictionary<ulong, UniqueLeafNodeGeneratorCompressedEntry> boards;
-    [ThreadStatic] public static int Order = 0;
+    public static Dictionary<ulong, UniqueLeafNodeGeneratorCompressedEntry> boards;
+    public static ulong Order = 0;
+    public static int Occurrences = 0;
     public static void PerftRootCompressedUniqueLeafNodes(ref Board board, int depth, bool whiteToMove)
     {
         if(boards == null)
         {
             boards = new();
         }
-
-        boards.Clear();
-        Order = 0;
 
         if (depth == 0)
         {
