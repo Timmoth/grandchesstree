@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Timmoth" /><link rel="canonical" href="https://grandchesstree.com/quickstart/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Quick start - The Grand Chess Tree</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Quick start";
+        var mkdocs_page_input_path = "quickstart.md";
+        var mkdocs_page_url = "/quickstart/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> The Grand Chess Tree
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Quick start</a>
+    <ul class="current">
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../results/">Results</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../technical/">Technical overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../linuxInstall/">Linux Installation</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../memoryConf/">Memory Configuration</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">The Grand Chess Tree</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Quick start</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Timmoth/grandchesstree/edit/main/docs/quickstart.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h3 id="quick-start">Quick start</h3>
+<ul>
+<li>Get in touch, you'll need an apikey in order to connect to the server. The easiest way is to <a href="https://discord.gg/cTu3aeCZVe">join the discord group</a></li>
+<li>Download the <a href="https://github.com/Timmoth/grandchesstree/releases">latest client</a> (windows, linux, mac are all supported (including ARM builds!))</li>
+<li>Run the client and answer the questions with the following:
+<div class="highlight"><pre><span></span><code>  api_url: https://api.grandchesstree.com/
+  api_key: &lt;your_api_key&gt;
+  workers: &lt;number_of_threads&gt;
+  worker_id: 0
+</code></pre></div></li>
+<li>That's it! </li>
+</ul>
+<p>**Note that you should pick a number of workers that corrosponds to less then the number of threads in your system since they will all be running in parrallel. **</p>
+<p><strong>You can close the program at any time, but do note that any progress on incomplete tasks will be lost.</strong></p>
+<p>If you want to run from source (for apple silicon you may need to)
+<div class="highlight"><pre><span></span><code>git clone https://github.com/Timmoth/grandchesstree
+cd GrandChessTree.Client
+# x86
+dotnet run -c Release --no-launch-profile 
+# ARM
+dotnet run -c Release --no-launch-profile --property:DefineConstants=&quot;ARM&quot;
+</code></pre></div></p>
+<p><a href="https://hub.docker.com/r/aptacode/grand-chess-tree-worker">Alternatively you can also run the worker in docker</a></p>
+<div class="highlight"><pre><span></span><code>docker run -e api_key=&quot;&lt;your_api_key&gt;&quot; -e api_url=&quot;https://api.grandchesstree.com/&quot; -e workers=4 -e depth=12 aptacode/grand-chess-tree-worker
+</code></pre></div>
+<h3 id="making-sense-of-the-output">Making sense of the output</h3>
+<ul>
+<li>worker: the index of the worker</li>
+<li>nps: the number of nodes per second the worker is able to process</li>
+<li>nodes: the number of nodes that have been processed for this task so far</li>
+<li>sub_tasks: completed / total sub tasks for the workers currently assigned tasks</li>
+<li>tasks: the number of full tasks that the worker has completed</li>
+<li>fen: the position the worker is currently processing</li>
+</ul>
+<p>The last three lines show:</p>
+<ul>
+<li>The number of subtasks that have been completed and the percentage of them that were duplicates of work you've already done</li>
+<li>The number of tasks you've submitted this session, and the number of tasks that you've completed but are waiting to be submitted</li>
+<li>Computed stats - this shows the amount and rate of nodes you're processing accross all of your workers (excluding caching)</li>
+<li>Effective stats - this shows the amount and rate of nodes that your sending to the server, it will be considerably higher then the rate your system can directly run the search since it includes cached nodes.</li>
+</ul>
+<div class="highlight"><pre><span></span><code>| worker | nps    | nodes  | sub_tasks | tasks | fen                                                             |
+|--------|--------|--------|-----------|-------|-----------------------------------------------------------------|
+| 0      | 179.3m | 23.8b  | 262/417   | 16    | rnbqkbnr/1ppppp1p/6p1/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1   |
+| 1      | 166.5m | 42.7b  | 304/586   | 12    | rnbqkbnr/1ppp1ppp/4p3/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1   |
+| 2      | 144.6m | 92.6b  | 469/565   | 11    | 1nbqkbnr/1ppppppp/r7/p7/8/P4N2/1PPPPPPP/RNBQKB1R w KQk - 0 1    |
+| 3      | 193.3m | 13.4b  | 76/398    | 16    | rnbqkb1r/p1pppppp/1p5n/8/1P6/P7/2PPPPPP/RNBQKBNR w KQkq - 0 1   |
+| 4      | 180.3m | 21.6b  | 244/380   | 13    | rnbqkbnr/1pppppp1/7p/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1    |
+| 5      | 162.7m | 49.8b  | 210/550   | 15    | rnbqkbnr/1pp1pppp/8/p2p4/8/P6N/1PPPPPPP/RNBQKB1R w KQkq d6 0 1  |
+| 6      | 164.1m | 375.6b | 612/752   | 12    | rnbqkbnr/1pp1pppp/8/p2p4/8/P2P4/1PP1PPPP/RNBQKBNR w KQkq d6 0 1 |
+| 7      | 159.2m | 19.4b  | 164/418   | 14    | rnbqkbnr/1pppppp1/8/p6p/8/P6N/1PPPPPPP/RNBQKB1R w KQkq h6 0 1   |
+| 8      | 180m   | 56.9b  | 380/530   | 18    | rnbqkbnr/1pp1pppp/3p4/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1   |
+| 9      | 180.9m | 354.6b | 596/803   | 13    | rnbqkbnr/1ppp1ppp/8/p3p3/8/P2P4/1PP1PPPP/RNBQKBNR w KQkq e6 0 1 |
+| 10     | 169.4m | 174.7b | 549/618   | 13    | rnbqkbnr/1ppp1ppp/8/p3p3/6P1/P7/1PPPPP1P/RNBQKBNR w KQkq e6 0 1 |
+| 11     | 165.6m | 39.3b  | 236/588   | 16    | rnbqkbnr/1ppp1ppp/8/p3p3/8/P6N/1PPPPPPP/RNBQKB1R w KQkq e6 0 1  |
+| 12     | 159.1m | 104.3b | 358/579   | 14    | rnbqkbnr/1pp1pppp/8/p2p4/7P/P7/1PPPPPP1/RNBQKBNR w KQkq d6 0 1  |
+| 13     | 170.4m | 14.1b  | 75/436    | 14    | rnbqkb1r/p1pppppp/1p3n2/8/1P6/P7/2PPPPPP/RNBQKBNR w KQkq - 0 1  |
+| 14     | 150.5m | 18.3b  | 245/417   | 17    | r1bqkbnr/1ppppppp/n7/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1    |
+| 15     | 158.5m | 30.9b  | 314/379   | 16    | rnbqkbnr/1pppp1pp/5p2/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1   |
+| 16     | 162.7m | 13.6b  | 224/436   | 11    | r1bqkbnr/1ppppppp/2n5/p7/8/P6N/1PPPPPPP/RNBQKB1R w KQkq - 0 1   |
+| 17     | 154m   | 21.5b  | 185/418   | 11    | rnbqkbnr/1ppppp1p/8/p5p1/8/P6N/1PPPPPPP/RNBQKB1R w KQkq g6 0 1  |
+| 18     | 199.1m | 105.7b | 525/558   | 13    | rnbqkbnr/1pp1pppp/3p4/p7/7P/P7/1PPPPPP1/RNBQKBNR w KQkq - 0 1   |
+| 19     | 174.7m | 4.8b   | 42/422    | 11    | rnbqkbnr/p1pppppp/8/1p6/8/P1P5/1P1PPPPP/RNBQKBNR w KQkq - 0 1   |
+| 20     | 196.6m | 28.9b  | 190/397   | 16    | rnbqkbnr/1pppp1pp/8/p4p2/8/P6N/1PPPPPPP/RNBQKB1R w KQkq f6 0 1  |
+| 21     | 170.9m | 14.1b  | 72/436    | 15    | r1bqkbnr/p1pppppp/1pn5/8/1P6/P7/2PPPPPP/RNBQKBNR w KQkq - 0 1   |
+| 22     | 160.1m | 4.6b   | 42/510    | 12    | rn1qkbnr/pbpppppp/1p6/8/1P6/P7/2PPPPPP/RNBQKBNR w KQkq - 0 1    |
+| 23     | 176.7m | 5b     | 30/432    | 3     | rn1qkbnr/p1pppppp/bp6/8/1P6/P7/2PPPPPP/RNBQKBNR w KQkq - 0 1    |
+
+completed 159k subtasks (29% cache hits), submitted 322 tasks (0 pending)
+[computed stats] 39.3t nodes at 4.1bnps
+[effective stats] 129.6t nodes at 13.3bnps
+</code></pre></div>
+<h2 id="running-the-toolkit">Running the toolkit</h2>
+<p><div class="highlight"><pre><span></span><code>git clone https://github.com/Timmoth/grandchesstree
+cd GrandChessTree.Toolkit
+# x86
+dotnet run -c Release --no-launch-profile 
+# ARM
+dotnet run -c Release --no-launch-profile --property:DefineConstants=&quot;ARM&quot;
+
+----The Grand Chess Tree Toolkit----
+perft_test:5:512:10
+</code></pre></div>
+The command to run a perft_test locally is:</p>
+<div class="highlight"><pre><span></span><code>perft_test:depth:hash_mb:iterations
+</code></pre></div>
+<ul>
+<li>depth: the depth to search, anything over 7 is going to take a while...</li>
+<li>hash_mb: the size in MB to allocate to the hash table</li>
+<li>iterations: the number of test iterations to run</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../results/" class="btn btn-neutral float-right" title="Results">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Timmoth/grandchesstree" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../results/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

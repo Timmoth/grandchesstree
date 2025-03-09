@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://grandchesstree.com/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/dev/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/linuxInstall/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/memoryConf/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/quickstart/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/results/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+    <url>
+         <loc>https://grandchesstree.com/technical/</loc>
+         <lastmod>2025-03-09</lastmod>
+    </url>
+</urlset>
