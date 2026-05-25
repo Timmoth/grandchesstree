@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Leaderboard &mdash; The Grand Chess Tree</title>
+    <title>CPU Leaderboard &mdash; The Grand Chess Tree</title>
     <meta
       name="description"
       content="Perft NPS leaderboard for chess move generators. Engines are validated against the standard perft corpus, then benchmarked across four threading/cache configurations."
@@ -25,7 +25,7 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://grandchesstree.com/leaderboard.html" />
-    <meta property="og:title" content="Leaderboard &mdash; The Grand Chess Tree" />
+    <meta property="og:title" content="CPU Leaderboard &mdash; The Grand Chess Tree" />
     <meta
       property="og:description"
       content="Perft NPS leaderboard for chess move generators. Validated against the standard perft corpus, benchmarked across four threading/cache configurations."
@@ -36,7 +36,7 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="The Grand Chess Tree" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Leaderboard &mdash; The Grand Chess Tree" />
+    <meta name="twitter:title" content="CPU Leaderboard &mdash; The Grand Chess Tree" />
     <meta name="twitter:description" content="Perft NPS leaderboard for chess move generators. Validated against the standard perft corpus, benchmarked across four threading/cache configurations." />
     <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
 
@@ -50,7 +50,7 @@
     {
       "@context": "https://schema.org",
       "@type": "Event",
-      "name": "The Grand Chess Tree — Move Generator Leaderboard",
+      "name": "The Grand Chess Tree — Move Generator CPU Leaderboard",
       "description": "An upcoming competition for the fastest chess move generator. Engines are validated against a known-correct perft corpus and ranked by throughput.",
       "url": "https://grandchesstree.com/leaderboard.html",
       "eventStatus": "https://schema.org/EventScheduled",
@@ -82,7 +82,8 @@
           <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
           <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
           <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
-          <li><a href="leaderboard.html" class="text-slate-900">Leaderboard</a></li>
+          <li><a href="leaderboard.html" class="text-slate-900">CPU Leaderboard</a></li>
+          <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
           <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
           <li>
             <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
@@ -101,12 +102,12 @@
             <ol class="flex flex-wrap items-center gap-2">
               <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
               <li aria-hidden="true">/</li>
-              <li class="text-slate-700">Leaderboard</li>
+              <li class="text-slate-700">CPU Leaderboard</li>
             </ol>
           </nav>
 
           <div class="flex flex-wrap items-center gap-3">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">Leaderboard</h1>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">CPU Leaderboard</h1>
             <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-800">
               <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
               Preview &mdash; {{LB_ENGINES_LABEL}}

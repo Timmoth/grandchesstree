@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Tools &mdash; The Grand Chess Tree</title>
+    <title>GPU Leaderboard &mdash; The Grand Chess Tree</title>
     <meta
       name="description"
-      content="Small, focused web tools for chess engine developers — FEN visualization, bitboard inspection, and more."
+      content="Perft NPS leaderboard for GPU-accelerated chess move generators. Coming soon."
     />
     <meta name="theme-color" content="#0f172a" />
-    <link rel="canonical" href="https://grandchesstree.com/tools.html" />
+    <link rel="canonical" href="https://grandchesstree.com/gpu-leaderboard.html" />
     <link rel="author" href="https://timmoth.com/" />
     <meta name="author" content="Tim Jones" />
     <meta name="creator" content="Tim Jones" />
     <meta name="publisher" content="The Grand Chess Tree" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <meta name="keywords" content="chess, chess engine, tools, FEN, bitboard, move generation, perft, Grand Chess Tree" />
+    <meta name="keywords" content="chess, move generator, GPU, CUDA, leaderboard, perft, benchmark, chess engine, Grand Chess Tree" />
     <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
     <link
       rel="icon"
@@ -24,11 +24,11 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://grandchesstree.com/tools.html" />
-    <meta property="og:title" content="Tools &mdash; The Grand Chess Tree" />
+    <meta property="og:url" content="https://grandchesstree.com/gpu-leaderboard.html" />
+    <meta property="og:title" content="GPU Leaderboard &mdash; The Grand Chess Tree" />
     <meta
       property="og:description"
-      content="Small, focused web tools for chess engine developers."
+      content="Perft NPS leaderboard for GPU-accelerated chess move generators. Coming soon."
     />
     <meta property="og:site_name" content="The Grand Chess Tree" />
     <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
@@ -36,25 +36,14 @@
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="The Grand Chess Tree" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Tools &mdash; The Grand Chess Tree" />
-    <meta name="twitter:description" content="Small, focused web tools for chess engine developers." />
+    <meta name="twitter:title" content="GPU Leaderboard &mdash; The Grand Chess Tree" />
+    <meta name="twitter:description" content="Perft NPS leaderboard for GPU-accelerated chess move generators. Coming soon." />
     <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
       html { font-feature-settings: "cv11", "ss01"; }
-      .tabular { font-variant-numeric: tabular-nums; }
     </style>
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "CollectionPage",
-      "name": "Tools",
-      "url": "https://grandchesstree.com/tools.html",
-      "description": "Small, focused web tools for chess engine developers."
-    }
-    </script>
   </head>
   <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
     <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
@@ -69,13 +58,13 @@
         </a>
         <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
           <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
-          <li><a href="tools.html" class="text-slate-900">Tools</a></li>
+          <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
           <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
           <li class="relative">
             <button
               id="leaderboards-dropdown-toggle"
               type="button"
-              class="inline-flex items-center gap-1 hover:text-slate-900"
+              class="inline-flex items-center gap-1 text-slate-900"
               aria-expanded="false"
               aria-haspopup="true"
               aria-controls="leaderboards-dropdown-menu"
@@ -91,7 +80,7 @@
               role="menu"
             >
               <li role="none"><a role="menuitem" href="leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
-              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 text-slate-900">GPU</a></li>
             </ul>
           </li>
           <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
@@ -121,13 +110,13 @@
       <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
         <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
           <li><a href="distributed-perft.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Distributed</a></li>
-          <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Tools</a></li>
+          <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
           <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Posts</a></li>
           <li>
             <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
             <ul class="mb-1 flex flex-col gap-1">
               <li><a href="leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
-              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 text-slate-900">GPU</a></li>
             </ul>
           </li>
           <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
@@ -194,133 +183,31 @@
             <ol class="flex flex-wrap items-center gap-2">
               <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
               <li aria-hidden="true">/</li>
-              <li class="text-slate-700">Tools</li>
+              <li class="text-slate-700">GPU Leaderboard</li>
             </ol>
           </nav>
 
-          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">Tools</h1>
-          <p class="mt-4 max-w-2xl text-slate-600 md:text-lg">
-            Small, focused utilities for chess engine developers. Each tool is a
-            single page &mdash; no install, no login, shareable via URL.
-          </p>
-        </div>
-      </section>
-
-      <section class="border-b border-slate-200 py-16 md:py-20">
-        <div class="mx-auto max-w-6xl px-4 sm:px-6">
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-
-            <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <h2 class="text-lg font-semibold tracking-tight text-slate-900">FEN visualizer</h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
-                Paste a FEN string and see the position rendered on a board.
-                Flip the board, copy a shareable link, or load a known
-                test position.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-500 tabular">
-                Available
-              </p>
-              <a
-                href="fen-visualizer.html"
-                class="mt-4 inline-flex items-center gap-1 font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-700"
-              >
-                Open tool
-                <svg aria-hidden="true" class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
-              </a>
-            </article>
-
-            <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <h2 class="text-lg font-semibold tracking-tight text-slate-900">Bitboard inspector</h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
-                Paste a 64-bit value to see which squares are set, or derive
-                per-piece bitboards from a FEN. Click squares to toggle
-                bits and copy the result back into your engine.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-500 tabular">
-                Available
-              </p>
-              <a
-                href="bitboard-inspector.html"
-                class="mt-4 inline-flex items-center gap-1 font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-700"
-              >
-                Open tool
-                <svg aria-hidden="true" class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
-              </a>
-            </article>
-
-            <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <h2 class="text-lg font-semibold tracking-tight text-slate-900">Perft tester</h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
-                Count legal move sequences from any FEN. Compares against
-                reference values for the standard CPW positions and gives a
-                per-root-move divide breakdown for locating move-gen bugs.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-500 tabular">
-                Available
-              </p>
-              <a
-                href="perft-test.html"
-                class="mt-4 inline-flex items-center gap-1 font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-700"
-              >
-                Open tool
-                <svg aria-hidden="true" class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
-              </a>
-            </article>
-
-            <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <h2 class="text-lg font-semibold tracking-tight text-slate-900">PGN viewer</h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
-                Paste a PGN and step through the game. Click any move to
-                jump, grab the FEN at any ply, and share a link to a
-                specific position.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-500 tabular">
-                Available
-              </p>
-              <a
-                href="pgn-viewer.html"
-                class="mt-4 inline-flex items-center gap-1 font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-700"
-              >
-                Open tool
-                <svg aria-hidden="true" class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
-              </a>
-            </article>
-
-            <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-0.5 hover:shadow-md">
-              <div class="flex items-center gap-2">
-                <h2 class="text-lg font-semibold tracking-tight text-slate-900">perftcheck CLI</h2>
-                <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-medium text-emerald-700">CLI</span>
-              </div>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-600">
-                Cross-platform CLI that validates a UCI chess engine against
-                ~28,000 known-correct positions and writes a JSON report.
-                Self-contained binary for Linux, macOS, and Windows &mdash;
-                no .NET runtime needed on the target.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-500 tabular">
-                Available
-              </p>
-              <a
-                href="perftcheck.html"
-                class="mt-4 inline-flex items-center gap-1 font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 group-hover:decoration-slate-700"
-              >
-                Open tool
-                <svg aria-hidden="true" class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
-              </a>
-            </article>
-
-            <article class="flex flex-col rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-6">
-              <h2 class="text-lg font-semibold tracking-tight text-slate-400">More coming</h2>
-              <p class="mt-3 flex-1 text-sm leading-relaxed text-slate-500">
-                UCI move tracer, attack maps, and other utilities are
-                planned. Suggestions welcome on the project Discord.
-              </p>
-              <p class="mt-6 text-xs font-medium text-slate-400 tabular">
-                Planned
-              </p>
-            </article>
-
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">GPU Leaderboard</h1>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-slate-700">
+              <span class="inline-block h-1.5 w-1.5 rounded-full bg-slate-400"></span>
+              Coming soon
+            </span>
           </div>
+
+          <p class="mt-6 max-w-3xl text-lg text-slate-600">
+            A leaderboard for GPU-accelerated chess move generators is in the works.
+            If you're working on a CUDA / ROCm / Metal / SYCL perft kernel and want it ranked here,
+            <a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">drop by the Discord</a>
+            or
+            <a href="https://github.com/Timmoth/grandchesstree/issues" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">open an issue on GitHub</a>.
+          </p>
+
+          <p class="mt-4 max-w-3xl text-sm text-slate-500">
+            In the meantime, the
+            <a href="leaderboard.html" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">CPU Leaderboard</a>
+            tracks single-threaded and multi-threaded CPU move generators across a shared perft corpus.
+          </p>
         </div>
       </section>
     </main>

@@ -106,10 +106,32 @@
           <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
         </a>
         <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
-          <li><a href="distributed-perft.html" class="text-slate-900">Distributed Perft</a></li>
+          <li><a href="distributed-perft.html" class="text-slate-900">Distributed</a></li>
           <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
-          <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
-          <li><a href="leaderboard.html" class="hover:text-slate-900">Leaderboard</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
           <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
           <li>
             <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
@@ -136,10 +158,16 @@
       </nav>
       <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
         <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
-          <li><a href="distributed-perft.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Distributed Perft</a></li>
+          <li><a href="distributed-perft.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Distributed</a></li>
           <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
-          <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Move generator</a></li>
-          <li><a href="leaderboard.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Leaderboard</a></li>
+          <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
           <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
           <li>
             <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
@@ -151,17 +179,48 @@
       </div>
       <script>
         (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
           var toggle = document.getElementById("mobile-nav-toggle");
           var menu = document.getElementById("mobile-nav-menu");
           var openIcon = document.getElementById("mobile-nav-open-icon");
           var closeIcon = document.getElementById("mobile-nav-close-icon");
-          if (!toggle || !menu) return;
-          toggle.addEventListener("click", function () {
-            var nowOpen = menu.classList.toggle("hidden") === false;
-            openIcon.classList.toggle("hidden", nowOpen);
-            closeIcon.classList.toggle("hidden", !nowOpen);
-            toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
-          });
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
         })();
       </script>
     </header>
@@ -333,10 +392,11 @@
             <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
           </div>
           <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
-            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
             <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
-            <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
-            <li><a href="leaderboard.html" class="hover:text-slate-900">Leaderboard</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
             <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
             <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
           </ul>

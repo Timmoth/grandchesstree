@@ -43,12 +43,18 @@ const HEADER_TPL = fs.readFileSync(path.join(TEMPLATES_DIR, "header.html"), "utf
 const FOOTER_TPL = fs.readFileSync(path.join(TEMPLATES_DIR, "footer.html"), "utf8");
 
 function renderChrome(tpl, { active, base }) {
+  const isActive = (s) => active === s ? "text-slate-900" : "hover:text-slate-900";
+  // Composite bucket: "Leaderboards" parent highlights when *either* CPU or
+  // GPU child is current. Mirror site/build.js NAV_BUCKETS.
+  const isInBucket = (members) => members.includes(active) ? "text-slate-900" : "hover:text-slate-900";
   return tpl
     .replace(/\{\{BASE\}\}/g, base)
-    .replace(/\{\{NAV_DISTRIBUTED_PERFT\}\}/g, active === "distributed-perft" ? "text-slate-900" : "hover:text-slate-900")
-    .replace(/\{\{NAV_TOOLS\}\}/g, active === "tools" ? "text-slate-900" : "hover:text-slate-900")
-    .replace(/\{\{NAV_MOVE_GENERATOR\}\}/g, active === "move-generator" ? "text-slate-900" : "hover:text-slate-900")
-    .replace(/\{\{NAV_LEADERBOARD\}\}/g, active === "leaderboard" ? "text-slate-900" : "hover:text-slate-900");
+    .replace(/\{\{NAV_DISTRIBUTED_PERFT\}\}/g, isActive("distributed-perft"))
+    .replace(/\{\{NAV_TOOLS\}\}/g, isActive("tools"))
+    .replace(/\{\{NAV_MOVE_GENERATOR\}\}/g, isActive("move-generator"))
+    .replace(/\{\{NAV_CPU_LEADERBOARD\}\}/g, isActive("cpu-leaderboard"))
+    .replace(/\{\{NAV_GPU_LEADERBOARD\}\}/g, isActive("gpu-leaderboard"))
+    .replace(/\{\{NAV_LEADERBOARDS\}\}/g, isInBucket(["cpu-leaderboard", "gpu-leaderboard"]));
 }
 
 const SERIES_TITLE = "Let's build a move generator";

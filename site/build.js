@@ -56,16 +56,29 @@ const headerTpl = read(path.join(TPL_DIR, "header.html"));
 const footerTpl = read(path.join(TPL_DIR, "footer.html"));
 
 // Sections the nav highlights. Add here when a new top-level section is added.
-const NAV_SECTIONS = ["distributed-perft", "tools", "move-generator", "leaderboard"];
+const NAV_SECTIONS = ["distributed-perft", "tools", "move-generator", "cpu-leaderboard", "gpu-leaderboard"];
+
+// Composite buckets: the "Leaderboards" dropdown button gets the active style
+// when *either* the CPU or GPU child page is current.
+const NAV_BUCKETS = {
+  "leaderboards": ["cpu-leaderboard", "gpu-leaderboard"],
+};
 
 function navClass(active, section) {
   return active === section ? "text-slate-900" : "hover:text-slate-900";
+}
+
+function navBucketClass(active, members) {
+  return members.includes(active) ? "text-slate-900" : "hover:text-slate-900";
 }
 
 function tplVars({ active = null, base = "" }) {
   const vars = { BASE: base };
   for (const s of NAV_SECTIONS) {
     vars[`NAV_${s.toUpperCase().replace(/-/g, "_")}`] = navClass(active, s);
+  }
+  for (const [name, members] of Object.entries(NAV_BUCKETS)) {
+    vars[`NAV_${name.toUpperCase().replace(/-/g, "_")}`] = navBucketClass(active, members);
   }
   return vars;
 }
@@ -88,7 +101,8 @@ function detectActiveSection(html) {
   if (/href="(?:\.\.\/)?distributed-perft\.html"[^>]*class="text-slate-900"/.test(header)) return "distributed-perft";
   if (/href="(?:\.\.\/)?tools\.html"[^>]*class="text-slate-900"/.test(header)) return "tools";
   if (/href="(?:\.\.\/)?move-generator\/?"[^>]*class="text-slate-900"/.test(header)) return "move-generator";
-  if (/href="(?:\.\.\/)?leaderboard\.html"[^>]*class="text-slate-900"/.test(header)) return "leaderboard";
+  if (/href="(?:\.\.\/)?leaderboard\.html"[^>]*class="text-slate-900"/.test(header)) return "cpu-leaderboard";
+  if (/href="(?:\.\.\/)?gpu-leaderboard\.html"[^>]*class="text-slate-900"/.test(header)) return "gpu-leaderboard";
   return null;
 }
 
