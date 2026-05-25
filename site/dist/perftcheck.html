@@ -43,6 +43,32 @@
       }
       .term .grey   { color: #94a3b8; }
       .term .prompt { color: #38bdf8; }
+      .cmd-copy-btn {
+        font-family: inherit;
+        font-size: 10px;
+        line-height: 1;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.25rem;
+        padding: 2px 6px;
+        margin-left: 0.5rem;
+        cursor: pointer;
+        opacity: 0.55;
+        transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+        vertical-align: 1px;
+      }
+      .cmd-copy-btn:hover {
+        opacity: 1;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .cmd-copy-btn-ok {
+        opacity: 1 !important;
+        background: rgba(74, 222, 128, 0.18);
+        color: #4ade80;
+        border-color: rgba(74, 222, 128, 0.3);
+      }
     </style>
   </head>
   <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
@@ -330,5 +356,68 @@
         </p>
       </div>
     </footer>
+
+    <script>
+      // Inject a small inline "copy" button at the end of each command in
+      // every terminal block. A command starts at a <span class="prompt">
+      // marker and extends until the next prompt (or end of block); the
+      // copied text strips the prompt and its trailing single space, so the
+      // user gets a paste-ready command without "$ " / "PS> " junk.
+      document.querySelectorAll("pre.term").forEach((pre) => {
+        const prompts = Array.from(pre.querySelectorAll(":scope > .prompt"));
+        if (prompts.length === 0) return;
+
+        prompts.forEach((prompt, i) => {
+          const nextPrompt = prompts[i + 1] || null;
+
+          // Walk forward from this prompt to (exclusive) the next prompt,
+          // collecting the command's nodes.
+          const cmdNodes = [];
+          let n = prompt.nextSibling;
+          while (n && n !== nextPrompt) {
+            cmdNodes.push(n);
+            n = n.nextSibling;
+          }
+
+          // Build the clipboard string: drop the leading space that follows
+          // the prompt span, and any trailing newline that separates this
+          // command from the next.
+          let text = cmdNodes.map((n) => n.textContent || "").join("");
+          text = text.replace(/^ /, "").replace(/\n$/, "");
+
+          // Insert the button right before the trailing newline (if any) so
+          // it sits on the command's last text line, not the line below.
+          let insertBefore = nextPrompt;
+          const last = cmdNodes[cmdNodes.length - 1];
+          if (last && last.nodeType === Node.TEXT_NODE && last.textContent.endsWith("\n")) {
+            last.textContent = last.textContent.slice(0, -1);
+            const nl = document.createTextNode("\n");
+            pre.insertBefore(nl, insertBefore);
+            insertBefore = nl;
+          }
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cmd-copy-btn";
+          btn.textContent = "copy";
+          btn.setAttribute("aria-label", "Copy command to clipboard");
+          pre.insertBefore(btn, insertBefore);
+
+          btn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.textContent = "copied";
+              btn.classList.add("cmd-copy-btn-ok");
+            } catch {
+              btn.textContent = "failed";
+            }
+            setTimeout(() => {
+              btn.textContent = "copy";
+              btn.classList.remove("cmd-copy-btn-ok");
+            }, 1500);
+          });
+        });
+      });
+    </script>
   </body>
 </html>

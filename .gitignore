@@ -415,6 +415,11 @@ gct_config.json
 # Single-file dotnet publish output under MoveGen/dist (regenerable via dotnet publish)
 MoveGen/dist/
 
+# Single-file dotnet publish output for the perftcheck CLI (ships via
+# GitHub Releases — see .github/workflows/publish-perftcheck.yml). Local
+# builds land here and shouldn't be committed.
+PerftSuite/dist/
+
 # MoveGen.Wasm intermediate publish output (the deployed copy lives under site/dist/wasm/movegen/)
 MoveGen/MoveGen.Wasm/bin/Release/publish/
 
