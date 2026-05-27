@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="author" content="Timmoth" /><link rel="canonical" href="https://grandchesstree.com/dev/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Dev - The Grand Chess Tree</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Dev";
+        var mkdocs_page_input_path = "dev.md";
+        var mkdocs_page_url = "/dev/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> The Grand Chess Tree
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick start</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../results/">Results</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../technical/">Technical overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../linuxInstall/">Linux Installation</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Advanced Configuration</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../memoryConf/">Memory Configuration</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">The Grand Chess Tree</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Dev</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Timmoth/grandchesstree/edit/main/docs/dev.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <div class="highlight"><pre><span></span><code>docker-compose up
+dotnet run
+
+ dotnet ef migrations add migration-message
+dotnet ef database update 
+dotnet ef database update --connection
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>docker buildx create --use 
+docker buildx build --platform linux/amd64,linux/arm64 -t aptacode/grand-chess-tree-worker:latest -t aptacode/grand-chess-tree-worker:0.0.2 -f .\GrandChessTree.Client\Dockerfile --push .
+docker buildx imagetools inspect aptacode/grand-chess-tree-worker:latest
+</code></pre></div>
+<div class="highlight"><pre><span></span><code> docker build -t aptacode/grand-chess-tree-api:0.0.14 .   
+ docker push aptacode/grand-chess-tree-api:0.0.14
+
+ docker-compose down &amp;&amp; docker-compose up -d
+</code></pre></div>
+<h2 id="manually-update-perft-jobs-row">Manually update perft jobs row</h2>
+<div class="highlight"><pre><span></span><code>UPDATE public.perft_jobs AS pj
+SET 
+    completed_fast_tasks = sub.completed_fast_tasks,
+    completed_full_tasks = sub.completed_full_tasks,
+    full_task_nodes = sub.full_task_nodes,
+    fast_task_nodes = sub.fast_task_nodes,
+    total_tasks = sub.count,
+    verified_tasks = sub.verified_tasks
+FROM (
+    SELECT 
+        SUM(CASE WHEN fast_task_finished_at &gt; 0 THEN 1 ELSE 0 END) AS completed_fast_tasks,
+        SUM(CASE WHEN full_task_finished_at &gt; 0 THEN 1 ELSE 0 END) AS completed_full_tasks,
+        SUM(full_task_nodes * occurrences) AS full_task_nodes,
+        SUM(fast_task_nodes * occurrences) AS fast_task_nodes,
+        COUNT(*) AS count,
+        SUM(CASE WHEN full_task_nodes = fast_task_nodes THEN 1 ELSE 0 END) AS verified_tasks
+    FROM public.perft_tasks_v3
+    WHERE depth = 10 AND root_position_id = 1
+) AS sub
+WHERE pj.id = 2;
+</code></pre></div>
+<h2 id="manually-update-full-task-contributions">Manually update full task contributions</h2>
+<div class="highlight"><pre><span></span><code>INSERT INTO public.perft_contributions (
+    account_id, root_position_id, depth, 
+    full_task_nodes, completed_full_tasks, 
+    completed_fast_tasks, fast_task_nodes
+)
+SELECT 
+    full_task_account_id AS account_id,
+    root_position_id,
+    depth,
+    SUM(full_task_nodes * occurrences) AS full_task_nodes,
+    COUNT(*) AS completed_full_tasks,
+    0 AS completed_fast_tasks,  -- Default value since fast tasks are not in the query
+    0.0 AS fast_task_nodes       -- Default value since fast tasks are not in the query
+FROM public.perft_tasks_v3
+WHERE depth = &lt;DEPTH&gt; 
+  AND root_position_id = &lt;ID&gt; 
+  AND full_task_finished_at &gt; 0
+GROUP BY full_task_account_id, depth, root_position_id
+ON CONFLICT (account_id, root_position_id, depth) 
+DO UPDATE SET 
+    full_task_nodes = EXCLUDED.full_task_nodes,
+    completed_full_tasks = EXCLUDED.completed_full_tasks;
+</code></pre></div>
+<h2 id="manually-update-fast-task-contributions">Manually update fast task contributions</h2>
+<div class="highlight"><pre><span></span><code>INSERT INTO public.perft_contributions (
+    account_id, root_position_id, depth, 
+    fast_task_nodes, completed_fast_tasks, 
+    completed_full_tasks, full_task_nodes
+)
+SELECT 
+    fast_task_account_id AS account_id,
+    root_position_id,
+    depth,
+    SUM(fast_task_nodes * occurrences) AS fast_task_nodes,
+    COUNT(*) AS completed_fast_tasks,
+    0 AS completed_full_tasks,  -- Default value since fast tasks are not in the query
+    0.0 AS full_task_nodes       -- Default value since fast tasks are not in the query
+FROM public.perft_tasks_v3
+WHERE depth = 10 
+  AND root_position_id = 1 
+  AND fast_task_finished_at &gt; 0
+GROUP BY fast_task_account_id, depth, root_position_id
+ON CONFLICT (account_id, root_position_id, depth) 
+DO UPDATE SET 
+    fast_task_nodes = EXCLUDED.fast_task_nodes,
+    completed_fast_tasks = EXCLUDED.completed_fast_tasks;
+</code></pre></div>
+<h2 id="manually-release-stalled-tasks">Manually release stalled tasks</h2>
+<div class="highlight"><pre><span></span><code>UPDATE public.perft_tasks_v3
+SET full_task_started_at = 0
+WHERE depth = 10 and root_position_id = 1 and full_task_finished_at = 0
+
+UPDATE public.perft_tasks_v3
+SET fast_task_started_at = 0
+WHERE depth = 10 and root_position_id = 1 and fast_task_finished_at = 0
+</code></pre></div>
+<h2 id="get-corrupt-rows">Get corrupt rows</h2>
+<div class="highlight"><pre><span></span><code>SELECT Count(*) from public.perft_tasks_v3
+WHERE depth = 10 and root_position_id = 1 and full_task_finished_at &gt; 0 and fast_task_finished_at &gt; 0 and full_task_nodes != fast_task_nodes
+</code></pre></div>
+<h2 id="get-contributor-summary">Get contributor summary</h2>
+<div class="highlight"><pre><span></span><code>SELECT 
+    p.completed_full_tasks AS full_tasks,
+    p.completed_fast_tasks AS fast_tasks,
+    a.name
+FROM public.perft_contributions p
+JOIN public.accounts a ON p.account_id = a.id
+WHERE p.depth = 10
+ORDER BY p.completed_full_tasks DESC
+</code></pre></div>
+<h2 id="get-perft-results-as-json">Get perft results as json</h2>
+<div class="highlight"><pre><span></span><code>WITH aggregated AS (
+    SELECT 
+        SUM(t.full_task_nodes * t.occurrences) AS nodes,
+        SUM(t.captures * t.occurrences) AS captures,
+        SUM(t.enpassants * t.occurrences) AS enpassants,
+        SUM(t.castles * t.occurrences) AS castles,
+        SUM(t.promotions * t.occurrences) AS promotions,
+        SUM(t.direct_checks * t.occurrences) AS direct_checks,
+        SUM(t.single_discovered_checks * t.occurrences) AS single_discovered_checks,
+        SUM(t.direct_discovered_checks * t.occurrences) AS direct_discovered_checks,
+        SUM(t.double_discovered_checks * t.occurrences) AS double_discovered_checks,
+        SUM(t.direct_mates * t.occurrences) AS direct_mates,
+        SUM(t.single_discovered_mates * t.occurrences) AS single_discovered_mates,
+        SUM(t.direct_discovered_mates * t.occurrences) AS direct_discovered_mates,
+        SUM(t.double_discovered_mates * t.occurrences) AS double_discovered_mates,
+        MIN(t.full_task_finished_at) as start,
+        MAX(t.full_task_finished_at) as end
+    FROM public.perft_tasks_v3 t
+    WHERE t.root_position_id = 1 AND t.depth = 10
+)
+SELECT row_to_json(a) 
+FROM (
+    SELECT *,
+        (direct_checks + single_discovered_checks + direct_discovered_checks + double_discovered_checks) AS total_checks,
+        (direct_mates + single_discovered_mates + direct_discovered_mates + double_discovered_mates) AS total_mates
+    FROM aggregated
+) a;
+</code></pre></div>
+<h3 id="get-contributors-json">Get Contributors json</h3>
+<div class="highlight"><pre><span></span><code>WITH aggregated AS (
+SELECT 
+    a.id AS id,
+    a.name AS name,
+    p.full_task_nodes AS nodes,
+    p.completed_full_tasks AS tasks,
+    p.fast_task_nodes AS fast_nodes,
+    p.completed_fast_tasks AS fast_tasks,
+    0 as compute_time
+FROM public.perft_contributions p
+JOIN public.accounts a ON p.account_id = a.id
+WHERE p.depth = 10
+ORDER BY p.completed_full_tasks DESC
+)
+SELECT row_to_json(a) 
+FROM (
+    SELECT *
+    FROM aggregated
+) a;
+</code></pre></div>
+<h2 id="table-size">Table Size</h2>
+<div class="highlight"><pre><span></span><code>SELECT 
+  pg_size_pretty(pg_total_relation_size(&#39;perft_tasks_v3&#39;)) AS total_table_size,
+  pg_size_pretty(pg_relation_size(&#39;perft_tasks_v3&#39;)) AS table_size,
+  pg_size_pretty(pg_total_relation_size(&#39;perft_tasks_v3&#39;) - pg_relation_size(&#39;perft_tasks_v3&#39;)) AS toast_size,
+  pg_size_pretty(pg_indexes_size(&#39;perft_tasks_v3&#39;)) AS index_size
+FROM pg_class 
+WHERE relname = &#39;perft_tasks_v3&#39;;
+</code></pre></div>
+<p>Size per row
+<div class="highlight"><pre><span></span><code>SELECT 
+  (pg_total_relation_size(&#39;perft_tasks_v3&#39;) + pg_indexes_size(&#39;perft_tasks_v3&#39;)) / NULLIF(reltuples, 0) AS avg_row_size_with_indexes
+FROM pg_class 
+WHERE relname = &#39;perft_tasks_v3&#39;;
+</code></pre></div></p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Timmoth/grandchesstree" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
