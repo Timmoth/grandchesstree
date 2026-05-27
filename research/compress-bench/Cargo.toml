@@ -1,0 +1,28 @@
+[package]
+name = "compress-bench"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "compress-bench"
+path = "src/main.rs"
+
+[[bin]]
+name = "merge"
+path = "src/merge.rs"
+
+[[bin]]
+name = "wave_merge"
+path = "src/wave_merge.rs"
+
+[dependencies]
+memmap2 = "0.9"
+sucds = "0.8"
+roaring = "0.10"
+cuckoofilter = "0.5"
+rayon = "1.10"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+opt-level = 3

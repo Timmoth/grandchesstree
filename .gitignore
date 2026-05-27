@@ -429,3 +429,12 @@ MoveGen/MoveGen.Wasm/bin/Release/publish/
 # Local perft-check reports (written by PerftSuite; one-off per run)
 site/src/perft-report.json
 site/dist/perft-report.json
+
+# Perft EPD corpora derived from copyleft-licensed upstreams (GPL-3.0 /
+# CC-BY-SA). Kept out of the repo but auto-picked-up by the `data/*.epd`
+# glob in PerftSuite.csproj for local builds, so engine validation still
+# uses them on machines where they exist.
+PerftSuite/data/perft-ethereal.epd
+PerftSuite/data/perft-jchess-extra.epd
+PerftSuite/data/perft-canonical-deep.epd
+PerftSuite/data/ferdy_perft_double_checks_v2.epd

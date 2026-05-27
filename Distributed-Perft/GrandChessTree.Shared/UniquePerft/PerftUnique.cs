@@ -7,24 +7,25 @@ using GrandChessTree.Shared.Precomputed;
 namespace GrandChessTree.Shared;
 
 
+// Shared lock-free unique-perft TT entry. Same XOR-guard pattern as the bulk TT
+// (see BulkPerft/PerftBulk.cs). Unique-perft TT only carries (key, depth) — no
+// node count, because hits just short-circuit subtree recursion.
 public struct PerftUniqueHashEntry
 {
-    public ulong FullHash;
-    public ulong Nodes;
-    public int Depth;
+    public ulong HashXorData;
+    public ulong Data;        // depth in low 4 bits; high 60 bits unused (kept random for XOR)
 }
 public static unsafe class PerftUnique
 {
     #region HashTable
-    public static uint HashTableMask;   
+    public static uint HashTableMask;
     public static int HashTableSize;
 
-    [ThreadStatic] public static PerftUniqueHashEntry* HashTable;
+    // Shared across all threads. XOR-guard makes concurrent access torn-read safe.
+    public static PerftUniqueHashEntry* HashTable;
 
-    static PerftUnique()
-    {
+    static PerftUnique() { }
 
-    }
     private static uint CalculateHashTableEntries(int sizeInMb)
     {
         var transpositionCount = (ulong)sizeInMb * 1024ul * 1024ul / (ulong)sizeof(PerftUniqueHashEntry);
@@ -32,49 +33,66 @@ public static unsafe class PerftUnique
         {
             transpositionCount = BitOperations.RoundUpToPowerOf2(transpositionCount) >> 1;
         }
-
         if (transpositionCount > int.MaxValue)
         {
             throw new ArgumentException("Hash table too large");
         }
-
         return (uint)transpositionCount;
     }
 
+    private static readonly object _allocLock = new();
+
     public static void AllocateHashTable(int sizeInMb = 512)
     {
-        var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
-
-        if (HashTable != null && HashTableSize == newHashTableSize)
+        // mbHash <= 0: drop the TT entirely.
+        if (sizeInMb <= 0)
         {
-            ClearTable();
+            lock (_allocLock)
+            {
+                if (HashTable != null) { NativeMemory.AlignedFree(HashTable); HashTable = null; }
+                HashTableSize = 0;
+                HashTableMask = 0;
+            }
             return;
         }
 
-        if(HashTable != null)
+        var newHashTableSize = (int)CalculateHashTableEntries(sizeInMb);
+
+        // Idempotent across threads: callers in worker loops are safe. We do NOT
+        // clear an existing table of the same size — perft TT entries are valid
+        // across consecutive runs of the same engine, since (position, depth) →
+        // node count is a function of the position alone. This lets sequential
+        // shard runs benefit from a warm TT.
+        lock (_allocLock)
         {
-            FreeHashTable();
+            if (HashTable != null && HashTableSize == newHashTableSize)
+            {
+                return;
+            }
+            if (HashTable != null)
+            {
+                FreeHashTable();
+            }
+            HashTableSize = newHashTableSize;
+            HashTableMask = (uint)HashTableSize - 1;
+
+            const nuint alignment = 64;
+            var bytes = ((nuint)sizeof(PerftUniqueHashEntry) * (nuint)HashTableSize);
+            var block = NativeMemory.AlignedAlloc(bytes, alignment);
+            NativeMemory.Clear(block, bytes);
+            HashTable = (PerftUniqueHashEntry*)block;
         }
-
-        HashTableSize = newHashTableSize;
-        HashTableMask = (uint)HashTableSize - 1;
-
-        const nuint alignment = 64;
-
-        var bytes = ((nuint)sizeof(PerftUniqueHashEntry) * (nuint)HashTableSize);
-        var block = NativeMemory.AlignedAlloc(bytes, alignment);
-        NativeMemory.Clear(block, bytes);
-
-        HashTable = (PerftUniqueHashEntry*)block;
-
     }
 
     public static void FreeHashTable()
     {
-        if (HashTable != null)
+        lock (_allocLock)
         {
-            NativeMemory.AlignedFree(HashTable);
-            HashTable = null;
+            if (HashTable != null)
+            {
+                NativeMemory.AlignedFree(HashTable);
+                HashTable = null;
+            }
         }
     }
 
@@ -90,6 +108,52 @@ public static unsafe class PerftUnique
     #endregion
 
     public static LockFreeHashSet UniquePositions = new LockFreeHashSet(1 << 30);
+    public static LockFreeHashSet128? UniquePositions128;
+
+    public static void ReallocateMemTable(int log2Capacity)
+    {
+        UniquePositions.Dispose();
+        UniquePositions = new LockFreeHashSet(1L << log2Capacity);
+    }
+
+    public static void ReallocateMemTable128(int log2Capacity)
+    {
+        UniquePositions128?.Dispose();
+        UniquePositions128 = new LockFreeHashSet128(1L << log2Capacity);
+    }
+
+    public static void FreeMemTable128()
+    {
+        UniquePositions128?.Dispose();
+        UniquePositions128 = null;
+    }
+
+    // When non-null, depth=0 leaf records are written to disk-backed bucket files
+    // instead of (or in addition to) the in-RAM UniquePositions set.
+    public static BucketSpillSink? SpillSink;
+
+    // BFS wave-expand mode. When non-null, depth=0 leaf writes the canonical
+    // 26-byte position (not just the hash) to disk. Used for external-memory
+    // BFS where each wave is a full set of positions on disk, and the next
+    // wave is produced by 1-ply expansion + external sort+dedup.
+    public static BucketPositionSpillSink? PositionSpillSink;
+
+    // Shard filter: process only positions whose top bits of h1 match ShardId.
+    // ShardCount == 1 disables filtering.
+    public static int ShardCount = 1;
+    public static int ShardId = 0;
+    public static int ShardShift = 0;
+
+    public static void SetShard(int shardCount, int shardId)
+    {
+        if (shardCount < 1 || (shardCount & (shardCount - 1)) != 0)
+            throw new ArgumentException("shardCount must be a power of two");
+        if (shardId < 0 || shardId >= shardCount)
+            throw new ArgumentException("shardId out of range");
+        ShardCount = shardCount;
+        ShardId = shardId;
+        ShardShift = shardCount == 1 ? 0 : (64 - System.Numerics.BitOperations.Log2((uint)shardCount));
+    }
 
     public static void PerftRootUnique(ref Board board, int depth, bool whiteToMove)
     {

@@ -13,19 +13,23 @@ public partial struct Board
             // bulk count
             return AccumulateWhiteMovesBulkCount();
         }
-        var ptr = (PerftBulk.HashTable + (Hash & PerftBulk.HashTableMask));
-        var hashEntry = Unsafe.Read<PerftBulkHashEntry>(ptr);
-        if (hashEntry.FullHash == (Hash ^ (White | Black)) && depth == hashEntry.Depth)
+        // Shared TT lookup with XOR-guard. Reads two ulongs without locking;
+        // a torn pair fails the (guard ^ data) == key check and yields a miss.
+        // When HashTable == null, pure move-gen mode: skip the TT entirely.
+        ulong key = Hash ^ (White | Black);
+        PerftBulkHashEntry* ptr = null;
+        if (PerftBulk.HashTable != null)
         {
-            return hashEntry.Nodes;
+            ptr = PerftBulk.HashTable + (Hash & PerftBulk.HashTableMask);
+            ulong cachedData = ptr->Data;
+            ulong cachedGuard = ptr->HashXorData;
+            if ((cachedGuard ^ cachedData) == key && (uint)(cachedData & 0xF) == (uint)depth)
+            {
+                return cachedData >> 4;
+            }
         }
 
-        hashEntry = default;
-        hashEntry.FullHash = Hash ^ (White | Black);
-        hashEntry.Depth = (byte)depth;
-
         ulong nodes = 0;
-
 
         var checkers = BlackCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);
@@ -35,8 +39,19 @@ public partial struct Board
         if (numCheckers > 1)
         {
             // Only a king move can evade double check
-            hashEntry.Nodes = nodes;
-            *ptr = hashEntry;
+            if (ptr != null)
+            {
+                // Replace-by-depth: keep entries cached at deeper search depth (more
+                // expensive to recompute) when the slot collides.
+                ulong existingData = ptr->Data;
+                uint existingDepth = (uint)(existingData & 0xF);
+                if (existingData == 0 || existingDepth <= (uint)depth)
+                {
+                    ulong newDataEarly = (nodes << 4) | (uint)depth;
+                    ptr->Data = newDataEarly;
+                    ptr->HashXorData = key ^ newDataEarly;
+                }
+            }
             return nodes;
         }
 
@@ -108,9 +123,21 @@ public partial struct Board
             nodes += AccumulateWhiteQueenMovesBulk(depth, index, 0xFFFFFFFFFFFFFFFF);
         }
 
-        hashEntry.Nodes = nodes;
-        *ptr = hashEntry;
-
+        // Commit: write Data first, then HashXorData. A reader that interleaves
+        // between the two writes sees a torn pair whose XOR doesn't match any
+        // queried key — false miss, never a wrong hit. Skip writes in no-TT mode.
+        // Replace-by-depth: don't overwrite deeper entries from prior writes.
+        if (ptr != null)
+        {
+            ulong existingData = ptr->Data;
+            uint existingDepth = (uint)(existingData & 0xF);
+            if (existingData == 0 || existingDepth <= (uint)depth)
+            {
+                ulong newData = (nodes << 4) | (uint)depth;
+                ptr->Data = newData;
+                ptr->HashXorData = key ^ newData;
+            }
+        }
         return nodes;
     }
 
@@ -186,37 +213,38 @@ public partial struct Board
             if (EnPassantFile != 8 && rankIndex.IsWhiteEnPassantRankIndex() &&
                 Math.Abs(index.GetFileIndex() - EnPassantFile) == 1)
             {
-                newBoard = Unsafe.As<Board, Board>(ref this);
-
-                toSquare = Constants.WhiteEnpassantOffset + EnPassantFile;
-
-                newBoard.WhitePawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByBlackSliders(newBoard.WhiteKingPos))
+                // Inline legality check; only copy the board if the capture is legal.
+                ulong fromBit = 1UL << index;
+                ulong toBit = 1UL << (Constants.WhiteEnpassantOffset + EnPassantFile);
+                ulong captureBit = 1UL << (4 * 8 + EnPassantFile);
+                ulong occAfter = ((White ^ fromBit) | toBit) | (Black & ~captureBit);
+                ulong blackAfter = Black & ~captureBit;
+                if ((AttackTables.PextBishopAttacks(occAfter, WhiteKingPos) & (blackAfter & (Bishop | Queen))) == 0 &&
+                    (AttackTables.PextRookAttacks(occAfter, WhiteKingPos) & (blackAfter & (Rook | Queen))) == 0)
                 {
-                    nodes += newBoard.AccumulateBlackMovesBulk( depth - 1);
+                    newBoard = Unsafe.As<Board, Board>(ref this);
+                    newBoard.WhitePawn_Enpassant(index, Constants.WhiteEnpassantOffset + EnPassantFile);
+                    nodes += newBoard.AccumulateBlackMovesBulk(depth - 1);
                 }
             }
 
+            // Filter out double-push to rank-4 if the intermediate (rank-3) is occupied.
             validMoves = AttackTables.WhitePawnPushTable[index] & MoveMask & ~(White | Black) & pushPinMask;
+            if (rankIndex.IsSecondRank() && ((White | Black) & (1UL << (index + 8))) != 0)
+            {
+                validMoves &= ~(1UL << (index + 16));
+            }
             while (validMoves != 0)
             {
                 toSquare = validMoves.PopLSB();
                 newBoard = Unsafe.As<Board, Board>(ref this);
 
-
                 if (rankIndex.IsSecondRank() && toSquare.GetRankIndex() == 3)
                 {
-                    // Double push: Check intermediate square
-                    var intermediateSquare = (index + toSquare) / 2; // Midpoint between start and destination
-                    if (((White | Black) & (1UL << intermediateSquare)) != 0)
-                    {
-                        continue; // Intermediate square is blocked, skip this move
-                    }
                     newBoard.WhitePawn_DoublePush(index, toSquare);
                 }
                 else
                 {
-                    // single push
                     newBoard.WhitePawn_Move(index, toSquare);
                 }
 
@@ -374,7 +402,6 @@ public partial struct Board
         if (WhiteKingPos != 4 || inCheck)
             // Can't castle if king is attacked or not on the starting position
             return nodes;
-
 
         if ((CastleRights & CastleRights.WhiteKingSide) != 0 &&
             (White & Rook & Constants.WhiteKingSideCastleRookPosition) > 0 &&

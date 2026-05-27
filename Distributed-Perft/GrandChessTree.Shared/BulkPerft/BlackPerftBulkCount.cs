@@ -117,34 +117,28 @@ public partial struct Board
             if (EnPassantFile != 8 && rankIndex.IsBlackEnPassantRankIndex() &&
                 Math.Abs(index.GetFileIndex() - EnPassantFile) == 1)
             {
-                var newBoard = Unsafe.As<Board, Board>(ref this);
-
-                toSquare = Constants.BlackEnpassantOffset + EnPassantFile;
-
-                newBoard.BlackPawn_Enpassant(index, toSquare);
-                if (!newBoard.IsAttackedByWhiteSliders(newBoard.BlackKingPos))
+                // Inline legality check (mirror of white). White pawn that just double-pushed
+                // sits on rank 3 (0-idx) for black to capture.
+                ulong fromBit = 1UL << index;
+                ulong toBit = 1UL << (Constants.BlackEnpassantOffset + EnPassantFile);
+                ulong captureBit = 1UL << (3 * 8 + EnPassantFile);
+                ulong occAfter = (White & ~captureBit) | ((Black ^ fromBit) | toBit);
+                ulong whiteAfter = White & ~captureBit;
+                if ((AttackTables.PextBishopAttacks(occAfter, BlackKingPos) & (whiteAfter & (Bishop | Queen))) == 0 &&
+                    (AttackTables.PextRookAttacks(occAfter, BlackKingPos) & (whiteAfter & (Rook | Queen))) == 0)
                 {
                     nodes++;
                 }
             }
 
+            // Branchless mirror of the white variant. Double-push intermediate is index-8;
+            // legality depends on raw occupancy, not on MoveMask.
             validMoves = AttackTables.BlackPawnPushTable[index] & MoveMask & ~(White | Black) & pushPinMask;
-            while (validMoves != 0)
+            if (rankIndex.IsSeventhRank() && ((White | Black) & (1UL << (index - 8))) != 0)
             {
-                toSquare = validMoves.PopLSB();
-
-                if (rankIndex.IsSeventhRank() && toSquare.GetRankIndex() == 4)
-                {
-                    // Double push: Check intermediate square
-                    var intermediateSquare = (index + toSquare) / 2; // Midpoint between start and destination
-                    if (((White | Black) & (1UL << intermediateSquare)) != 0)
-                    {
-                        continue; // Intermediate square is blocked, skip this move
-                    }
-                }
-
-                nodes++;
+                validMoves &= ~(1UL << (index - 16));
             }
+            nodes += (ulong)BitOperations.PopCount(validMoves);
         }
         return nodes;
 

@@ -1,6 +1,6 @@
 {
   "name": "tgct_engine",
-  "version": "0.1.5",
+  "version": "0.1.14-r2r",
   "owner": "Timmoth",
   "repo": "https://github.com/Timmoth/grandchesstree",
   "language": "C#",
@@ -8,7 +8,7 @@
     "single-no-cache": {
       "launch": "bin/tgct_engine_local/GrandChessTree.Engine",
       "setup": [],
-      "case": "nodes:{depth}:1:{fen}",
+      "case": "nodes:{depth}:0:{fen}",
       "end_re": "^-{15,}$",
       "quit": "quit"
     },
@@ -22,14 +22,14 @@
     "multi-no-cache": {
       "launch": "bin/tgct_engine_local/GrandChessTree.Engine",
       "setup": [],
-      "case": "nodes_mt:{depth}:1:{threads}:{fen}",
+      "case": "nodes_mt:{depth}:0:{threads}:{fen}",
       "end_re": "^-{15,}$",
       "quit": "quit"
     },
     "multi-with-cache": {
       "launch": "bin/tgct_engine_local/GrandChessTree.Engine",
       "setup": [],
-      "case": "nodes_mt:{depth}:512:{threads}:{fen}",
+      "case": "nodes_mt:{depth}:4096:{threads}:{fen}",
       "end_re": "^-{15,}$",
       "quit": "quit"
     }

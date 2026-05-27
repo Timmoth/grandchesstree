@@ -22,9 +22,8 @@ The user's `GrandChessTree.Client.Tests/` already has:
 |-----------------------|--------------------------------|------:|
 | `perft.epd`           | Chris Whittington collection   | 173   |
 | `perft-marcel.epd`    | Marcel van Kervinck via CW     | 6,837 |
-| `perft-ethereal.epd`  | Andy Grant / Ethereal          | 127   |
 
-Total **7,137 positions**, each carrying D1..D6 expected counts. Identical format across all three (`<FEN> ; D1 N ; D2 N ; …`).
+Identical format across both (`<FEN> ; D1 N ; D2 N ; …`), each carrying D1..D6 expected counts. The `data/*.epd` glob in the csproj auto-embeds any additional EPDs dropped into the directory locally, so contributors can add private corpora without code changes.
 
 The new CLI bundles these as embedded resources — no external data files to ship.
 
@@ -46,9 +45,8 @@ PerftSuite/
 │   ├── ReportModel.cs                DTOs serialized to JSON
 │   └── ReportJsonContext.cs          [JsonSerializable] for AOT
 ├── data/
-│   ├── perft.epd                     <EmbeddedResource>
-│   ├── perft-marcel.epd
-│   └── perft-ethereal.epd
+│   ├── perft.epd                     <EmbeddedResource via data/*.epd glob>
+│   └── perft-marcel.epd
 └── build/
     ├── publish-all.sh                produces linux-x64, osx-arm64, osx-x64, win-x64
     └── publish-all.cmd
@@ -127,7 +125,7 @@ The whole point of this tool is a machine-readable artifact. Single JSON documen
     "depthMin": 1,
     "depthCap": 4,
     "timeout":  30,
-    "epdFiles": ["perft.epd", "perft-marcel.epd", "perft-ethereal.epd"]
+    "epdFiles": ["perft.epd", "perft-marcel.epd"]
   },
   "totals": {
     "cases":   20983,

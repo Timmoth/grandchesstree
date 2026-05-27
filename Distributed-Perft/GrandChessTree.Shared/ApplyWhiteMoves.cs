@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 ﻿using GrandChessTree.Shared.Helpers;
 using GrandChessTree.Shared.Moves;
 using GrandChessTree.Shared.Precomputed;

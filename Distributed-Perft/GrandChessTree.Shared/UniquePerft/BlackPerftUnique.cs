@@ -49,27 +49,75 @@ public partial struct Board
         if (depth == 0)
         {
             var hash = Hash;
-            if (EnPassantFile < 8 && !CanBlackPawnEnpassant())
+            bool epAvailable = false;
+            if (EnPassantFile < 8)
             {
-                // Is ep move possible? If not remove possibility from hash
-                hash ^= Zobrist.EnPassantFile[EnPassantFile];
+                if (CanBlackPawnEnpassant()) epAvailable = true;
+                else hash ^= Zobrist.EnPassantFile[EnPassantFile];
             }
 
-            PerftUnique.UniquePositions.Add(hash);
+            if (PerftUnique.ShardCount > 1 && (hash >> PerftUnique.ShardShift) != (ulong)PerftUnique.ShardId)
+                return;
+
+            // BFS wave-expand mode: write the full 26-byte canonical position.
+            // Memtable suppression (if a 128-bit memtable is allocated) filters
+            // local duplicates before they reach disk. TableFull falls through
+            // to spill — the external Rust merger dedups what we couldn't.
+            var posSink = PerftUnique.PositionSpillSink;
+            if (posSink != null)
+            {
+                var mtSuppress = PerftUnique.UniquePositions128;
+                if (mtSuppress != null)
+                {
+                    var h2s = SecondaryHash.Compute(ref this, whiteToMove: false, epAvailable);
+                    if (mtSuppress.TryAdd(hash, h2s) == LockFreeHashSet128.AddResult.AlreadyPresent)
+                        return;
+                }
+                Board snap = this;
+                if (!epAvailable && snap.EnPassantFile < 8) snap.EnPassantFile = 8;
+                Span<byte> buf = stackalloc byte[BucketPositionSpillSink.RecordSize];
+                buf.Clear();
+                BoardStateSerialization.WriteToSpan(ref snap, buf, whiteToMove: false);
+                posSink.Record(buf, hash);
+                return;
+            }
+
+            var sink = PerftUnique.SpillSink;
+            if (sink != null)
+            {
+                var h2 = SecondaryHash.Compute(ref this, whiteToMove: false, epAvailable);
+                var mt128 = PerftUnique.UniquePositions128;
+                if (mt128 != null)
+                {
+                    if (mt128.TryAdd(hash, h2) != LockFreeHashSet128.AddResult.AlreadyPresent)
+                        sink.Record(hash, h2);
+                }
+                else if (PerftUnique.UniquePositions.Add(hash))
+                {
+                    sink.Record(hash, h2);
+                }
+            }
+            else
+            {
+                PerftUnique.UniquePositions.Add(hash);
+            }
             return;
         }
 
 
-        var ptr = (PerftUnique.HashTable + (Hash & PerftUnique.HashTableMask));
-        var hashEntry = Unsafe.Read<PerftUniqueHashEntry>(ptr);
-        if (hashEntry.FullHash == (Hash ^  (White | Black)) && depth == hashEntry.Depth)
+        // Shared TT lookup with XOR-guard. Skipped when HashTable == null.
+        ulong key = Hash ^ (White | Black);
+        PerftUniqueHashEntry* ptr = null;
+        if (PerftUnique.HashTable != null)
         {
-           return;
+            ptr = PerftUnique.HashTable + (Hash & PerftUnique.HashTableMask);
+            ulong cachedData = ptr->Data;
+            ulong cachedGuard = ptr->HashXorData;
+            if ((cachedGuard ^ cachedData) == key && (uint)(cachedData & 0xF) == (uint)depth)
+            {
+                return;
+            }
         }
-        
-        hashEntry = default;
-        hashEntry.FullHash = Hash ^ (White | Black);
-        hashEntry.Depth = (byte)depth;
 
         var checkers = WhiteCheckers();
         var numCheckers = (byte)ulong.PopCount(checkers);
@@ -79,7 +127,12 @@ public partial struct Board
         if (numCheckers > 1)
         {
             // Only a king move can evade double check
-            * ptr = hashEntry;
+            if (ptr != null)
+            {
+                ulong newDataEarly = (uint)depth;
+                ptr->Data = newDataEarly;
+                ptr->HashXorData = key ^ newDataEarly;
+            }
             return;
         }
 
@@ -153,7 +206,12 @@ public partial struct Board
             AccumulateBlackQueenMovesUnique( depth, index,  0xFFFFFFFFFFFFFFFF);
         }
 
-        *ptr = hashEntry;
+        if (ptr != null)
+        {
+            ulong newData = (uint)depth;
+            ptr->Data = newData;
+            ptr->HashXorData = key ^ newData;
+        }
     }
     public unsafe void AccumulateBlackPawnMovesUnique(int depth, int index, ulong pushPinMask, ulong capturePinMask)
     {
