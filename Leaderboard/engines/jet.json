@@ -1,0 +1,20 @@
+{
+  "name": "jet",
+  "version": "1.2-ca93a57",
+  "owner": "rafid-dev",
+  "repo": "https://github.com/rafid-dev/jet",
+  "language": "C++",
+  "_note": "Jet (Rafid Ahsan) is a UCI engine in C++ with NNUE eval. The NNUE file `hexadecane_512_v2.net` is bundled in the repo (src/) and embedded into the binary at build time via -DNNFILE — no external download needed. The perft handler insists on the `perft depth N` syntax: `perft N` directly falls through to a hard-coded depth 6, so we always pass `perft depth {depth}`. The engine only supports 1 search thread (UCI option Threads max=1), so only single-no-cache is defined. Min Hash = 8 MB; clamped silently if a smaller value is passed.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/jet/Jet",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 8"
+      ],
+      "case":   "position fen {fen}\nperft depth {depth}",
+      "end_re": "^Nodes: \\d+$",
+      "quit":   "quit"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "clover",
+  "version": "9.1-e647926",
+  "owner": "lucametehau",
+  "repo": "https://github.com/lucametehau/CloverEngine",
+  "language": "C++",
+  "_note": "Clover (Luca Metehau) is a UCI engine in C++ with NNUE eval. The NNUE file `quantised.nnue` is committed to the repo (src/) and embedded into the binary at build time — no external download needed. Perft is invoked via the top-level command `perft <depth>` (NOT `go perft`); output is three lowercase-keyed lines `nodes: N`, `time : T`, `nps  : V`. Threads + Hash setoption supported; Hash has min=2 so don't try to set it to 1.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/clover/clover",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 2"
+      ],
+      "case":   "position fen {fen}\nperft {depth}",
+      "end_re": "^nodes: \\d+$",
+      "quit":   "quit"
+    },
+    "multi-no-cache": {
+      "launch": "bin/clover/clover",
+      "setup": [
+        "setoption name Threads value {threads}",
+        "setoption name Hash value 2"
+      ],
+      "case":   "position fen {fen}\nperft {depth}",
+      "end_re": "^nodes: \\d+$",
+      "quit":   "quit"
+    }
+  }
+}

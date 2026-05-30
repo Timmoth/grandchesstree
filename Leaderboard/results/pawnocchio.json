@@ -1,0 +1,244 @@
+{
+  "name": "pawnocchio",
+  "owner": "JonathanHallstrom",
+  "repo": "https://github.com/JonathanHallstrom/pawnocchio",
+  "language": "Zig",
+  "versions": {
+    "2.0-dev-a8f09e7": {
+      "ran_at": "2026-05-25T18:02:55Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66585444352,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.003015,
+                  "nps": 6633,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 0.000127,
+                  "nps": 3155669,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 0.000104,
+                  "nps": 85741253,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.000627,
+                  "nps": 314582034,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.013754,
+                  "nps": 353756062,
+                  "av_cpu_pct": 72.7,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 0.326093,
+                  "nps": 365111147,
+                  "av_cpu_pct": 101.2,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 7,
+                  "nodes": 3195901860,
+                  "elapsed_sec": 8.246153,
+                  "nps": 387562772,
+                  "av_cpu_pct": 99.9,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                }
+              ],
+              "note": "skipped d8 (estimated 219.3s > 81.4s remaining at 1.5x budget cap)",
+              "best_depth": 7,
+              "best_nodes": 3195901860,
+              "best_elapsed_sec": 8.246153,
+              "best_nps": 387562772,
+              "best_av_cpu_pct": 99.9,
+              "best_av_rss_mb": 12.4,
+              "best_peak_rss_mb": 12.4
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.003544,
+                  "nps": 13544,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.7,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 0.000119,
+                  "nps": 17099537,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.000294,
+                  "nps": 332978344,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.008704,
+                  "nps": 469383535,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 0.350815,
+                  "nps": 552115650,
+                  "av_cpu_pct": 99.8,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                },
+                {
+                  "depth": 6,
+                  "nodes": 8031647685,
+                  "elapsed_sec": 16.484615,
+                  "nps": 487220824,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 12.4,
+                  "peak_rss_mb": 12.4
+                }
+              ],
+              "note": "skipped d7 (estimated 768.0s > 73.2s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 8031647685,
+              "best_elapsed_sec": 16.484615,
+              "best_nps": 487220824,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 12.4,
+              "best_peak_rss_mb": 12.4
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.003776,
+                  "nps": 12181,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 0.000167,
+                  "nps": 12413941,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.000249,
+                  "nps": 361330515,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.006464,
+                  "nps": 602460709,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 12.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 0.282476,
+                  "nps": 580847481,
+                  "av_cpu_pct": 102.7,
+                  "av_rss_mb": 12.3,
+                  "peak_rss_mb": 12.3
+                },
+                {
+                  "depth": 6,
+                  "nodes": 6923051137,
+                  "elapsed_sec": 11.71033,
+                  "nps": 591191804,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 12.3,
+                  "peak_rss_mb": 12.3
+                }
+              ],
+              "note": "skipped d7 (estimated 485.8s > 78.0s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 6923051137,
+              "best_elapsed_sec": 11.71033,
+              "best_nps": 591191804,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 12.3,
+              "best_peak_rss_mb": 12.3
+            }
+          ],
+          "mean_nps": 488658466
+        }
+      }
+    }
+  }
+}

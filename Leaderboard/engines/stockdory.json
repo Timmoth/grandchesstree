@@ -1,0 +1,31 @@
+{
+  "name": "stockdory",
+  "version": "cd237fc32a",
+  "owner": "TheBlackPlague",
+  "repo": "https://github.com/TheBlackPlague/StockDory",
+  "language": "C++",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/stockdory/Build/StockDory",
+      "setup": [
+        "uci",
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\ngo perft {depth}",
+      "end_re": "^Nodes searched: [\\d,]+",
+      "quit": "quit"
+    },
+    "multi-no-cache": {
+      "launch": "bin/stockdory/Build/StockDory",
+      "setup": [
+        "uci",
+        "setoption name Threads value {threads}",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\ngo perft {depth}",
+      "end_re": "^Nodes searched: [\\d,]+",
+      "quit": "quit"
+    }
+  }
+}

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CPU Leaderboard &mdash; The Grand Chess Tree</title>
+    <meta
+      name="description"
+      content="Perft NPS leaderboard for chess move generators. Engines are validated against the standard perft corpus, then benchmarked across four threading/cache configurations."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/leaderboard.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess, move generator, leaderboard, competition, perft, benchmark, chess engine, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/leaderboard.html" />
+    <meta property="og:title" content="CPU Leaderboard &mdash; The Grand Chess Tree" />
+    <meta
+      property="og:description"
+      content="Perft NPS leaderboard for chess move generators. Validated against the standard perft corpus, benchmarked across four threading/cache configurations."
+    />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="CPU Leaderboard &mdash; The Grand Chess Tree" />
+    <meta name="twitter:description" content="Perft NPS leaderboard for chess move generators. Validated against the standard perft corpus, benchmarked across four threading/cache configurations." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": "The Grand Chess Tree — Move Generator CPU Leaderboard",
+      "description": "An upcoming competition for the fastest chess move generator. Engines are validated against a known-correct perft corpus and ranked by throughput.",
+      "url": "https://grandchesstree.com/leaderboard.html",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+      "location": {
+        "@type": "VirtualLocation",
+        "url": "https://discord.gg/cTu3aeCZVe"
+      },
+      "organizer": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+          <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+          <li><a href="leaderboard.html" class="text-slate-900">CPU Leaderboard</a></li>
+          <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 md:py-20">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">CPU Leaderboard</li>
+            </ol>
+          </nav>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">CPU Leaderboard</h1>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-emerald-800">
+              <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+              Preview &mdash; {{LB_ENGINES_LABEL}}
+            </span>
+          </div>
+
+          <p class="mt-6 max-w-3xl text-lg text-slate-600 md:text-xl">
+            A competition for the <strong class="font-semibold text-slate-900">fastest move generator in the world</strong>.
+            Engines submit a UCI-compatible binary, get validated against
+            the standard perft corpus, and are ranked by throughput across
+            four threading and cache configurations.
+          </p>
+
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a
+              href="#results"
+              class="inline-flex items-center gap-2 rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+            >
+              See the results
+              <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8l5 5 5-5"/></svg>
+            </a>
+            <a
+              href="https://discord.gg/cTu3aeCZVe"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+            >
+              Register on Discord
+            </a>
+          </div>
+
+          <p class="mt-6 text-xs text-slate-500">
+            Last benchmarked: <time datetime="{{LB_TIMESTAMP_ISO}}" class="font-mono">{{LB_TIMESTAMP}}</time>
+          </p>
+        </div>
+      </section>
+
+      <section id="results" class="scroll-mt-20 border-b border-slate-200 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Best in mode</h2>
+              <p class="mt-3 max-w-2xl text-slate-600">
+                Fastest engine in each of the four benchmark configurations.
+                Throughput is the <strong class="font-semibold text-slate-900">mean of best NPS</strong>
+                across the six canonical positions &mdash; each timed at the deepest
+                depth it can complete inside a fixed per-position budget.
+              </p>
+            </div>
+          </div>
+
+          <div class="mt-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {{LB_CARDS}}
+          </div>
+
+          <h3 class="mt-14 text-xl font-semibold tracking-tight text-slate-900">Full results</h3>
+          <p class="mt-2 max-w-2xl text-sm text-slate-600">
+            One row per engine version. Bold cells mark the fastest engine in that
+            mode. A dash (&mdash;) means the engine did not run that configuration.
+            Click a column header to sort &mdash; missing values always sort last.
+          </p>
+
+          <div class="mt-6 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table id="lb-summary" class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                  <tr>
+                    <th data-sort="engine" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Engine<span class="sort-icon hidden text-slate-700"></span></span></th>
+                    <th data-sort="language" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Language<span class="sort-icon hidden text-slate-700"></span></span></th>
+                    <th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Version</th>
+                    <th data-sort="single-no-cache" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-right font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Single, no cache<span class="sort-icon hidden text-slate-700"></span></span></th>
+                    <th data-sort="single-with-cache" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-right font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Single, with cache<span class="sort-icon hidden text-slate-700"></span></span></th>
+                    <th data-sort="multi-no-cache" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-right font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Multi, no cache<span class="sort-icon hidden text-slate-700"></span></span></th>
+                    <th data-sort="multi-with-cache" scope="col" class="cursor-pointer select-none whitespace-nowrap px-4 py-3 text-right font-semibold text-slate-700 hover:text-slate-900"><span class="inline-flex items-center gap-1.5">Multi, with cache<span class="sort-icon hidden text-slate-700"></span></span></th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-600">
+                  {{LB_TABLE_ROWS}}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="browse" class="scroll-mt-20 border-b border-slate-200 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Drill down by run</h2>
+            <p class="mt-3 text-slate-600">
+              Pick an engine, mode, and position to see how NPS scales with
+              depth &mdash; and where subprocess startup amortizes into raw
+              move-generation throughput.
+            </p>
+          </div>
+
+          <div id="lb-controls" class="mt-8 grid gap-4 sm:grid-cols-3">
+            <label class="text-sm">
+              <span class="mb-1 block font-medium text-slate-700">Engine</span>
+              <select id="lb-engine" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 tabular focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"></select>
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-medium text-slate-700">Mode</span>
+              <select id="lb-mode" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"></select>
+            </label>
+            <label class="text-sm">
+              <span class="mb-1 block font-medium text-slate-700">Position</span>
+              <select id="lb-position" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"></select>
+            </label>
+          </div>
+
+          <p id="lb-empty" class="mt-8 rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-sm text-slate-500">
+            Loading run data&hellip;
+          </p>
+
+          <div id="lb-detail" class="mt-8 hidden space-y-8">
+            <dl id="lb-stats" class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"></dl>
+
+            <div id="lb-host" class="hidden"></div>
+
+            <div class="rounded-xl border border-slate-200 bg-white p-6">
+              <div class="flex flex-wrap items-baseline justify-between gap-2">
+                <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-700">Metrics vs depth</h3>
+                <p class="text-xs text-slate-500">NPS (left, log) &middot; CPU% &amp; peak RSS on right axes &middot; hover for combined values</p>
+              </div>
+              <div id="lb-chart" class="mt-4"></div>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-200 bg-white">
+              <div class="overflow-x-auto">
+                <table class="min-w-full text-sm">
+                  <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                    <tr>
+                      <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-700">Depth</th>
+                      <th scope="col" class="px-4 py-3 text-right font-semibold text-slate-700">Nodes</th>
+                      <th scope="col" class="px-4 py-3 text-right font-semibold text-slate-700">Elapsed</th>
+                      <th scope="col" class="px-4 py-3 text-right font-semibold text-slate-700">NPS</th>
+                      <th id="lb-th-cpu" scope="col" class="px-4 py-3 text-right font-semibold text-slate-700">CPU %</th>
+                      <th id="lb-th-mem" scope="col" class="px-4 py-3 text-right font-semibold text-slate-700">Peak RSS</th>
+                    </tr>
+                  </thead>
+                  <tbody id="lb-depth-rows" class="text-slate-600"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-b border-slate-200 bg-slate-50 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">How it works</h2>
+            <p class="mt-3 text-slate-600">
+              Three steps from binary to ranked entry. The full harness, position
+              set, and verification rules live in the
+              <a href="https://github.com/Timmoth/grandchesstree/tree/main/PerftWar" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">PerftWar</a>
+              directory.
+            </p>
+          </div>
+
+          <div class="mt-10 grid gap-12 md:grid-cols-3">
+            <div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-md bg-slate-900 text-sm font-semibold text-white">1</div>
+              <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900">Submit your engine</h3>
+              <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                Any move generator that speaks the standard UCI
+                <span class="font-mono">go perft N</span> protocol is eligible.
+                Open the door on
+                <a href="https://discord.gg/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Discord</a>
+                to register and coordinate the upload.
+              </p>
+            </div>
+            <div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-md bg-slate-900 text-sm font-semibold text-white">2</div>
+              <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900">Compliance check</h3>
+              <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                Every entry runs through
+                <a href="perftcheck.html" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck</a>
+                against ~28,000 known-correct positions. Any wrong node count
+                disqualifies the run &mdash; speed is the tiebreaker among
+                engines that already pass.
+              </p>
+            </div>
+            <div>
+              <div class="flex h-10 w-10 items-center justify-center rounded-md bg-slate-900 text-sm font-semibold text-white">3</div>
+              <h3 class="mt-4 text-lg font-semibold tracking-tight text-slate-900">Benchmark and rank</h3>
+              <p class="mt-3 text-sm leading-relaxed text-slate-600">
+                Validated engines are run on each of six TGCT-canonical
+                positions, walking depths from d1 upward under a per-position
+                wall-clock budget. We record the NPS at the deepest depth
+                that completes, then mean those across positions for each of
+                the four threading / cache configurations.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-b border-slate-200 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Caveats &amp; methodology notes</h2>
+            <p class="mt-3 text-slate-600">
+              A few things to keep in mind when reading these numbers:
+            </p>
+          </div>
+
+          <ul class="mt-8 grid gap-4 md:grid-cols-2">
+            <li class="rounded-xl border border-slate-200 bg-white p-5">
+              <p class="text-sm font-semibold text-slate-900">Preview hardware</p>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                Until the bare-metal Ubuntu reference host is online, some
+                entries are captured on developer hardware &mdash; look for
+                version tags like <span class="font-mono text-xs">-local</span>.
+                Expect absolute NPS to shift once the reference rig takes over.
+              </p>
+            </li>
+            <li class="rounded-xl border border-slate-200 bg-white p-5">
+              <p class="text-sm font-semibold text-slate-900">Subprocess overhead</p>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                Each measurement spawns a fresh process so cache state is
+                deterministic. At depth 4 the spawn cost can dominate &mdash;
+                particularly for very small positions like
+                <span class="font-mono">pos3</span> (43k nodes). Depth 6
+                numbers are the more reliable cross-engine signal.
+              </p>
+            </li>
+            <li class="rounded-xl border border-slate-200 bg-white p-5">
+              <p class="text-sm font-semibold text-slate-900">Partial mode coverage</p>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                Engines opt in to the modes they support. The reference
+                engine currently exposes only cached configurations; a future
+                build will fill in the no-cache modes once that switch lands.
+              </p>
+            </li>
+            <li class="rounded-xl border border-slate-200 bg-white p-5">
+              <p class="text-sm font-semibold text-slate-900">Strict correctness first</p>
+              <p class="mt-2 text-sm leading-relaxed text-slate-600">
+                Every subprocess's stdout is scanned for the expected node
+                count. A single mismatch fails the whole engine run &mdash;
+                no NPS is recorded for a disqualified entry.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-8 md:p-10">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Interested in entering?</h2>
+            <p class="mt-3 max-w-2xl text-slate-600">
+              The board is in preview with two engines. If you've got a move
+              generator you'd like to put in the ring &mdash; in any language,
+              any architecture, any style &mdash; drop into the project
+              Discord and let us know.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-3">
+              <a
+                href="https://discord.gg/cTu3aeCZVe"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800"
+              >
+                Join the Discord
+              </a>
+              <a
+                href="https://github.com/Timmoth/grandchesstree"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100"
+              >
+                Browse the reference engine
+              </a>
+            </div>
+            <p class="mt-6 text-xs text-slate-500">
+              The reference engine in
+              <a href="https://github.com/Timmoth/grandchesstree/tree/main/MoveGen" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">MoveGen/</a>
+              gives one starting point — but the leaderboard isn't tied to any
+              one architecture. Magic bitboards, PEXT, classical ray-scan,
+              0×88 — all welcome.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+            <li><a href="leaderboard.html" class="hover:text-slate-900">Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="assets/js/leaderboard.js" defer></script>
+  </body>
+</html>

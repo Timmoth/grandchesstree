@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PGN viewer &mdash; The Grand Chess Tree</title>
+    <meta
+      name="description"
+      content="Paste a PGN and step through the game move by move, with the position rendered on a board, current-ply FEN, and click-to-jump move list."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/pgn-viewer.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="PGN, chess, viewer, replay, SAN, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/pgn-viewer.html" />
+    <meta property="og:title" content="PGN viewer &mdash; The Grand Chess Tree" />
+    <meta
+      property="og:description"
+      content="Paste a PGN and step through the game, with the position rendered on a board at each ply."
+    />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="PGN viewer &mdash; The Grand Chess Tree" />
+    <meta name="twitter:description" content="Paste a PGN and step through the game, with the position rendered on a board at each ply." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+      .board-piece { image-rendering: pixelated; }
+      .moveListItem { cursor: pointer; }
+      .moveListItem:hover { background-color: rgb(241 245 249); }
+      .moveListItem.active { background-color: rgb(15 23 42); color: white; }
+      #moveList { scroll-padding-top: 0.5rem; }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PGN viewer",
+      "description": "Paste a PGN and step through the game with the position rendered at each ply. Click any move to jump.",
+      "url": "https://grandchesstree.com/pgn-viewer.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">PGN viewer</li>
+            </ol>
+          </nav>
+
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">PGN viewer</h1>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            Paste a PGN and step through the game. Click any move to jump,
+            grab the FEN at any ply, or share a link to a specific position.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-10 md:py-14">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+
+          <div>
+            <label for="pgnInput" class="block text-sm font-medium text-slate-700">PGN</label>
+            <textarea id="pgnInput" rows="5" spellcheck="false" autocomplete="off"
+              class="mono mt-1 block w-full resize-y rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+            <p id="pgnError" class="mt-1 hidden text-xs text-red-600"></p>
+            <div class="mt-2 flex flex-wrap items-center gap-2">
+              <button id="parseBtn" type="button"
+                class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-800">
+                Parse
+              </button>
+              <button id="resetBtn" type="button"
+                class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                Load sample
+              </button>
+              <button id="copyLinkBtn" type="button"
+                class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                Copy share link
+              </button>
+              <span class="text-xs text-slate-500">Variations and comments are stripped; only the main line is replayed.</span>
+            </div>
+          </div>
+
+          <div id="headersStrip" class="mt-6 hidden">
+            <div class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3">
+              <p class="text-sm text-slate-700">
+                <span id="hdrMatch" class="font-semibold text-slate-900">—</span>
+                <span id="hdrMeta" class="text-slate-500"></span>
+              </p>
+              <p id="hdrEvent" class="mt-0.5 text-xs text-slate-500"></p>
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-8 md:grid-cols-5">
+            <div class="md:col-span-3">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="text-slate-500">Ply:</span>
+                  <span id="plyBadge" class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-0.5 font-medium text-slate-900 mono">0 / 0</span>
+                  <span class="text-slate-500">·</span>
+                  <span class="text-slate-500">To move:</span>
+                  <span id="sideBadge" class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-0.5 font-medium text-slate-900">—</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button id="savePngBtn" type="button" title="Save board as PNG"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10m0 0l-4-4m4 4l4-4M4 17h12"/></svg>
+                    Save PNG
+                  </button>
+                  <button id="flipBtn" type="button"
+                    class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    Flip
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-3 md:p-4">
+                <svg id="board" viewBox="0 0 428 428" xmlns="http://www.w3.org/2000/svg"
+                  class="w-full h-auto select-none" role="img" aria-label="Chess board">
+                </svg>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1">
+                  <button id="startBtn" type="button" title="Start (Home)"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">|◀</button>
+                  <button id="prevBtn" type="button" title="Previous (←)"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">◀</button>
+                  <button id="nextBtn" type="button" title="Next (→)"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">▶</button>
+                  <button id="endBtn" type="button" title="End (End)"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">▶|</button>
+                </div>
+                <div id="currentMoveLabel" class="text-sm text-slate-500 mono"></div>
+              </div>
+
+              <div class="mt-4">
+                <label class="block text-xs font-medium text-slate-500">FEN at current ply</label>
+                <div class="mt-1 flex items-stretch gap-2">
+                  <input id="fenAtPly" type="text" readonly class="mono flex-1 rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-700" />
+                  <button id="copyFenBtn" type="button"
+                    class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Copy</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="md:col-span-2">
+              <h2 class="text-sm font-medium text-slate-700">Moves</h2>
+              <div id="moveList" class="mono mt-2 max-h-[28rem] overflow-y-auto rounded-md border border-slate-200 bg-white p-2 text-sm">
+                <p class="text-xs text-slate-400">Paste a PGN above and press Parse.</p>
+              </div>
+              <p id="resultLabel" class="mt-2 text-xs text-slate-500"></p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="assets/js/movegen.js"></script>
+    <script src="assets/js/board-export.js"></script>
+    <script>
+      (function () {
+        const MG = window.GCT.MoveGen;
+
+        // ---------------- Sample PGN (Morphy's Opera Game, 1858) ----------------
+        const SAMPLE_PGN = `[Event "Paris"]
+[Site "Paris FRA"]
+[Date "1858.??.??"]
+[White "Paul Morphy"]
+[Black "Duke Karl / Count Isouard"]
+[Result "1-0"]
+
+1. e4 e5 2. Nf3 d6 3. d4 Bg4 4. dxe5 Bxf3 5. Qxf3 dxe5 6. Bc4 Nf6 7. Qb3 Qe7
+8. Nc3 c6 9. Bg5 b5 10. Nxb5 cxb5 11. Bxb5+ Nbd7 12. O-O-O Rd8 13. Rxd7 Rxd7
+14. Rd1 Qe6 15. Bxd7+ Nxd7 16. Qb8+ Nxb8 17. Rd8# 1-0`;
+
+        // ---------------- PGN parsing ----------------
+
+        function parsePgn(text) {
+          const headers = {};
+          const lines = text.split(/\r?\n/);
+          let bodyIdx = 0;
+          // Headers block (terminated by an empty line or first non-header line)
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            const m = line.match(/^\s*\[\s*(\w+)\s+"((?:[^"\\]|\\.)*)"\s*\]\s*$/);
+            if (m) {
+              headers[m[1]] = m[2].replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+              bodyIdx = i + 1;
+              continue;
+            }
+            if (line.trim() === "") { bodyIdx = i + 1; continue; }
+            // First non-empty, non-header line — bail.
+            break;
+          }
+          let body = lines.slice(bodyIdx).join(" ");
+
+          // Strip comments {...}
+          body = body.replace(/\{[^}]*\}/g, " ");
+          // Strip ;-style line comments (which we joined onto one line earlier — but PGN line
+          // comments end at newline; since we joined on space, those are gone; the per-line
+          // form would have been better preserved if we processed line-by-line. Edge case.)
+
+          // Strip variations (...) — handle nesting.
+          {
+            let depth = 0, out = "";
+            for (const ch of body) {
+              if (ch === "(") { depth++; continue; }
+              if (ch === ")") { depth = Math.max(0, depth - 1); continue; }
+              if (depth === 0) out += ch;
+            }
+            body = out;
+          }
+
+          // Strip NAGs ($1, $2, ...).
+          body = body.replace(/\$\d+/g, " ");
+
+          // Capture result token (if present at end).
+          let result = null;
+          const rm = body.match(/(?:^|\s)(1-0|0-1|1\/2-1\/2|\*)\s*$/);
+          if (rm) {
+            result = rm[1];
+            body = body.slice(0, rm.index);
+          }
+
+          // Strip move numbers like "1." or "1..." (with whitespace tolerance).
+          body = body.replace(/\d+\s*\.(?:\s*\.\s*\.)?/g, " ");
+
+          // Tokenize.
+          const tokens = body.split(/\s+/).filter(t => t.length > 0);
+
+          return { headers, sanTokens: tokens, result };
+        }
+
+        function buildGame(parsed) {
+          const startFen = parsed.headers.FEN || MG.STARTPOS_FEN;
+          let pos;
+          try { pos = MG.parseFenStrict(startFen); }
+          catch (e) { return { positions: [], moves: [], error: "Bad starting FEN: " + e.message }; }
+          const positions = [pos];
+          const moves = [];
+          for (let i = 0; i < parsed.sanTokens.length; i++) {
+            const san = parsed.sanTokens[i];
+            const m = MG.moveFromSan(pos, san);
+            if (m === null || m === undefined) {
+              return {
+                positions, moves, result: parsed.result,
+                error: `Move ${i + 1} (${san}) doesn't match any legal move from the current position.`,
+              };
+            }
+            moves.push({
+              san,
+              move: m,
+              from: MG.moveFrom(m),
+              to: MG.moveTo(m),
+              uci: MG.uciOf(m),
+            });
+            pos = MG.applyMove(pos, m);
+            positions.push(pos);
+          }
+          return { positions, moves, result: parsed.result };
+        }
+
+        // ---------------- Board rendering ----------------
+
+        const PIECE_FILE = {
+          0:"white_pawn.png",  1:"white_knight.png", 2:"white_bishop.png",
+          3:"white_rook.png",  4:"white_queen.png",  5:"white_king.png",
+          6:"black_pawn.png",  7:"black_knight.png", 8:"black_bishop.png",
+          9:"black_rook.png", 10:"black_queen.png", 11:"black_king.png",
+        };
+
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const SQUARE = 48;
+        const MARGIN = 22;
+        const BOARD_PX = SQUARE * 8;
+        const TOTAL = BOARD_PX + MARGIN * 2;
+        const PIECE_SCALE = 0.8;
+
+        const els = {
+          pgnInput: document.getElementById("pgnInput"),
+          pgnError: document.getElementById("pgnError"),
+          parseBtn: document.getElementById("parseBtn"),
+          resetBtn: document.getElementById("resetBtn"),
+          copyLinkBtn: document.getElementById("copyLinkBtn"),
+          headersStrip: document.getElementById("headersStrip"),
+          hdrMatch: document.getElementById("hdrMatch"),
+          hdrMeta: document.getElementById("hdrMeta"),
+          hdrEvent: document.getElementById("hdrEvent"),
+          board: document.getElementById("board"),
+          flipBtn: document.getElementById("flipBtn"),
+          savePngBtn: document.getElementById("savePngBtn"),
+          plyBadge: document.getElementById("plyBadge"),
+          sideBadge: document.getElementById("sideBadge"),
+          startBtn: document.getElementById("startBtn"),
+          prevBtn: document.getElementById("prevBtn"),
+          nextBtn: document.getElementById("nextBtn"),
+          endBtn: document.getElementById("endBtn"),
+          currentMoveLabel: document.getElementById("currentMoveLabel"),
+          fenAtPly: document.getElementById("fenAtPly"),
+          copyFenBtn: document.getElementById("copyFenBtn"),
+          moveList: document.getElementById("moveList"),
+          resultLabel: document.getElementById("resultLabel"),
+        };
+
+        els.board.setAttribute("viewBox", `0 0 ${TOTAL} ${TOTAL}`);
+
+        const state = {
+          parsed: null,           // { headers, sanTokens, result }
+          game: null,             // { positions, moves, result, error? }
+          ply: 0,
+          flipped: false,
+        };
+
+        function buildBoard() {
+          const svg = els.board;
+          while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+          const bg = document.createElementNS(SVG_NS, "rect");
+          bg.setAttribute("x", "0"); bg.setAttribute("y", "0");
+          bg.setAttribute("width", String(TOTAL)); bg.setAttribute("height", String(TOTAL));
+          bg.setAttribute("rx", "6"); bg.setAttribute("fill", "#1f2937");
+          svg.appendChild(bg);
+
+          const pos = state.game ? state.game.positions[state.ply] : MG.parseFen(MG.STARTPOS_FEN);
+          const lastMove = (state.game && state.ply > 0) ? state.game.moves[state.ply - 1] : null;
+
+          const pieceSize = SQUARE * PIECE_SCALE;
+          const pieceInset = (SQUARE - pieceSize) / 2;
+
+          for (let dr = 0; dr < 8; dr++) {
+            for (let df = 0; df < 8; df++) {
+              const rank = state.flipped ? dr : 7 - dr;       // 0=rank 1, 7=rank 8
+              const file = state.flipped ? 7 - df : df;       // 0=a, 7=h
+              const sq = rank * 8 + file;
+              const x = MARGIN + df * SQUARE;
+              const y = MARGIN + dr * SQUARE;
+              const isLight = (rank + file) % 2 === 1;
+
+              const rect = document.createElementNS(SVG_NS, "rect");
+              rect.setAttribute("x", String(x)); rect.setAttribute("y", String(y));
+              rect.setAttribute("width", String(SQUARE)); rect.setAttribute("height", String(SQUARE));
+              rect.setAttribute("fill", isLight ? "#f0d9b5" : "#b58863");
+              svg.appendChild(rect);
+
+              // Last-move highlight overlay.
+              if (lastMove && (sq === lastMove.from || sq === lastMove.to)) {
+                const hl = document.createElementNS(SVG_NS, "rect");
+                hl.setAttribute("x", String(x)); hl.setAttribute("y", String(y));
+                hl.setAttribute("width", String(SQUARE)); hl.setAttribute("height", String(SQUARE));
+                hl.setAttribute("fill", "#facc15");
+                hl.setAttribute("fill-opacity", "0.35");
+                hl.setAttribute("pointer-events", "none");
+                svg.appendChild(hl);
+              }
+
+              const piece = pos.squares[sq];
+              if (piece !== -1) {
+                const img = document.createElementNS(SVG_NS, "image");
+                img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `assets/img/pieces/${PIECE_FILE[piece]}`);
+                img.setAttribute("href", `assets/img/pieces/${PIECE_FILE[piece]}`);
+                img.setAttribute("x", String(x + pieceInset));
+                img.setAttribute("y", String(y + pieceInset));
+                img.setAttribute("width", String(pieceSize));
+                img.setAttribute("height", String(pieceSize));
+                img.setAttribute("class", "board-piece");
+                img.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                svg.appendChild(img);
+              }
+            }
+          }
+
+          // File labels.
+          for (let df = 0; df < 8; df++) {
+            const file = state.flipped ? 7 - df : df;
+            const t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", String(MARGIN + df * SQUARE + SQUARE / 2));
+            t.setAttribute("y", String(MARGIN + BOARD_PX + MARGIN / 2));
+            t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "middle");
+            t.setAttribute("font-size", "12"); t.setAttribute("font-weight", "600");
+            t.setAttribute("font-family", "ui-monospace, monospace"); t.setAttribute("fill", "#e2e8f0");
+            t.textContent = "abcdefgh"[file];
+            svg.appendChild(t);
+          }
+          for (let dr = 0; dr < 8; dr++) {
+            const rank = state.flipped ? dr : 7 - dr;
+            const t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", String(MARGIN / 2));
+            t.setAttribute("y", String(MARGIN + dr * SQUARE + SQUARE / 2));
+            t.setAttribute("text-anchor", "middle"); t.setAttribute("dominant-baseline", "middle");
+            t.setAttribute("font-size", "12"); t.setAttribute("font-weight", "600");
+            t.setAttribute("font-family", "ui-monospace, monospace"); t.setAttribute("fill", "#e2e8f0");
+            t.textContent = String(rank + 1);
+            svg.appendChild(t);
+          }
+        }
+
+        function renderHeaders() {
+          if (!state.parsed) { els.headersStrip.classList.add("hidden"); return; }
+          const h = state.parsed.headers;
+          const w = h.White || "White", b = h.Black || "Black";
+          const result = state.parsed.result || h.Result || "*";
+          const meta = [h.Date, h.Round ? `Round ${h.Round}` : null].filter(Boolean).join(" · ");
+          els.hdrMatch.textContent = `${w} — ${b}  ${result}`;
+          els.hdrMeta.textContent = meta ? `  (${meta})` : "";
+          const eventParts = [h.Event, h.Site].filter(Boolean);
+          els.hdrEvent.textContent = eventParts.join(" · ");
+          els.headersStrip.classList.toggle("hidden", eventParts.length === 0 && !meta && !h.White && !h.Black);
+        }
+
+        function renderMoveList() {
+          const list = els.moveList;
+          list.innerHTML = "";
+          if (!state.game) {
+            list.innerHTML = '<p class="text-xs text-slate-400">Paste a PGN above and press Parse.</p>';
+            return;
+          }
+          if (state.game.moves.length === 0) {
+            list.innerHTML = '<p class="text-xs text-slate-400">No moves parsed.</p>';
+            return;
+          }
+
+          // Group moves into pairs based on the side-to-move at the start.
+          const startWhite = state.game.positions[0].whiteToMove;
+          const startMoveNum = state.game.positions[0].fullmoveNumber;
+
+          let row = document.createElement("div");
+          row.className = "flex items-baseline gap-2 px-1 py-0.5";
+          const placeRow = () => list.appendChild(row);
+
+          // First, if black is to move at the start, render "N..." label then black move alone.
+          let i = 0;
+          if (!startWhite && state.game.moves.length > 0) {
+            const label = document.createElement("span");
+            label.className = "w-10 shrink-0 text-right text-slate-400";
+            label.textContent = `${startMoveNum}…`;
+            row.appendChild(label);
+            row.appendChild(spacer());
+            row.appendChild(renderMoveSpan(0));
+            placeRow();
+            i = 1;
+          }
+          while (i < state.game.moves.length) {
+            row = document.createElement("div");
+            row.className = "flex items-baseline gap-2 px-1 py-0.5";
+            // Move number for this pair
+            const ply0White = (startWhite ? i : (i + 1)) % 2 === 0;
+            const moveNum = startMoveNum + Math.floor((i + (startWhite ? 0 : 1)) / 2);
+            const label = document.createElement("span");
+            label.className = "w-10 shrink-0 text-right text-slate-400";
+            label.textContent = `${moveNum}.`;
+            row.appendChild(label);
+            row.appendChild(renderMoveSpan(i)); i++;
+            if (i < state.game.moves.length) {
+              row.appendChild(renderMoveSpan(i)); i++;
+            }
+            placeRow();
+          }
+          // If parser errored, show the error.
+          if (state.game.error) {
+            const err = document.createElement("p");
+            err.className = "mt-2 px-1 text-xs text-red-600";
+            err.textContent = state.game.error;
+            list.appendChild(err);
+          }
+          // Scroll active into view.
+          const active = list.querySelector(".moveListItem.active");
+          if (active && active.scrollIntoView) active.scrollIntoView({ block: "nearest" });
+        }
+
+        function spacer() {
+          const s = document.createElement("span");
+          s.className = "w-16 shrink-0 inline-block";
+          return s;
+        }
+
+        function renderMoveSpan(idx) {
+          const moveInfo = state.game.moves[idx];
+          const el = document.createElement("span");
+          el.className = "moveListItem inline-block w-16 shrink-0 rounded px-1 text-slate-800";
+          if (state.ply === idx + 1) el.classList.add("active");
+          el.textContent = moveInfo.san;
+          el.dataset.ply = String(idx + 1);
+          el.addEventListener("click", () => goTo(idx + 1));
+          return el;
+        }
+
+        function setError(msg) {
+          if (msg) {
+            els.pgnError.textContent = msg;
+            els.pgnError.classList.remove("hidden");
+          } else {
+            els.pgnError.textContent = "";
+            els.pgnError.classList.add("hidden");
+          }
+        }
+
+        function renderBadges() {
+          const total = state.game ? state.game.moves.length : 0;
+          els.plyBadge.textContent = `${state.ply} / ${total}`;
+          let pos;
+          if (state.game) pos = state.game.positions[state.ply];
+          else pos = MG.parseFen(MG.STARTPOS_FEN);
+          els.sideBadge.textContent = pos.whiteToMove ? "White" : "Black";
+          els.fenAtPly.value = MG.writeFen(pos);
+
+          els.startBtn.disabled = state.ply === 0 || !state.game;
+          els.prevBtn.disabled  = state.ply === 0 || !state.game;
+          els.nextBtn.disabled  = !state.game || state.ply >= total;
+          els.endBtn.disabled   = !state.game || state.ply >= total;
+
+          if (state.game && state.ply > 0) {
+            const m = state.game.moves[state.ply - 1];
+            const side = state.game.positions[state.ply - 1].whiteToMove ? "white" : "black";
+            const moveNum = state.game.positions[state.ply - 1].fullmoveNumber;
+            els.currentMoveLabel.textContent = `${moveNum}${side === "white" ? "." : "…"} ${m.san}  (${m.uci})`;
+          } else {
+            els.currentMoveLabel.textContent = state.game ? "start position" : "";
+          }
+
+          if (state.game && state.game.result) {
+            els.resultLabel.textContent = `Result: ${state.game.result}`;
+          } else {
+            els.resultLabel.textContent = "";
+          }
+        }
+
+        // ---------------- URL state ----------------
+
+        let urlTimer = null;
+        function writeUrl() {
+          if (urlTimer) clearTimeout(urlTimer);
+          urlTimer = setTimeout(() => {
+            const params = new URLSearchParams();
+            const pgn = els.pgnInput.value.trim();
+            if (pgn && pgn !== SAMPLE_PGN.trim()) params.set("pgn", pgn);
+            if (state.ply !== 0) params.set("ply", String(state.ply));
+            if (state.flipped) params.set("flip", "1");
+            const qs = params.toString();
+            history.replaceState(null, "", qs ? `${location.pathname}?${qs}` : location.pathname);
+          }, 250);
+        }
+
+        function shareLink() {
+          const params = new URLSearchParams();
+          params.set("pgn", els.pgnInput.value.trim());
+          if (state.ply !== 0) params.set("ply", String(state.ply));
+          if (state.flipped) params.set("flip", "1");
+          return `${location.origin}${location.pathname}?${params.toString()}`;
+        }
+
+        // ---------------- Actions ----------------
+
+        function parsePgnInput(initialPly) {
+          const raw = els.pgnInput.value;
+          state.parsed = parsePgn(raw);
+          state.game = buildGame(state.parsed);
+          if (state.game.error) setError(state.game.error);
+          else setError(null);
+
+          if (typeof initialPly === "number" && initialPly >= 0 && initialPly <= state.game.moves.length) {
+            state.ply = initialPly;
+          } else {
+            state.ply = state.game.moves.length;  // jump to end by default
+          }
+
+          renderHeaders();
+          renderMoveList();
+          renderBadges();
+          buildBoard();
+          writeUrl();
+        }
+
+        function goTo(ply) {
+          if (!state.game) return;
+          const n = state.game.moves.length;
+          state.ply = Math.max(0, Math.min(ply, n));
+          renderMoveList();
+          renderBadges();
+          buildBoard();
+          writeUrl();
+        }
+
+        async function copyText(text, btn) {
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = btn.textContent;
+            btn.textContent = "Copied";
+            setTimeout(() => { btn.textContent = original; }, 1200);
+          } catch (e) {
+            const ta = document.createElement("textarea");
+            ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+            document.body.appendChild(ta); ta.select();
+            try { document.execCommand("copy"); } catch (_) {}
+            document.body.removeChild(ta);
+          }
+        }
+
+        // ---------------- Wire up ----------------
+
+        els.parseBtn.addEventListener("click", () => parsePgnInput());
+        els.resetBtn.addEventListener("click", () => { els.pgnInput.value = SAMPLE_PGN; parsePgnInput(0); });
+        els.startBtn.addEventListener("click", () => goTo(0));
+        els.prevBtn.addEventListener("click", () => goTo(state.ply - 1));
+        els.nextBtn.addEventListener("click", () => goTo(state.ply + 1));
+        els.endBtn.addEventListener("click", () => goTo(state.game ? state.game.moves.length : 0));
+        els.flipBtn.addEventListener("click", () => { state.flipped = !state.flipped; buildBoard(); writeUrl(); });
+        els.savePngBtn.addEventListener("click", async () => {
+          const original = els.savePngBtn.textContent;
+          els.savePngBtn.disabled = true;
+          els.savePngBtn.textContent = "Saving…";
+          try {
+            const h = state.parsed ? state.parsed.headers : {};
+            const w = (h.White || "white").replace(/[\s,]+/g, "_");
+            const b = (h.Black || "black").replace(/[\s,]+/g, "_");
+            const name = `${w}_vs_${b}_ply${state.ply}`;
+            await window.GCT.saveSvgAsPng(els.board, name);
+          } catch (e) {
+            console.error(e);
+            alert("Could not save image: " + (e && e.message ? e.message : e));
+          } finally {
+            els.savePngBtn.disabled = false;
+            els.savePngBtn.textContent = original;
+          }
+        });
+        els.copyFenBtn.addEventListener("click", () => copyText(els.fenAtPly.value, els.copyFenBtn));
+        els.copyLinkBtn.addEventListener("click", () => copyText(shareLink(), els.copyLinkBtn));
+
+        document.addEventListener("keydown", (e) => {
+          if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+          switch (e.key) {
+            case "ArrowLeft":  goTo(state.ply - 1); break;
+            case "ArrowRight": goTo(state.ply + 1); break;
+            case "Home":       goTo(0); break;
+            case "End":        goTo(state.game ? state.game.moves.length : 0); break;
+            default: return;
+          }
+          e.preventDefault();
+        });
+
+        // ---------------- Init ----------------
+
+        function init() {
+          const params = new URLSearchParams(location.search);
+          const urlPgn = params.get("pgn");
+          const urlPly = params.get("ply");
+          const urlFlip = params.get("flip");
+          state.flipped = urlFlip === "1" || urlFlip === "true";
+          els.pgnInput.value = urlPgn || SAMPLE_PGN;
+          const initialPly = urlPly != null ? parseInt(urlPly, 10) : null;
+          parsePgnInput(Number.isFinite(initialPly) ? initialPly : undefined);
+        }
+        init();
+      })();
+    </script>
+  </body>
+</html>

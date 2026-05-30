@@ -1,0 +1,13 @@
+# Regenerable pipeline outputs. The queries (queries.txt) and scripts are the
+# only things checked into git; everything below can be rebuilt from them.
+sources/queue.jsonl
+sources/pages/
+extracted/
+corpus.csv
+corpus_hm.csv
+corpus_invalid.csv
+epd/
+snippets/
+descriptions/
+static_analysis.jsonl
+perft_results.jsonl

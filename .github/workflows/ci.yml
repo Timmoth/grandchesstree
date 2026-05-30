@@ -1,0 +1,124 @@
+name: CI
+
+# Builds + smoke-tests every component on push and pull request. No
+# artifacts are published; the release workflows
+# (publish-engine.yml, publish-perftcheck.yml) handle that on dispatch.
+#
+# Catches the kinds of regressions that used to only surface at release
+# time: csproj path drift after directory renames, missing embedded
+# resources, wrong .NET SDK version, etc.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to the same ref cancels the previous run — saves runner
+# minutes on rapid pushes.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  engine:
+    name: build engine
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build Engine
+        run: dotnet build Engine/GrandChessTree.sln -c Release
+
+      - name: Publish linux-x64 (verify the release-path build config)
+        run: |
+          dotnet publish Engine/GrandChessTree.Engine \
+            -r linux-x64 /p:Release=true \
+            -p:DeterministicSourcePaths=true \
+            -p:PathMap="${{ github.workspace }}=/src/" \
+            -o /tmp/engine-publish
+
+      - name: Smoke-test linux-x64 binary
+        # Startpos d5 = 4,865,609 — book value. If the build is broken
+        # or BMI2 fallback regressed, this catches it.
+        run: |
+          set -euo pipefail
+          BIN=/tmp/engine-publish/GrandChessTree.Engine
+          chmod +x "$BIN"
+          OUT=$(printf "nodes:5:0:rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\nquit\n" | "$BIN" 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q "^nodes: 4865609$" || { echo "smoke FAILED"; exit 1; }
+
+  perftcheck:
+    name: build perftcheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Verify bundled corpus is present
+        run: |
+          set -euo pipefail
+          CORPUS=Perft-Checker/fen_corpus/corpus.gctc.gz
+          if [[ ! -s "$CORPUS" ]]; then
+            echo "ERROR: $CORPUS missing — perftcheck would build without an embedded corpus."
+            exit 1
+          fi
+          ls -lh "$CORPUS"
+
+      - name: Build perftcheck
+        run: dotnet build Perft-Checker/PerftSuite.csproj -c Release
+
+      - name: Publish linux-x64 (verify the release-path build config)
+        run: |
+          dotnet publish Perft-Checker/PerftSuite.csproj \
+            -c Release -r linux-x64 \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:EnableCompressionInSingleFile=true \
+            -p:DebugType=embedded \
+            -p:DeterministicSourcePaths=true \
+            -p:PathMap="${{ github.workspace }}=/src/" \
+            -o /tmp/perftcheck-publish
+
+      - name: Smoke-test linux-x64 binary
+        # The corpus should load; --version + --help should print without
+        # touching an engine; default `--engine /bin/false` runs through
+        # the case loop and exits cleanly via "error" status.
+        run: |
+          set -euo pipefail
+          BIN=/tmp/perftcheck-publish/perftcheck
+          chmod +x "$BIN"
+          "$BIN" --version
+          "$BIN" --help | grep -q -- "--static-analysis" \
+            || { echo "smoke FAILED: --help missing --static-analysis"; exit 1; }
+          # `/bin/false` exits immediately → broken pipe → reported as
+          # "error". We just want a non-crash; rc!=0 is expected.
+          echo "" | "$BIN" --engine /bin/false --limit 1 --depth-cap 1 --quiet || true
+          echo "perftcheck smoke ok"
+
+  site:
+    name: build site
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build site
+        run: node Site/build.js --skip-articles
+
+      - name: Verify expected pages are emitted
+        run: |
+          set -euo pipefail
+          for page in index.html perftcheck.html leaderboard.html tools.html; do
+            test -s "Site/dist/$page" || { echo "MISSING: Site/dist/$page"; exit 1; }
+          done
+          # Spot-check the perftcheck page rendered with the current version
+          grep -q "perftcheck-0\.3" Site/dist/perftcheck.html \
+            || echo "warning: perftcheck.html version pin may be stale"

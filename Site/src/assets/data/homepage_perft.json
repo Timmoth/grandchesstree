@@ -1,0 +1,5256 @@
+{
+  "positions": {
+    "startpos": {
+      "name": "Startpos",
+      "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      "description": "The initial position of a standard game of chess.",
+      "rows": [
+        {
+          "ply": 0,
+          "cells": {
+            "nodes": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 1,
+          "cells": {
+            "nodes": {
+              "value": "20",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "20",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 2,
+          "cells": {
+            "nodes": {
+              "value": "400",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "400",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 3,
+          "cells": {
+            "nodes": {
+              "value": "8902",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "5362",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "34",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "12",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 4,
+          "cells": {
+            "nodes": {
+              "value": "197281",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "72078",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "1576",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "461",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "8",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 5,
+          "cells": {
+            "nodes": {
+              "value": "4865609",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "822518",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "82719",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "258",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "27004",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "347",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 6,
+          "cells": {
+            "nodes": {
+              "value": "119060324",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "9417681",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "2812008",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "5248",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "798271",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "10828",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 7,
+          "cells": {
+            "nodes": {
+              "value": "3195901860",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "96400068",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "108329926",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "319617",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "883453",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "32668081",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "435767",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 8,
+          "cells": {
+            "nodes": {
+              "value": "84998978956",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "988187354",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "3523740106",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "7187977",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "23605205",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "959129557",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "9852036",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 9,
+          "cells": {
+            "nodes": {
+              "value": "2439530234167",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "9183421888",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "125208536153",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "319496827",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "1784356000",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "17334376",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "35695709940",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "400191963",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 10,
+          "cells": {
+            "nodes": {
+              "value": "69352859712417",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "CCC 2012 — Perft FEN data (d=10..13)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=46055"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "85375278064",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "4092784875884",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "7824835694",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "50908510199",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "511374376",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "1078854669486",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "8790619155",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 11,
+          "cells": {
+            "nodes": {
+              "value": "2097651003696806",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "CCC 2012 — Perft FEN data (d=10..13)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=46055"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "726155461002",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Positions Statistics",
+                  "url": "https://wismuth.com/chess/statistics-positions.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "142537161824567",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "313603617408",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "2641343463566",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "49560932860",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "39147687661803",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "362290010907",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Joost de Heer"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 12,
+          "cells": {
+            "nodes": {
+              "value": "62854969236701747",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "CCC 2012 — Perft FEN data (d=10..13)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=46055"
+                },
+                {
+                  "name": "CCC 2011 — Perft(12) count confirmed",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=38862"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "4737246427144832",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "8240532674085",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "79307385134229",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "1537540318804",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "1224448528652016",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "8361091858959",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "TGCT — Startpos",
+                  "url": "startpos.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 13,
+          "cells": {
+            "nodes": {
+              "value": "1981066775000396239",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                },
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "CCC 2012 — Perft FEN data (d=10..13)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=46055"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": null,
+            "enpassants": null,
+            "castles": null,
+            "promotions": null,
+            "checks": {
+              "value": "44252532348552226",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                }
+              ]
+            },
+            "mates": {
+              "value": "346742245764219",
+              "verifiers": [
+                {
+                  "name": "François Labelle",
+                  "url": "https://wismuth.com/"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 14,
+          "cells": {
+            "nodes": {
+              "value": "61885021521585529237",
+              "verifiers": [
+                {
+                  "name": "Peter Österlund"
+                },
+                {
+                  "name": "Ankan Banerjee"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "wismuth.com — Chess Games Statistics",
+                  "url": "https://wismuth.com/chess/statistics-games.html"
+                },
+                {
+                  "name": "CCC 2016 — yet another attempt on Perft(14)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=61119&start=30"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": null,
+            "enpassants": null,
+            "castles": null,
+            "promotions": null,
+            "checks": null,
+            "mates": null
+          }
+        },
+        {
+          "ply": 15,
+          "cells": {
+            "nodes": {
+              "value": "2015099950053364471960",
+              "verifiers": [
+                {
+                  "name": "Ankan Banerjee"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2017 — Perft(15)",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=64983&start=4"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": null,
+            "enpassants": null,
+            "castles": null,
+            "promotions": null,
+            "checks": null,
+            "mates": null
+          }
+        }
+      ]
+    },
+    "kiwipete": {
+      "name": "Kiwipete",
+      "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -",
+      "description": "A complex middle-game position used to stress-test move generators.",
+      "rows": [
+        {
+          "ply": 0,
+          "cells": {
+            "nodes": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 1,
+          "cells": {
+            "nodes": {
+              "value": "48",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "48",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "8",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "2",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 2,
+          "cells": {
+            "nodes": {
+              "value": "2039",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "2038",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "351",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "91",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "3",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 3,
+          "cells": {
+            "nodes": {
+              "value": "97862",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "57548",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "17102",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "45",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "3162",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "992",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 4,
+          "cells": {
+            "nodes": {
+              "value": "4085603",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "1374152",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "757163",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "1929",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "128013",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "15172",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "25480",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "43",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 5,
+          "cells": {
+            "nodes": {
+              "value": "193690690",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "27404650",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "35043416",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "73365",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "4993637",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "8392",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "3279716",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "30171",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 6,
+          "cells": {
+            "nodes": {
+              "value": "8031647685",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "472499859",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "1558445089",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "3577504",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "184513607",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "56627920",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "91878047",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "360003",
+              "verifiers": [
+                {
+                  "name": "Russell Reagan",
+                  "url": "https://www.chessprogramming.org/Russell_Reagan"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2003 — kiwipete perft (Russell Reagan) [Wayback]",
+                  "url": "https://web.archive.org/web/20250804222701/https://www.stmintz.com/ccc/index.php?id=274926"
+                },
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 7,
+          "cells": {
+            "nodes": {
+              "value": "374190009323",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "7476732715",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "69479646226",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "117075132",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "7831249352",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "49612944",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "8306459296",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "111664735",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 8,
+          "cells": {
+            "nodes": {
+              "value": "15493944087984",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "3093158581098",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "6455134672",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "269372817251",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "154095409292",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "259898519994",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "1615117630",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 9,
+          "cells": {
+            "nodes": {
+              "value": "708027759953502",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "134002020234634",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "184698440605",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "12153817624221",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "188843973180",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "18879800124875",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "285802666744",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 10,
+          "cells": {
+            "nodes": {
+              "value": "29344805396643919",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "5959928383894810",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "11394307136496",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "395107667957400",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "364355113900536",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "644314088763985",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "5389910322702",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — Kiwipete",
+                  "url": "kiwipete.html#results"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "sje": {
+      "name": "SJE's Symmetric Alternative",
+      "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+      "description": "Steven Edwards' symmetric perft probe position.",
+      "rows": [
+        {
+          "ply": 0,
+          "cells": {
+            "nodes": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 1,
+          "cells": {
+            "nodes": {
+              "value": "46",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "46",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "4",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "1",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 2,
+          "cells": {
+            "nodes": {
+              "value": "2079",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "2079",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "203",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "40",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 3,
+          "cells": {
+            "nodes": {
+              "value": "89890",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "49377",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "9470",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "1783",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 4,
+          "cells": {
+            "nodes": {
+              "value": "3894594",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "1164752",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "440388",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "68985",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 5,
+          "cells": {
+            "nodes": {
+              "value": "164075551",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "19106668",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "19528068",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "122",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "2998380",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "228",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 6,
+          "cells": {
+            "nodes": {
+              "value": "6923051137",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "315668837",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "868499408",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "5167",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "115520065",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "10070",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 7,
+          "cells": {
+            "nodes": {
+              "value": "287188994746",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": {
+              "value": "4117328153",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "captures": {
+              "value": "37337665196",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "653902",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "4991385259",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "3514747",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 8,
+          "cells": {
+            "nodes": {
+              "value": "11923589843526",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "1615552099219",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "29144239",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "1972668",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "194584434302",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "146162877",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "ply": 9,
+          "cells": {
+            "nodes": {
+              "value": "490154852788714",
+              "verifiers": [
+                {
+                  "name": "Steven Edwards",
+                  "url": "https://www.chessprogramming.org/Steven_Edwards"
+                },
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "CCC 2013 — An alternative perft() initial FEN",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=48616"
+                },
+                {
+                  "name": "CCC 2013 — Some perft() results",
+                  "url": "https://www.talkchess.com/forum/viewtopic.php?t=49118"
+                },
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "unique": null,
+            "captures": {
+              "value": "68145537029941",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "enpassants": {
+              "value": "2297994855",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "castles": {
+              "value": "0",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "promotions": {
+              "value": "274526296",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "checks": {
+              "value": "8413063784138",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            },
+            "mates": {
+              "value": "16500838022",
+              "verifiers": [
+                {
+                  "name": "Tim Jones",
+                  "url": "https://timmoth.com"
+                }
+              ],
+              "sources": [
+                {
+                  "name": "TGCT — SJE",
+                  "url": "sje.html#results"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,244 @@
+{
+  "name": "berserk",
+  "owner": "jhonnold",
+  "repo": "https://github.com/jhonnold/berserk",
+  "versions": {
+    "13": {
+      "ran_at": "2026-05-24T11:52:10Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66585452544,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.352399,
+                  "nps": 56,
+                  "av_cpu_pct": 96.5,
+                  "av_rss_mb": 10.1,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 9.2e-05,
+                  "nps": 4362002,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 7.4e-05,
+                  "nps": 121005341,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.000606,
+                  "nps": 325315370,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.011863,
+                  "nps": 410152382,
+                  "av_cpu_pct": 84.3,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 0.2986,
+                  "nps": 398728288,
+                  "av_cpu_pct": 100.5,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 7,
+                  "nodes": 3195901860,
+                  "elapsed_sec": 7.368956,
+                  "nps": 433698073,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                }
+              ],
+              "note": "timeout at d8",
+              "best_depth": 7,
+              "best_nodes": 3195901860,
+              "best_elapsed_sec": 7.368956,
+              "best_nps": 433698073,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 54.3,
+              "best_peak_rss_mb": 54.3
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.354069,
+                  "nps": 135,
+                  "av_cpu_pct": 98.9,
+                  "av_rss_mb": 10.2,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 0.000149,
+                  "nps": 13640712,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.000296,
+                  "nps": 330143072,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.009125,
+                  "nps": 447747521,
+                  "av_cpu_pct": 109.6,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 0.365568,
+                  "nps": 529835626,
+                  "av_cpu_pct": 98.5,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 6,
+                  "nodes": 8031647685,
+                  "elapsed_sec": 17.447822,
+                  "nps": 460323790,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                }
+              ],
+              "note": "timeout at d7",
+              "best_depth": 6,
+              "best_nodes": 8031647685,
+              "best_elapsed_sec": 17.447822,
+              "best_nps": 460323790,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 54.3,
+              "best_peak_rss_mb": 54.3
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.354039,
+                  "nps": 129,
+                  "av_cpu_pct": 98.9,
+                  "av_rss_mb": 12.2,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 0.000136,
+                  "nps": 15232443,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.000259,
+                  "nps": 346511753,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.007935,
+                  "nps": 490834490,
+                  "av_cpu_pct": 126.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 0.316395,
+                  "nps": 518578589,
+                  "av_cpu_pct": 98.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                },
+                {
+                  "depth": 6,
+                  "nodes": 6923051137,
+                  "elapsed_sec": 14.113581,
+                  "nps": 490524060,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 54.3,
+                  "peak_rss_mb": 54.3
+                }
+              ],
+              "note": "timeout at d7",
+              "best_depth": 6,
+              "best_nodes": 6923051137,
+              "best_elapsed_sec": 14.113581,
+              "best_nps": 490524060,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 54.3,
+              "best_peak_rss_mb": 54.3
+            }
+          ],
+          "mean_nps": 461515307
+        }
+      }
+    }
+  },
+  "language": "C"
+}

@@ -1,0 +1,940 @@
+{
+  "engine": "perft_cpu_2026",
+  "version": "main",
+  "language": "C++",
+  "mode_used": "single-no-cache",
+  "ran_at": "2026-05-25T10:06:41Z",
+  "duration_sec": 122.79,
+  "shards": 4,
+  "options": {
+    "depth_cap": 4,
+    "epd_files": [
+      "ferdy_perft_double_checks.epd",
+      "ferdy_perft_enpassant_1.epd",
+      "ferdy_perft_single_check_1.epd",
+      "ferdy_perft_single_check_10.epd",
+      "ferdy_perft_single_check_11.epd",
+      "ferdy_perft_single_check_12.epd",
+      "ferdy_perft_single_check_13.epd",
+      "ferdy_perft_single_check_14.epd",
+      "ferdy_perft_single_check_15.epd",
+      "ferdy_perft_single_check_16.epd",
+      "ferdy_perft_single_check_17.epd",
+      "ferdy_perft_single_check_18.epd",
+      "ferdy_perft_single_check_19.epd",
+      "ferdy_perft_single_check_2.epd",
+      "ferdy_perft_single_check_3.epd",
+      "ferdy_perft_single_check_4.epd",
+      "ferdy_perft_single_check_5.epd",
+      "ferdy_perft_single_check_6.epd",
+      "ferdy_perft_single_check_7.epd",
+      "ferdy_perft_single_check_8.epd",
+      "ferdy_perft_single_check_9.epd",
+      "perft-marcel.epd",
+      "perft.epd"
+    ],
+    "per_case_timeout_sec": 5.0,
+    "fail_fast": false
+  },
+  "totals": {
+    "cases": 125625,
+    "passed": 125526,
+    "failed": 99,
+    "timeout": 0,
+    "error": 0,
+    "skipped_min_depth": 0
+  },
+  "failures": [
+    {
+      "fen": "1k5R/1p6/p1p1p3/P1P3p1/1PKP2P1/8/8/6r1 b - -  0 1",
+      "depth": 4,
+      "expected": 7661,
+      "got": "392020948",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 38, time: 1.964e-06 seconds, nps: 19348268\n\nPerft(03): 518, time: 6.733e-06 seconds, nps: 76934501\n\nPerft(04): 7635, time: 1.9476e-05 seconds, nps: 392020948\n\nperft-done"
+    },
+    {
+      "fen": "8/8/3k4/p5r1/Pp1p1p2/3Pb3/1PP3K1/3B3R w - -  0 1",
+      "depth": 4,
+      "expected": 43501,
+      "got": "812553708",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 129, time: 7.81e-07 seconds, nps: 165172855\n\nPerft(03): 1931, time: 9.768e-06 seconds, nps: 197686322\n\nPerft(04): 43496, time: 5.353e-05 seconds, nps: 812553708\n\nperft-done"
+    },
+    {
+      "fen": "8/8/6k1/p7/2p3p1/P1P2q1p/1P2Np1R/5B1K w - -  0 1",
+      "depth": 4,
+      "expected": 16843,
+      "got": "615663047",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 59, time: 1.3355e-05 seconds, nps: 4417821\n\nPerft(03): 637, time: 1.065e-05 seconds, nps: 59812206\n\nPerft(04): 16839, time: 2.7351e-05 seconds, nps: 615663047\n\nperft-done"
+    },
+    {
+      "fen": "8/1p2p1kp/3p1r2/p1nP1P1P/2P5/1P2K1R1/P3B3/8 b - -  0 1",
+      "depth": 4,
+      "expected": 48001,
+      "got": "798028000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 115, time: 2.044e-06 seconds, nps: 56262230\n\nPerft(03): 2155, time: 7.845e-06 seconds, nps: 274697259\n\nPerft(04): 47995, time: 6.0142e-05 seconds, nps: 798028000\n\nperft-done"
+    },
+    {
+      "fen": "8/2R1kp2/p5p1/4P1Pp/4K2P/1b6/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 12204,
+      "got": "370809459",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 71, time: 2.514e-06 seconds, nps: 28241845\n\nPerft(03): 784, time: 1.4267e-05 seconds, nps: 54951987\n\nPerft(04): 12167, time: 3.2812e-05 seconds, nps: 370809459\n\nperft-done"
+    },
+    {
+      "fen": "8/8/1p6/p4k2/P1p1bp1p/2P2K1P/1P4P1/3B4 w - -  0 1",
+      "depth": 4,
+      "expected": 5840,
+      "got": "382679545",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 32, time: 5.21e-07 seconds, nps: 61420345\n\nPerft(03): 366, time: 5.249e-06 seconds, nps: 69727567\n\nPerft(04): 5824, time: 1.5219e-05 seconds, nps: 382679545\n\nperft-done"
+    },
+    {
+      "fen": "3q1k2/3P1r2/5P2/p1Q5/1p6/1P5P/P5P1/3R3K b - -  0 1",
+      "depth": 4,
+      "expected": 72454,
+      "got": "1315072968",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 131, time: 7.91e-07 seconds, nps: 165613147\n\nPerft(03): 1887, time: 1.4598e-05 seconds, nps: 129264282\n\nPerft(04): 72450, time: 5.5092e-05 seconds, nps: 1315072968\n\nperft-done"
+    },
+    {
+      "fen": "8/R2k2p1/3n1p1p/3N1P2/3P1K1P/5P2/8/7r b - -  0 1",
+      "depth": 4,
+      "expected": 47660,
+      "got": "776595397",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 116, time: 7.71e-07 seconds, nps: 150453955\n\nPerft(03): 2272, time: 1.027e-05 seconds, nps: 221226874\n\nPerft(04): 47655, time: 6.1364e-05 seconds, nps: 776595397\n\nperft-done"
+    },
+    {
+      "fen": "8/4p3/3p2k1/3P1PP1/3bP1K1/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 3586,
+      "got": "183583542",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 27, time: 1.012e-06 seconds, nps: 26679841\n\nPerft(03): 448, time: 6.222e-06 seconds, nps: 72002571\n\nPerft(04): 3583, time: 1.9517e-05 seconds, nps: 183583542\n\nperft-done"
+    },
+    {
+      "fen": "2r5/P3kpp1/2P5/1N1n3p/8/7P/5PPK/4R3 b - -  0 1",
+      "depth": 4,
+      "expected": 70991,
+      "got": "997274247",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 124, time: 3.036e-06 seconds, nps: 40843214\n\nPerft(03): 2421, time: 1.4718e-05 seconds, nps: 164492458\n\nPerft(04): 70979, time: 7.1173e-05 seconds, nps: 997274247\n\nperft-done"
+    },
+    {
+      "fen": "3n1R2/5krP/1p2pP2/3n2B1/3Pp2N/8/p4P1K/8 b - -  0 1",
+      "depth": 4,
+      "expected": 10510,
+      "got": "509036290",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 22, time: 5.11e-07 seconds, nps: 43052837\n\nPerft(03): 536, time: 1.2534e-05 seconds, nps: 42763682\n\nPerft(04): 10506, time: 2.0639e-05 seconds, nps: 509036290\n\nperft-done"
+    },
+    {
+      "fen": "8/R4kp1/7p/2r2P1P/5KP1/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 22166,
+      "got": "554811358",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 91, time: 2.855e-06 seconds, nps: 31873905\n\nPerft(03): 1335, time: 8.115e-06 seconds, nps: 164510166\n\nPerft(04): 22117, time: 3.9864e-05 seconds, nps: 554811358\n\nperft-done"
+    },
+    {
+      "fen": "8/5pp1/2k1p2p/1B2P1PP/p2P1P2/Nb2K3/n7/8 b - -  0 1",
+      "depth": 4,
+      "expected": 24848,
+      "got": "812538836",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 86, time: 2.304e-06 seconds, nps: 37326388\n\nPerft(03): 1253, time: 9.528e-06 seconds, nps: 131507136\n\nPerft(04): 24845, time: 3.0577e-05 seconds, nps: 812538836\n\nperft-done"
+    },
+    {
+      "fen": "8/p4ppp/4p3/3rP1PP/4KP2/8/2kR4/8 b - -  0 1",
+      "depth": 4,
+      "expected": 17490,
+      "got": "738570944",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 73, time: 8.72e-07 seconds, nps: 83715596\n\nPerft(03): 1306, time: 4.889e-06 seconds, nps: 267130292\n\nPerft(04): 17448, time: 2.3624e-05 seconds, nps: 738570944\n\nperft-done"
+    },
+    {
+      "fen": "4N3/8/4p3/4k1p1/5p1p/2n2P1P/4K1P1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 5814,
+      "got": "390442263",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 59, time: 5.61e-07 seconds, nps: 105169340\n\nPerft(03): 578, time: 5.179e-06 seconds, nps: 111604556\n\nPerft(04): 5809, time: 1.4878e-05 seconds, nps: 390442263\n\nperft-done"
+    },
+    {
+      "fen": "Q6k/p1qP1Pp1/1p6/6Kp/2p5/6P1/P1N4r/3RR3 b - -  0 1",
+      "depth": 4,
+      "expected": 138645,
+      "got": "1127882992",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 151, time: 1.543e-06 seconds, nps: 97861309\n\nPerft(03): 3132, time: 1.9296e-05 seconds, nps: 162313432\n\nPerft(04): 138345, time: 0.000122659 seconds, nps: 1127882992\n\nperft-done"
+    },
+    {
+      "fen": "3b4/7p/8/3k2PR/p1pp1B2/P7/1PK2r2/8 w - -  0 1",
+      "depth": 4,
+      "expected": 36013,
+      "got": "694658255",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 92, time: 1.0049e-05 seconds, nps: 9155139\n\nPerft(03): 1539, time: 9.067e-06 seconds, nps: 169736406\n\nPerft(04): 36009, time: 5.1837e-05 seconds, nps: 694658255\n\nperft-done"
+    },
+    {
+      "fen": "2R3k1/6p1/5p1p/5P2/1P3KPP/5R2/1r4r1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 23470,
+      "got": "553882464",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 56, time: 4.319e-06 seconds, nps: 12965964\n\nPerft(03): 1058, time: 9.097e-06 seconds, nps: 116302077\n\nPerft(04): 23468, time: 4.237e-05 seconds, nps: 553882464\n\nperft-done"
+    },
+    {
+      "fen": "5k2/5p1p/4p1p1/4P3/1r2NP2/pr1K1B2/2p3PP/R7 w - -  0 1",
+      "depth": 4,
+      "expected": 75170,
+      "got": "1091017303",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 106, time: 9.167e-06 seconds, nps: 11563215\n\nPerft(03): 2608, time: 9.107e-06 seconds, nps: 286373119\n\nPerft(04): 75158, time: 6.8888e-05 seconds, nps: 1091017303\n\nperft-done"
+    },
+    {
+      "fen": "8/2kn1p2/1P2p1p1/pR2P1P1/P2PK3/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 10924,
+      "got": "404011887",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 77, time: 2.685e-06 seconds, nps: 28677839\n\nPerft(03): 829, time: 8.235e-06 seconds, nps: 100667880\n\nPerft(04): 10876, time: 2.692e-05 seconds, nps: 404011887\n\nperft-done"
+    },
+    {
+      "fen": "8/p5r1/5k2/8/1pP2p1p/P1K5/4R1PP/8 w - -  0 1",
+      "depth": 4,
+      "expected": 69218,
+      "got": "687644066",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 171, time: 8.41e-07 seconds, nps: 203329369\n\nPerft(03): 3516, time: 1.1982e-05 seconds, nps: 293440160\n\nPerft(04): 69210, time: 0.000100648 seconds, nps: 687644066\n\nperft-done"
+    },
+    {
+      "fen": "8/1R2kp2/6p1/4P1Pp/4K3/8/8/3r4 b - -  0 1",
+      "depth": 4,
+      "expected": 19210,
+      "got": "521483577",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 77, time: 2.254e-06 seconds, nps: 34161490\n\nPerft(03): 1264, time: 7.103e-06 seconds, nps: 177952977\n\nPerft(04): 19164, time: 3.6749e-05 seconds, nps: 521483577\n\nperft-done"
+    },
+    {
+      "fen": "8/1p1k3R/p1p1p3/P1P3p1/1PKP2P1/8/8/6r1 b - -  0 1",
+      "depth": 4,
+      "expected": 11731,
+      "got": "445994891",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 54, time: 5.01e-06 seconds, nps: 10778443\n\nPerft(03): 791, time: 9.558e-06 seconds, nps: 82757899\n\nPerft(04): 11698, time: 2.6229e-05 seconds, nps: 445994891\n\nperft-done"
+    },
+    {
+      "fen": "8/5p2/1p4p1/1P1k4/1Rp1p1pP/r3K1P1/1R3P2/2r5 w - -  0 1",
+      "depth": 4,
+      "expected": 44367,
+      "got": "757306247",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 147, time: 1.312e-06 seconds, nps: 112042682\n\nPerft(03): 1727, time: 1.2112e-05 seconds, nps: 142585865\n\nPerft(04): 44363, time: 5.858e-05 seconds, nps: 757306247\n\nperft-done"
+    },
+    {
+      "fen": "8/1R1k1p2/3P2p1/3rP1P1/5K2/8/1P6/8 b - -  0 1",
+      "depth": 4,
+      "expected": 18022,
+      "got": "529546657",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 94, time: 6.61e-07 seconds, nps: 142208774\n\nPerft(03): 1093, time: 7.324e-06 seconds, nps: 149235390\n\nPerft(04): 18012, time: 3.4014e-05 seconds, nps: 529546657\n\nperft-done"
+    },
+    {
+      "fen": "3k4/1N3p2/2n1p1p1/pp2P1P1/5P2/PP1K4/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 11928,
+      "got": "409668774",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 65, time: 9.22e-07 seconds, nps: 70498915\n\nPerft(03): 925, time: 7.244e-06 seconds, nps: 127691882\n\nPerft(04): 11923, time: 2.9104e-05 seconds, nps: 409668774\n\nperft-done"
+    },
+    {
+      "fen": "8/2R2kp1/7p/rp3P2/5KPP/2P5/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 15598,
+      "got": "455911589",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 74, time: 5.901e-06 seconds, nps: 12540247\n\nPerft(03): 880, time: 9.077e-06 seconds, nps: 96948330\n\nPerft(04): 15594, time: 3.4204e-05 seconds, nps: 455911589\n\nperft-done"
+    },
+    {
+      "fen": "8/1p1k3R/p4rn1/P1PK4/1P1p1p2/8/3B1PP1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 39831,
+      "got": "611841700",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 105, time: 5.65e-06 seconds, nps: 18584070\n\nPerft(03): 1825, time: 1.3425e-05 seconds, nps: 135940409\n\nPerft(04): 39826, time: 6.5092e-05 seconds, nps: 611841700\n\nperft-done"
+    },
+    {
+      "fen": "5k2/6p1/5p1p/3b1P2/5KPP/B1P5/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 8064,
+      "got": "351348995",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 36, time: 8.51e-07 seconds, nps: 42303172\n\nPerft(03): 644, time: 5.66e-06 seconds, nps: 113780918\n\nPerft(04): 8061, time: 2.2943e-05 seconds, nps: 351348995\n\nperft-done"
+    },
+    {
+      "fen": "8/R3N1p1/2kn1p1p/5P2/3P1K1P/5P2/8/7r b - -  0 1",
+      "depth": 4,
+      "expected": 15753,
+      "got": "506821545",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 40, time: 9.91e-07 seconds, nps: 40363269\n\nPerft(03): 819, time: 9.027e-06 seconds, nps: 90727816\n\nPerft(04): 15751, time: 3.1078e-05 seconds, nps: 506821545\n\nperft-done"
+    },
+    {
+      "fen": "8/6p1/4Rk1p/5P1P/5KP1/8/8/3r4 b - -  0 1",
+      "depth": 4,
+      "expected": 6085,
+      "got": "371044593",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 21, time: 6.51e-07 seconds, nps: 32258064\n\nPerft(03): 364, time: 6.642e-06 seconds, nps: 54802770\n\nPerft(04): 6074, time: 1.637e-05 seconds, nps: 371044593\n\nperft-done"
+    },
+    {
+      "fen": "8/1p6/pR6/P3pk1p/5p2/7P/2r2KP1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 19597,
+      "got": "623206845",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 70, time: 2.325e-06 seconds, nps: 30107526\n\nPerft(03): 1127, time: 6.763e-06 seconds, nps: 166642022\n\nPerft(04): 19593, time: 3.1439e-05 seconds, nps: 623206845\n\nperft-done"
+    },
+    {
+      "fen": "8/4R3/8/1p1k4/p1p5/P2p4/1P6/1K3r2 w - -  0 1",
+      "depth": 4,
+      "expected": 9823,
+      "got": "326539433",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 38, time: 7.91e-07 seconds, nps: 48040455\n\nPerft(03): 529, time: 8.626e-06 seconds, nps: 61326223\n\nPerft(04): 9821, time: 3.0076e-05 seconds, nps: 326539433\n\nperft-done"
+    },
+    {
+      "fen": "8/6p1/R4k1p/2r2P1P/5KP1/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 13959,
+      "got": "478265348",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 54, time: 4.378e-06 seconds, nps: 12334399\n\nPerft(03): 832, time: 1.2503e-05 seconds, nps: 66544029\n\nPerft(04): 13929, time: 2.9124e-05 seconds, nps: 478265348\n\nperft-done"
+    },
+    {
+      "fen": "1rR3k1/1P1r1p1p/p2Pnbp1/8/5P2/2N5/1P4B1/3R2K1 b - -  0 1",
+      "depth": 4,
+      "expected": 218524,
+      "got": "1487981260",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 225, time: 4.819e-06 seconds, nps: 46690184\n\nPerft(03): 6033, time: 1.5479e-05 seconds, nps: 389753860\n\nPerft(04): 218516, time: 0.000146854 seconds, nps: 1487981260\n\nperft-done"
+    },
+    {
+      "fen": "r5k1/p1qP1Pp1/1p6/6Kp/2p5/1Q4P1/P1N4r/3RR3 b - -  0 1",
+      "depth": 4,
+      "expected": 220946,
+      "got": "1863737415",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 182, time: 2.695e-06 seconds, nps: 67532467\n\nPerft(03): 5444, time: 1.5919e-05 seconds, nps: 341981280\n\nPerft(04): 220482, time: 0.000118301 seconds, nps: 1863737415\n\nperft-done"
+    },
+    {
+      "fen": "3R4/8/8/2k5/p1p5/P2p4/1Pr5/2K5 w - -  0 1",
+      "depth": 4,
+      "expected": 5113,
+      "got": "338465622",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 26, time: 9.708e-06 seconds, nps: 2678203\n\nPerft(03): 367, time: 5.069e-06 seconds, nps: 72400868\n\nPerft(04): 5100, time: 1.5068e-05 seconds, nps: 338465622\n\nperft-done"
+    },
+    {
+      "fen": "8/2p3p1/1p3p2/3knP2/5K1P/8/6B1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 10240,
+      "got": "349986321",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 59, time: 7.774e-06 seconds, nps: 7589400\n\nPerft(03): 938, time: 8.546e-06 seconds, nps: 109758951\n\nPerft(04): 10235, time: 2.9244e-05 seconds, nps: 349986321\n\nperft-done"
+    },
+    {
+      "fen": "8/1pp2r2/3p4/1PbPp1k1/2P3p1/3P2rp/R4P2/3B1RK1 w - -  0 1",
+      "depth": 4,
+      "expected": 47328,
+      "got": "813315231",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 65, time: 9.11e-07 seconds, nps: 71350164\n\nPerft(03): 1590, time: 9.237e-06 seconds, nps: 172133809\n\nPerft(04): 47326, time: 5.8189e-05 seconds, nps: 813315231\n\nperft-done"
+    },
+    {
+      "fen": "8/5p2/2R1k1p1/4P1Pp/4K3/8/8/1r6 b - -  0 1",
+      "depth": 4,
+      "expected": 12732,
+      "got": "478614457",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 40, time: 2.775e-06 seconds, nps: 14414414\n\nPerft(03): 745, time: 9.177e-06 seconds, nps: 81181213\n\nPerft(04): 12712, time: 2.656e-05 seconds, nps: 478614457\n\nperft-done"
+    },
+    {
+      "fen": "4Qr2/p4r2/8/q3pk2/PB3ppp/1PnPP2N/1RK2PP1/1N3B1R b - - 0 1",
+      "depth": 3,
+      "expected": 39311,
+      "got": "1036628780",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(01): 35, time: 6.582e-06 seconds, nps: 5317532\n\nPerft(02): 1302, time: 7.484e-06 seconds, nps: 173971138\n\nPerft(03): 39310, time: 3.7921e-05 seconds, nps: 1036628780\n\nperft-done"
+    },
+    {
+      "fen": "2k5/P1P3b1/2N1p1p1/3P2rp/R4B1P/3b4/2nK3R/1r6 w - - 0 1",
+      "depth": 3,
+      "expected": 45523,
+      "got": "1034227546",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(01): 34, time: 8.255e-06 seconds, nps: 4118715\n\nPerft(02): 1410, time: 3.196e-06 seconds, nps: 441176470\n\nPerft(03): 45415, time: 4.3912e-05 seconds, nps: 1034227546\n\nperft-done"
+    },
+    {
+      "fen": "5q2/p2Pn3/P4Pk1/Bp1p2p1/3P3p/7P/5R2/3Q2KN w - - 0 1",
+      "depth": 3,
+      "expected": 31901,
+      "got": "975711969",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(01): 42, time: 7.794e-06 seconds, nps: 5388760\n\nPerft(02): 783, time: 6.643e-06 seconds, nps: 117868432\n\nPerft(03): 31897, time: 3.2691e-05 seconds, nps: 975711969\n\nperft-done"
+    },
+    {
+      "fen": "r6r/2p1n3/1p1p1kp1/1P1PP3/2P3P1/4K3/4B1q1/3Q1R2 b - -  0 1",
+      "depth": 4,
+      "expected": 93348,
+      "got": "477583075",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 84, time: 4.148e-06 seconds, nps: 20250723\n\nPerft(03): 3813, time: 1.2594e-05 seconds, nps: 302763220\n\nPerft(04): 93346, time: 0.000195455 seconds, nps: 477583075\n\nperft-done"
+    },
+    {
+      "fen": "8/5kp1/5p1p/7P/pP2PKP1/P1B5/2P1b3/8 b - b3  0 1",
+      "depth": 4,
+      "expected": 50515,
+      "got": "632527329",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 223, time: 2.786e-06 seconds, nps: 80043072\n\nPerft(03): 3471, time: 1.0089e-05 seconds, nps: 344038061\n\nPerft(04): 50513, time: 7.9859e-05 seconds, nps: 632527329\n\nperft-done"
+    },
+    {
+      "fen": "8/1pk4R/p1p1p3/P1P3p1/1PKP2P1/8/8/6r1 b - -  0 1",
+      "depth": 4,
+      "expected": 11816,
+      "got": "509756414",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 54, time: 5.41e-06 seconds, nps: 9981515\n\nPerft(03): 796, time: 5.971e-06 seconds, nps: 133311003\n\nPerft(04): 11782, time: 2.3113e-05 seconds, nps: 509756414\n\nperft-done"
+    },
+    {
+      "fen": "8/1p2p1kp/3p1r2/p1nP1P2/2P4P/1P3K1B/P7/6R1 b - -  0 1",
+      "depth": 4,
+      "expected": 64344,
+      "got": "786666177",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 137, time: 9.02e-07 seconds, nps: 151884700\n\nPerft(03): 2814, time: 1.1191e-05 seconds, nps: 251452059\n\nPerft(04): 64343, time: 8.1792e-05 seconds, nps: 786666177\n\nperft-done"
+    },
+    {
+      "fen": "4Q2k/6p1/5p1p/5P1P/p4pP1/1q3P1K/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 16446,
+      "got": "169698971",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 47, time: 8.32e-07 seconds, nps: 56490384\n\nPerft(03): 775, time: 1.4878e-05 seconds, nps: 52090334\n\nPerft(04): 16444, time: 9.6901e-05 seconds, nps: 169698971\n\nperft-done"
+    },
+    {
+      "fen": "8/5p2/8/3nP3/1pk1K1P1/5P2/2RB4/5r2 b - -  0 1",
+      "depth": 4,
+      "expected": 22375,
+      "got": "666021671",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 53, time: 2.685e-06 seconds, nps: 19739292\n\nPerft(03): 1059, time: 6.723e-06 seconds, nps: 157518964\n\nPerft(04): 22373, time: 3.3592e-05 seconds, nps: 666021671\n\nperft-done"
+    },
+    {
+      "fen": "3r1rk1/5p1P/p5P1/1p2p2P/3nB3/4B3/P1P5/2K4R b - -  0 1",
+      "depth": 4,
+      "expected": 47400,
+      "got": "1159097023",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 69, time: 8.796e-06 seconds, nps: 7844474\n\nPerft(03): 1490, time: 6.973e-06 seconds, nps: 213681342\n\nPerft(04): 47392, time: 4.0887e-05 seconds, nps: 1159097023\n\nperft-done"
+    },
+    {
+      "fen": "6R1/3b4/3k4/1p2r1p1/p1pN3p/P1P3p1/1P3K1P/8 w - -  0 1",
+      "depth": 4,
+      "expected": 61245,
+      "got": "792186792",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 128, time: 9.147e-06 seconds, nps: 13993659\n\nPerft(03): 2718, time: 1.1912e-05 seconds, nps: 228173270\n\nPerft(04): 61240, time: 7.7305e-05 seconds, nps: 792186792\n\nperft-done"
+    },
+    {
+      "fen": "8/3R1kp1/7p/p3KP1P/P7/1r6/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 16647,
+      "got": "545043717",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 60, time: 2.484e-06 seconds, nps: 24154589\n\nPerft(03): 1012, time: 7.003e-06 seconds, nps: 144509495\n\nPerft(04): 16644, time: 3.0537e-05 seconds, nps: 545043717\n\nperft-done"
+    },
+    {
+      "fen": "8/1p1P4/p1k1n3/PPP5/2K5/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 2899,
+      "got": "221246372",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 24, time: 3.908e-06 seconds, nps: 6141248\n\nPerft(03): 287, time: 9.889e-06 seconds, nps: 29022145\n\nPerft(04): 2897, time: 1.3094e-05 seconds, nps: 221246372\n\nperft-done"
+    },
+    {
+      "fen": "3B4/8/8/3k4/1P2p1p1/n6p/5PK1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 10303,
+      "got": "408375302",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 63, time: 2.675e-06 seconds, nps: 23551401\n\nPerft(03): 801, time: 6.141e-06 seconds, nps: 130434782\n\nPerft(04): 10298, time: 2.5217e-05 seconds, nps: 408375302\n\nperft-done"
+    },
+    {
+      "fen": "8/2R2kpp/8/7P/1r3PPK/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 25263,
+      "got": "571044242",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 94, time: 3.377e-06 seconds, nps: 27835356\n\nPerft(03): 1461, time: 1.3054e-05 seconds, nps: 111919718\n\nPerft(04): 25259, time: 4.4233e-05 seconds, nps: 571044242\n\nperft-done"
+    },
+    {
+      "fen": "8/1p6/p7/4pk1p/1R3p2/7P/r2K2P1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 30729,
+      "got": "591771481",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 116, time: 1.2183e-05 seconds, nps: 9521464\n\nPerft(03): 1709, time: 8.886e-06 seconds, nps: 192325005\n\nPerft(04): 30723, time: 5.1917e-05 seconds, nps: 591771481\n\nperft-done"
+    },
+    {
+      "fen": "3rr3/1P5k/P1nP4/2P4p/3b1P1P/2NBp3/8/1R2B1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 180256,
+      "got": "1655622204",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 187, time: 3.827e-06 seconds, nps: 48863339\n\nPerft(03): 5043, time: 1.3415e-05 seconds, nps: 375922474\n\nPerft(04): 180236, time: 0.000108863 seconds, nps: 1655622204\n\nperft-done"
+    },
+    {
+      "fen": "5k1R/1r3p2/4r3/p3P1P1/2R2PK1/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 43994,
+      "got": "805653321",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 66, time: 4.889e-06 seconds, nps: 13499693\n\nPerft(03): 1500, time: 8.716e-06 seconds, nps: 172097292\n\nPerft(04): 43950, time: 5.4552e-05 seconds, nps: 805653321\n\nperft-done"
+    },
+    {
+      "fen": "8/8/1p1pNkb1/3P2p1/1PP1Kp1p/7P/6P1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 5589,
+      "got": "304385725",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 30, time: 6.833e-06 seconds, nps: 4390458\n\nPerft(03): 382, time: 5.721e-06 seconds, nps: 66771543\n\nPerft(04): 5587, time: 1.8355e-05 seconds, nps: 304385725\n\nperft-done"
+    },
+    {
+      "fen": "2r1r3/2P1P3/p1KBR3/1p4kp/5P2/8/P6P/8 b - -  0 1",
+      "depth": 4,
+      "expected": 20634,
+      "got": "532674354",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 64, time: 5.08e-06 seconds, nps: 12598425\n\nPerft(03): 880, time: 7.895e-06 seconds, nps: 111462951\n\nPerft(04): 20370, time: 3.8241e-05 seconds, nps: 532674354\n\nperft-done"
+    },
+    {
+      "fen": "8/R4kp1/7p/7P/2r2P1K/6P1/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 20923,
+      "got": "481951579",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 93, time: 3.066e-06 seconds, nps: 30332681\n\nPerft(03): 1434, time: 1.0299e-05 seconds, nps: 139236819\n\nPerft(04): 20922, time: 4.3411e-05 seconds, nps: 481951579\n\nperft-done"
+    },
+    {
+      "fen": "5bk1/5p2/7p/2p1P2r/2N1KP2/p7/8/6R1 b - -  0 1",
+      "depth": 4,
+      "expected": 34564,
+      "got": "700904445",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 105, time: 3.497e-06 seconds, nps: 30025736\n\nPerft(03): 1551, time: 8.977e-06 seconds, nps: 172774869\n\nPerft(04): 34563, time: 4.9312e-05 seconds, nps: 700904445\n\nperft-done"
+    },
+    {
+      "fen": "8/8/1q4pk/8/P1P1Qp1p/1K2p3/1R4P1/r7 w - -  0 1",
+      "depth": 4,
+      "expected": 57454,
+      "got": "822858779",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 70, time: 7.72e-07 seconds, nps: 90673575\n\nPerft(03): 1859, time: 1.067e-05 seconds, nps: 174226804\n\nPerft(04): 57452, time: 6.982e-05 seconds, nps: 822858779\n\nperft-done"
+    },
+    {
+      "fen": "r7/p1qP1Ppk/1p6/6Kp/2p1Q3/6P1/P1N4r/3RR3 b - -  0 1",
+      "depth": 4,
+      "expected": 135636,
+      "got": "1165916963",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 104, time: 5.13e-06 seconds, nps: 20272904\n\nPerft(03): 3033, time: 1.3966e-05 seconds, nps: 217170270\n\nPerft(04): 135300, time: 0.000116046 seconds, nps: 1165916963\n\nperft-done"
+    },
+    {
+      "fen": "8/8/8/1kp5/1p1p2R1/8/P1P5/1K2r3 w - -  0 1",
+      "depth": 4,
+      "expected": 7206,
+      "got": "405227285",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 23, time: 2.154e-06 seconds, nps: 10677808\n\nPerft(03): 372, time: 4.909e-06 seconds, nps: 75779181\n\nPerft(04): 7194, time: 1.7753e-05 seconds, nps: 405227285\n\nperft-done"
+    },
+    {
+      "fen": "4kR2/3n1p2/1p2p1p1/p3P1P1/P1PPK3/8/8/7R b - -  0 1",
+      "depth": 4,
+      "expected": 10641,
+      "got": "488647900",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 68, time: 4.539e-06 seconds, nps: 14981273\n\nPerft(03): 607, time: 1.1602e-05 seconds, nps: 52318565\n\nPerft(04): 10589, time: 2.167e-05 seconds, nps: 488647900\n\nperft-done"
+    },
+    {
+      "fen": "8/7r/2p1R3/3q1prk/P6p/7P/KP3RP1/4Q3 w - -  0 1",
+      "depth": 4,
+      "expected": 154963,
+      "got": "985155187",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 139, time: 2.645e-06 seconds, nps: 52551984\n\nPerft(03): 4831, time: 1.7272e-05 seconds, nps: 279701250\n\nPerft(04): 154959, time: 0.000157294 seconds, nps: 985155187\n\nperft-done"
+    },
+    {
+      "fen": "5r2/P7/2P5/2R3kp/5p2/7P/5K2/8 b - -  0 1",
+      "depth": 4,
+      "expected": 33983,
+      "got": "710160986",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 112, time: 3.536e-06 seconds, nps: 31674208\n\nPerft(03): 1515, time: 7.884e-06 seconds, nps: 192161339\n\nPerft(04): 33967, time: 4.783e-05 seconds, nps: 710160986\n\nperft-done"
+    },
+    {
+      "fen": "1R3k2/5p2/6p1/4P1Pp/4K3/8/8/3r4 b - -  0 1",
+      "depth": 4,
+      "expected": 13090,
+      "got": "441637070",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 50, time: 2.043e-06 seconds, nps: 24473813\n\nPerft(03): 845, time: 6.442e-06 seconds, nps: 131170443\n\nPerft(04): 13057, time: 2.9565e-05 seconds, nps: 441637070\n\nperft-done"
+    },
+    {
+      "fen": "1q6/8/8/R4ppk/7p/7P/4R1PK/8 w - -  0 1",
+      "depth": 4,
+      "expected": 62269,
+      "got": "769644380",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 119, time: 2.816e-06 seconds, nps: 42258522\n\nPerft(03): 2786, time: 1.092e-05 seconds, nps: 255128205\n\nPerft(04): 62265, time: 8.0901e-05 seconds, nps: 769644380\n\nperft-done"
+    },
+    {
+      "fen": "4rnk1/p4P2/3Pq3/1p2p3/8/8/PB3R1P/6RK b - -  0 1",
+      "depth": 4,
+      "expected": 70082,
+      "got": "1180384875",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 76, time: 2.145e-06 seconds, nps: 35431235\n\nPerft(03): 2003, time: 9.117e-06 seconds, nps: 219699462\n\nPerft(04): 69926, time: 5.924e-05 seconds, nps: 1180384875\n\nperft-done"
+    },
+    {
+      "fen": "2k4R/1p6/p1p1p3/P1P3p1/1PKP2P1/8/8/6r1 b - -  0 1",
+      "depth": 4,
+      "expected": 8173,
+      "got": "375247570",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 38, time: 5.81e-07 seconds, nps: 65404475\n\nPerft(03): 549, time: 7.174e-06 seconds, nps: 76526345\n\nPerft(04): 8147, time: 2.1711e-05 seconds, nps: 375247570\n\nperft-done"
+    },
+    {
+      "fen": "4r3/2rb4/3k1p2/1p1P1PbP/p1p3B1/P1N1p2P/1P2RK2/5R2 w - -  0 1",
+      "depth": 4,
+      "expected": 120840,
+      "got": "1074748732",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 162, time: 8.31e-07 seconds, nps: 194945848\n\nPerft(03): 4703, time: 1.11e-05 seconds, nps: 423693693\n\nPerft(04): 120834, time: 0.00011243 seconds, nps: 1074748732\n\nperft-done"
+    },
+    {
+      "fen": "6R1/3b4/3k4/1p2r1p1/p1pN2pp/P1P1K3/1P5P/8 w - -  0 1",
+      "depth": 4,
+      "expected": 19356,
+      "got": "520562683",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 44, time: 6.41e-07 seconds, nps: 68642745\n\nPerft(03): 966, time: 7.844e-06 seconds, nps: 123151453\n\nPerft(04): 19354, time: 3.7179e-05 seconds, nps: 520562683\n\nperft-done"
+    },
+    {
+      "fen": "2R3k1/6p1/7p/rp3P2/5KPP/2P5/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 8549,
+      "got": "443401120",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 40, time: 4.558e-06 seconds, nps: 8775778\n\nPerft(03): 470, time: 1.07e-05 seconds, nps: 43925233\n\nPerft(04): 8547, time: 1.9276e-05 seconds, nps: 443401120\n\nperft-done"
+    },
+    {
+      "fen": "3q1k2/3P1r2/5P1Q/p5p1/1p6/1P5P/P5P1/3R3K b - -  0 1",
+      "depth": 4,
+      "expected": 21059,
+      "got": "750008905",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 53, time: 2.435e-06 seconds, nps: 21765913\n\nPerft(03): 726, time: 7.604e-06 seconds, nps: 95476065\n\nPerft(04): 21055, time: 2.8073e-05 seconds, nps: 750008905\n\nperft-done"
+    },
+    {
+      "fen": "8/1pR1kp2/6p1/p2rP1P1/P4P1p/3pK3/1P1Rb3/8 b - -  0 1",
+      "depth": 4,
+      "expected": 37073,
+      "got": "680121830",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 102, time: 8.01e-07 seconds, nps: 127340823\n\nPerft(03): 1759, time: 1.092e-05 seconds, nps: 161080586\n\nPerft(04): 37068, time: 5.4502e-05 seconds, nps: 680121830\n\nperft-done"
+    },
+    {
+      "fen": "3Q4/1p3pk1/5q2/p6p/4P2P/5pP1/P2p4/R3K3 w Q -  0 1",
+      "depth": 4,
+      "expected": 82712,
+      "got": "682657070",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 134, time: 3.186e-06 seconds, nps: 42059008\n\nPerft(03): 3486, time: 1.4667e-05 seconds, nps: 237676416\n\nPerft(04): 82708, time: 0.000121156 seconds, nps: 682657070\n\nperft-done"
+    },
+    {
+      "fen": "8/1p6/p7/P3pk1p/1R3p2/7P/6P1/2r2K2 w - -  0 1",
+      "depth": 4,
+      "expected": 14568,
+      "got": "535691956",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 46, time: 7.02e-07 seconds, nps: 65527065\n\nPerft(03): 739, time: 8.697e-06 seconds, nps: 84971829\n\nPerft(04): 14566, time: 2.7191e-05 seconds, nps: 535691956\n\nperft-done"
+    },
+    {
+      "fen": "4b3/8/1p1pNk2/3P2p1/1PP2p1p/4K2P/6P1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 25455,
+      "got": "534093055",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 116, time: 8.526e-06 seconds, nps: 13605442\n\nPerft(03): 1851, time: 1.0039e-05 seconds, nps: 184380914\n\nPerft(04): 25449, time: 4.7649e-05 seconds, nps: 534093055\n\nperft-done"
+    },
+    {
+      "fen": "r7/PRk5/K1Pp2p1/6Pp/2p4P/4P3/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 5741,
+      "got": "288915747",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 51, time: 6.071e-06 seconds, nps: 8400592\n\nPerft(03): 385, time: 6.863e-06 seconds, nps: 56097916\n\nPerft(04): 5737, time: 1.9857e-05 seconds, nps: 288915747\n\nperft-done"
+    },
+    {
+      "fen": "8/5p2/6k1/4P2r/3NKP1p/6R1/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 18836,
+      "got": "516905428",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 96, time: 6.182e-06 seconds, nps: 15528955\n\nPerft(03): 978, time: 1.4057e-05 seconds, nps: 69573877\n\nPerft(04): 18835, time: 3.6438e-05 seconds, nps: 516905428\n\nperft-done"
+    },
+    {
+      "fen": "8/6p1/4k3/5P1P/6K1/8/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 3589,
+      "got": "227336300",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 53, time: 4.077e-06 seconds, nps: 12999754\n\nPerft(03): 435, time: 6.011e-06 seconds, nps: 72367326\n\nPerft(04): 3576, time: 1.573e-05 seconds, nps: 227336300\n\nperft-done"
+    },
+    {
+      "fen": "8/3R4/8/2k5/p1p5/P2p4/1Pr5/2K5 w - -  0 1",
+      "depth": 4,
+      "expected": 5020,
+      "got": "357234589",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 26, time: 5.81e-07 seconds, nps: 44750430\n\nPerft(03): 367, time: 5.731e-06 seconds, nps: 64037689\n\nPerft(04): 5007, time: 1.4016e-05 seconds, nps: 357234589\n\nperft-done"
+    },
+    {
+      "fen": "1R3k2/4bp2/6p1/3BP1Pp/3K1P2/1p4P1/1Pr5/8 b - -  0 1",
+      "depth": 4,
+      "expected": 37796,
+      "got": "644052488",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 78, time: 7.71e-07 seconds, nps: 101167315\n\nPerft(03): 1623, time: 1.4376e-05 seconds, nps: 112896494\n\nPerft(04): 37793, time: 5.868e-05 seconds, nps: 644052488\n\nperft-done"
+    },
+    {
+      "fen": "8/8/8/1kp4R/1p1p4/1K2r3/P1P5/8 w - -  0 1",
+      "depth": 4,
+      "expected": 12856,
+      "got": "355541408",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 41, time: 7.61e-07 seconds, nps: 53876478\n\nPerft(03): 713, time: 8.596e-06 seconds, nps: 82945556\n\nPerft(04): 12845, time: 3.6128e-05 seconds, nps: 355541408\n\nperft-done"
+    },
+    {
+      "fen": "2R1k3/pp1r1p1p/4p2P/4P3/1r1PK1P1/8/1P3R2/8 b - -  0 1",
+      "depth": 4,
+      "expected": 24299,
+      "got": "597623966",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 58, time: 8.82e-07 seconds, nps: 65759637\n\nPerft(03): 1020, time: 1.1201e-05 seconds, nps: 91063297\n\nPerft(04): 24297, time: 4.0656e-05 seconds, nps: 597623966\n\nperft-done"
+    },
+    {
+      "fen": "8/3P1k2/p6Q/P7/N7/2p4B/2R1p3/4K3 w - - 0 1",
+      "depth": 4,
+      "expected": 16787,
+      "got": "132038055",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 114, time: 1.2474e-05 seconds, nps: 9139009\n\nPerft(03): 4232, time: 1.1572e-05 seconds, nps: 365710335\n\nPerft(04): 16779, time: 0.000127077 seconds, nps: 132038055\n\nperft-done"
+    },
+    {
+      "fen": "5q2/p2P4/P1n2Pk1/Bp1p2p1/3P3p/7P/6R1/4Q1KN b - - 0 1",
+      "depth": 4,
+      "expected": 1291688,
+      "got": "1537540669",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 1345, time: 7.564e-06 seconds, nps: 177815970\n\nPerft(03): 32516, time: 5.9862e-05 seconds, nps: 543182653\n\nPerft(04): 1291548, time: 0.000840009 seconds, nps: 1537540669\n\nperft-done"
+    },
+    {
+      "fen": "8/r5P1/1k3P2/8/6Kp/2B5/4Rq2/8 b - - 0 1",
+      "depth": 4,
+      "expected": 493584,
+      "got": "939667333",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 723, time: 6.001e-06 seconds, nps: 120479920\n\nPerft(03): 22110, time: 3.3062e-05 seconds, nps: 668743572\n\nPerft(04): 493580, time: 0.000525271 seconds, nps: 939667333\n\nperft-done"
+    },
+    {
+      "fen": "1N1k4/P1P3b1/4p1p1/3P2rp/R4B1P/8/2nKb2R/1r6 b - - 0 1",
+      "depth": 4,
+      "expected": 145113,
+      "got": "1715069044",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 101, time: 7.12e-07 seconds, nps: 141853932\n\nPerft(03): 4447, time: 9.507e-06 seconds, nps: 467760597\n\nPerft(04): 144817, time: 8.4438e-05 seconds, nps: 1715069044\n\nperft-done"
+    },
+    {
+      "fen": "8/3P3k/p7/P2Q4/N7/2p4B/2R1p3/4K3 w - - 0 1",
+      "depth": 4,
+      "expected": 36793,
+      "got": "295788356",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 187, time: 8.747e-06 seconds, nps: 21378758\n\nPerft(03): 7615, time: 1.2914e-05 seconds, nps: 589670125\n\nPerft(04): 36773, time: 0.000124322 seconds, nps: 295788356\n\nperft-done"
+    },
+    {
+      "fen": "8/6k1/8/2PP4/1K6/6p1/4p2R/4r3 w - - 0 1",
+      "depth": 4,
+      "expected": 73129,
+      "got": "732851587",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 253, time: 1.4126e-05 seconds, nps: 17910236\n\nPerft(03): 4342, time: 1.3435e-05 seconds, nps: 323185708\n\nPerft(04): 73121, time: 9.9776e-05 seconds, nps: 732851587\n\nperft-done"
+    },
+    {
+      "fen": "1Nk5/P1P3b1/4p1p1/3P2rp/R4B1P/3b4/2nK1R2/5r2 b - - 0 1",
+      "depth": 4,
+      "expected": 1231918,
+      "got": "1106474752",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 1116, time: 4.419e-06 seconds, nps: 252545824\n\nPerft(03): 41810, time: 4.7489e-05 seconds, nps: 880414411\n\nPerft(04): 1231814, time: 0.00111328 seconds, nps: 1106474752\n\nperft-done"
+    },
+    {
+      "fen": "2k5/2P1P1b1/8/1p1pP3/1p3r2/8/4K3/5n1q b - - 0 1",
+      "depth": 4,
+      "expected": 57305,
+      "got": "271159718",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 259, time: 1.1762e-05 seconds, nps: 22020064\n\nPerft(03): 7388, time: 1.595e-05 seconds, nps: 463197492\n\nPerft(04): 57273, time: 0.000211215 seconds, nps: 271159718\n\nperft-done"
+    },
+    {
+      "fen": "4kb1r/rb4pp/p1n2p2/2PppP1P/Q1pBP1R1/N4K2/P2P4/R4nN1 b k - 0 1",
+      "depth": 4,
+      "expected": 643467,
+      "got": "1172893874",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 736, time: 1.3395e-05 seconds, nps: 54945875\n\nPerft(03): 18333, time: 6.953e-05 seconds, nps: 263670358\n\nPerft(04): 643466, time: 0.000548614 seconds, nps: 1172893874\n\nperft-done"
+    },
+    {
+      "fen": "6n1/8/B4n2/Pp1p1P1p/1k6/1P2pRbP/2p1R3/2K3N1 w - - 0 1",
+      "depth": 4,
+      "expected": 161101,
+      "got": "987240692",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 390, time: 4.068e-06 seconds, nps: 95870206\n\nPerft(03): 7663, time: 1.5229e-05 seconds, nps: 503184713\n\nPerft(04): 161093, time: 0.000163175 seconds, nps: 987240692\n\nperft-done"
+    },
+    {
+      "fen": "3N3k/B4P2/2r4P/1bn5/3K2p1/6P1/8/4R3 b - - 0 1",
+      "depth": 4,
+      "expected": 347098,
+      "got": "1558390129",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 609, time: 1.078e-05 seconds, nps: 56493506\n\nPerft(03): 14112, time: 1.4036e-05 seconds, nps: 1005414648\n\nPerft(04): 347094, time: 0.000222726 seconds, nps: 1558390129\n\nperft-done"
+    },
+    {
+      "fen": "r7/2b3r1/1N2P3/2p2R2/P3b2P/3kp3/1p1P4/3K4 w - - 0 1",
+      "depth": 4,
+      "expected": 716501,
+      "got": "1545356900",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nPerft(02): 941, time: 1.9165e-05 seconds, nps: 49099921\n\nPerft(03): 17464, time: 7.2376e-05 seconds, nps: 241295457\n\nPerft(04): 716497, time: 0.000463645 seconds, nps: 1545356900\n\nperft-done"
+    }
+  ]
+}

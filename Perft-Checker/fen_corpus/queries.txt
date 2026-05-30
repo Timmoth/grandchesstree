@@ -1,0 +1,70 @@
+# Seed queries for 01_search.py. One per line. Blank lines and `#` comments
+# are ignored. Re-running the script is cheap and dedupes by URL — just keep
+# adding queries.
+#
+# Goal: maximise FEN yield from any chess context useful for engine debugging
+# — perft suites, tactic sets, opening positions, endgame positions, bug
+# reports, test EPDs.
+
+# Perft / movegen
+perft test positions
+perft test fen
+perft epd
+chess perft suite
+chess perft results
+chess perft test cases
+roce perft
+marcel perft
+chess960 perft
+fischer random perft
+move generation test fen
+movegen bug fen
+
+# Bug reports / edge cases
+problematic chess fen
+chess engine bug position
+en passant fen test
+castling fen test
+promotion check fen
+discovered check fen
+pinned piece fen
+
+# Test suites
+chess test suite epd
+chess tactic suite epd
+chess engine test positions
+bratko-kopec test positions
+WAC test positions
+strategic test suite ECM
+silent but deadly STS
+
+# Engines / repos
+stockfish test fen
+ethereal perft epd
+github epd file chess
+github perft.epd
+chess engine perft.txt
+
+# Endgames / openings
+endgame fen positions
+chess opening fen
+KQK endgame fen
+KPK endgame fen
+
+# Forums / wikis
+talkchess perft
+talkchess viewtopic perft
+chessprogramming wiki perft results
+chess stack exchange perft
+reddit chessprogramming fen
+reddit computer chess perft
+
+# Tactics / puzzles (huge volume of FENs)
+chess puzzle fen
+chess tactic fen
+lichess puzzle fen export
+chess problem fen
+
+# Datasets
+chess position dataset fen
+chess fen csv

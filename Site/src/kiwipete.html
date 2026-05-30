@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kiwipete &mdash; Perft Results &middot; The Grand Chess Tree</title>
+    <meta name="description" content="Perft results for the Kiwipete chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/kiwipete.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="perft, chess, performance test, distributed computing, chess engine, move generation, Grand Chess Tree, Tim Jones, Timmoth" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+        <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/kiwipete.html" />
+    <meta property="og:title" content="Kiwipete &mdash; Perft Results" />
+    <meta property="og:description" content="Perft results for the Kiwipete chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kiwipete &mdash; Perft Results" />
+    <meta name="twitter:description" content="Perft results for the Kiwipete chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; scroll-behavior: smooth; }
+      .tabular { font-variant-numeric: tabular-nums; }
+    </style>
+
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Perft results for Kiwipete",
+  "description": "A popular perft position discovered by Peter McKenzie known to have a large branching factor.",
+  "url": "https://grandchesstree.com/kiwipete.html",
+  "creator": {
+    "@type": "Organization",
+    "name": "The Grand Chess Tree",
+    "url": "https://grandchesstree.com/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Tim Jones",
+    "alternateName": "Timmoth",
+    "url": "https://timmoth.com/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Tim Jones",
+    "url": "https://timmoth.com/"
+  },
+  "keywords": [
+    "chess",
+    "perft",
+    "kiwipete"
+  ],
+  "variableMeasured": [
+    "nodes",
+    "captures",
+    "enpassants",
+    "castles",
+    "promotions",
+    "checks",
+    "mates"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://github.com/Timmoth/grandchesstree",
+  "spatialCoverage": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -",
+  "temporalCoverage": "depths 0\u201310"
+}</script>
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://grandchesstree.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Positions",
+      "item": "https://grandchesstree.com/#positions"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Kiwipete",
+      "item": "https://grandchesstree.com/kiwipete.html"
+    }
+  ]
+}</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Tim Jones",
+      "alternateName": "Timmoth",
+      "url": "https://timmoth.com/",
+      "jobTitle": "Software engineer",
+      "sameAs": [
+        "https://timmoth.com/",
+        "https://github.com/Timmoth"
+      ],
+      "worksFor": {
+        "@type": "ResearchProject",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="distributed-perft.html" class="text-slate-900">Distributed Perft</a></li>
+          <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 md:py-20">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="distributed-perft.html#positions" class="hover:text-slate-900">Studied positions</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Kiwipete</li>
+            </ol>
+          </nav>
+
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">Kiwipete</h1>
+          <p class="mt-4 max-w-3xl text-base text-slate-600 md:text-lg">A popular perft position discovered by Peter McKenzie known to have a large branching factor.</p>
+
+          <div class="mt-8 grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white p-3 md:p-4">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 348 348" class="block h-auto w-full max-w-[22rem]" role="img" aria-label="Chess board diagram. White to move. Black rook on a8, Black king on e8, Black rook on h8, Black pawn on a7, Black pawn on c7, Black pawn on d7, Black queen on e7, Black pawn on f7, Black bishop on g7, Black bishop on a6, Black knight on b6, Black pawn on e6, Black knight on f6, Black pawn on g6, White pawn on d5, White knight on e5, Black pawn on b4, White pawn on e4, White knight on c3, White queen on f3, Black pawn on h3, White pawn on a2, White pawn on b2, White pawn on c2, White bishop on d2, White bishop on e2, White pawn on f2, White pawn on g2, White pawn on h2, White rook on a1, White king on e1, White rook on h1."><rect x="0" y="0" width="348" height="348" rx="6" fill="#1f2937"/><rect x="14" y="14" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_rook.png" xlink:href="assets/img/pieces/black_rook.png" x="15.200000000000003" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="14" width="40" height="40" fill="#b58863"/><rect x="94" y="14" width="40" height="40" fill="#f0d9b5"/><rect x="134" y="14" width="40" height="40" fill="#b58863"/><rect x="174" y="14" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_king.png" xlink:href="assets/img/pieces/black_king.png" x="175.2" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="14" width="40" height="40" fill="#b58863"/><rect x="254" y="14" width="40" height="40" fill="#f0d9b5"/><rect x="294" y="14" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_rook.png" xlink:href="assets/img/pieces/black_rook.png" x="295.2" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="14" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="15.200000000000003" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="54" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="95.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="54" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="135.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="174" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_queen.png" xlink:href="assets/img/pieces/black_queen.png" x="175.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="54" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="215.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_bishop.png" xlink:href="assets/img/pieces/black_bishop.png" x="255.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="54" width="40" height="40" fill="#f0d9b5"/><rect x="14" y="94" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_bishop.png" xlink:href="assets/img/pieces/black_bishop.png" x="15.200000000000003" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="94" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_knight.png" xlink:href="assets/img/pieces/black_knight.png" x="55.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="94" y="94" width="40" height="40" fill="#f0d9b5"/><rect x="134" y="94" width="40" height="40" fill="#b58863"/><rect x="174" y="94" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="175.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="94" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_knight.png" xlink:href="assets/img/pieces/black_knight.png" x="215.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="94" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="255.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="94" width="40" height="40" fill="#b58863"/><rect x="14" y="134" width="40" height="40" fill="#b58863"/><rect x="54" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="134" width="40" height="40" fill="#b58863"/><rect x="134" y="134" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="135.2" y="135.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="174" y="134" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_knight.png" xlink:href="assets/img/pieces/white_knight.png" x="175.2" y="135.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="254" y="134" width="40" height="40" fill="#b58863"/><rect x="294" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="14" y="174" width="40" height="40" fill="#f0d9b5"/><rect x="54" y="174" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="55.2" y="175.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="94" y="174" width="40" height="40" fill="#f0d9b5"/><rect x="134" y="174" width="40" height="40" fill="#b58863"/><rect x="174" y="174" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="175.2" y="175.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="174" width="40" height="40" fill="#b58863"/><rect x="254" y="174" width="40" height="40" fill="#f0d9b5"/><rect x="294" y="174" width="40" height="40" fill="#b58863"/><rect x="14" y="214" width="40" height="40" fill="#b58863"/><rect x="54" y="214" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="214" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_knight.png" xlink:href="assets/img/pieces/white_knight.png" x="95.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="214" width="40" height="40" fill="#f0d9b5"/><rect x="174" y="214" width="40" height="40" fill="#b58863"/><rect x="214" y="214" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_queen.png" xlink:href="assets/img/pieces/white_queen.png" x="215.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="214" width="40" height="40" fill="#b58863"/><rect x="294" y="214" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="295.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="14" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="15.200000000000003" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="55.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="94" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="95.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_bishop.png" xlink:href="assets/img/pieces/white_bishop.png" x="135.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="174" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_bishop.png" xlink:href="assets/img/pieces/white_bishop.png" x="175.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="215.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="255.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="295.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="14" y="294" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_rook.png" xlink:href="assets/img/pieces/white_rook.png" x="15.200000000000003" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="294" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="294" width="40" height="40" fill="#b58863"/><rect x="134" y="294" width="40" height="40" fill="#f0d9b5"/><rect x="174" y="294" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_king.png" xlink:href="assets/img/pieces/white_king.png" x="175.2" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="294" width="40" height="40" fill="#f0d9b5"/><rect x="254" y="294" width="40" height="40" fill="#b58863"/><rect x="294" y="294" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_rook.png" xlink:href="assets/img/pieces/white_rook.png" x="295.2" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><text x="34" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">a</text><text x="74" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">b</text><text x="114" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">c</text><text x="154" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">d</text><text x="194" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">e</text><text x="234" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">f</text><text x="274" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">g</text><text x="314" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">h</text><text x="7" y="34" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">8</text><text x="7" y="74" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">7</text><text x="7" y="114" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">6</text><text x="7" y="154" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">5</text><text x="7" y="194" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">4</text><text x="7" y="234" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">3</text><text x="7" y="274" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">2</text><text x="7" y="314" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">1</text></svg>
+            </div>
+            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+              <div class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <span>FEN</span>
+              </div>
+              <code class="block overflow-x-auto px-4 py-3 font-mono text-xs text-slate-700 md:text-sm">r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -</code>
+            </div>
+          </div>
+
+          <dl class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Depth range</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">0–10</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Total nodes</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">30.1q</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Wall-clock compute</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">5d 16h</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Contributors</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">8</dd>
+            </div>
+          </dl>
+
+          <nav aria-label="Sections" class="mt-10 flex flex-wrap gap-2">
+            <a href="#results" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Move breakdown</a>
+            <a href="#work" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Computation work</a>
+            <a href="#unique" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Distinct positions</a>
+          </nav>
+        </div>
+      </section>
+
+      <section id="results" class="scroll-mt-20 border-b border-slate-200 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Move breakdown by depth</h2>
+          <p class="mt-4 max-w-2xl text-slate-600">Counts of each move type &mdash; captures, en passants, castles, promotions, checks, and mates &mdash; for every completed depth.</p>
+
+          <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600"><tr><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Depth</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Nodes</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Captures</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">En passants</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Castles</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Promotions</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Single disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Double disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Total checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Single disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Double disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Total mates</th></tr></thead>
+                <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">0</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">1</span></td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">1</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">48</span></td><td class="whitespace-nowrap px-4 py-3 tabular">8</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">2</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">2</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">2,039</span></td><td class="whitespace-nowrap px-4 py-3 tabular">351</td><td class="whitespace-nowrap px-4 py-3 tabular">1</td><td class="whitespace-nowrap px-4 py-3 tabular">91</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">3</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">3</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">3</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">97,862</span></td><td class="whitespace-nowrap px-4 py-3 tabular">17,102</td><td class="whitespace-nowrap px-4 py-3 tabular">45</td><td class="whitespace-nowrap px-4 py-3 tabular">3,162</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">992</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">992</td><td class="whitespace-nowrap px-4 py-3 tabular">1</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">4</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">4,085,603</span></td><td class="whitespace-nowrap px-4 py-3 tabular">757,163</td><td class="whitespace-nowrap px-4 py-3 tabular">1,929</td><td class="whitespace-nowrap px-4 py-3 tabular">128,013</td><td class="whitespace-nowrap px-4 py-3 tabular">15,172</td><td class="whitespace-nowrap px-4 py-3 tabular">25,432</td><td class="whitespace-nowrap px-4 py-3 tabular">42</td><td class="whitespace-nowrap px-4 py-3 tabular">6</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">25,480</td><td class="whitespace-nowrap px-4 py-3 tabular">43</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">43</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">5</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">193,690,690</span></td><td class="whitespace-nowrap px-4 py-3 tabular">35,043,416</td><td class="whitespace-nowrap px-4 py-3 tabular">73,365</td><td class="whitespace-nowrap px-4 py-3 tabular">4,993,637</td><td class="whitespace-nowrap px-4 py-3 tabular">8,392</td><td class="whitespace-nowrap px-4 py-3 tabular">3,257,196</td><td class="whitespace-nowrap px-4 py-3 tabular">19,883</td><td class="whitespace-nowrap px-4 py-3 tabular">2,637</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">3,279,716</td><td class="whitespace-nowrap px-4 py-3 tabular">30,163</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">8</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">30,171</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">6</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">8,031,647,685</span></td><td class="whitespace-nowrap px-4 py-3 tabular">1,558,445,089</td><td class="whitespace-nowrap px-4 py-3 tabular">3,577,504</td><td class="whitespace-nowrap px-4 py-3 tabular">184,513,607</td><td class="whitespace-nowrap px-4 py-3 tabular">56,627,920</td><td class="whitespace-nowrap px-4 py-3 tabular">91,254,682</td><td class="whitespace-nowrap px-4 py-3 tabular">568,417</td><td class="whitespace-nowrap px-4 py-3 tabular">54,948</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">91,878,047</td><td class="whitespace-nowrap px-4 py-3 tabular">359,937</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">66</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">360,003</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">7</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">374,190,009,323</span></td><td class="whitespace-nowrap px-4 py-3 tabular">69,479,646,226</td><td class="whitespace-nowrap px-4 py-3 tabular">117,075,132</td><td class="whitespace-nowrap px-4 py-3 tabular">7,831,249,352</td><td class="whitespace-nowrap px-4 py-3 tabular">49,612,944</td><td class="whitespace-nowrap px-4 py-3 tabular">8,192,443,596</td><td class="whitespace-nowrap px-4 py-3 tabular">101,344,336</td><td class="whitespace-nowrap px-4 py-3 tabular">12,671,364</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">8,306,459,296</td><td class="whitespace-nowrap px-4 py-3 tabular">111,582,045</td><td class="whitespace-nowrap px-4 py-3 tabular">3,560</td><td class="whitespace-nowrap px-4 py-3 tabular">79,130</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">111,664,735</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">8</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">15,493,944,087,984</span></td><td class="whitespace-nowrap px-4 py-3 tabular">3,093,158,581,098</td><td class="whitespace-nowrap px-4 py-3 tabular">6,455,134,672</td><td class="whitespace-nowrap px-4 py-3 tabular">269,372,817,251</td><td class="whitespace-nowrap px-4 py-3 tabular">154,095,409,292</td><td class="whitespace-nowrap px-4 py-3 tabular">256,442,503,361</td><td class="whitespace-nowrap px-4 py-3 tabular">3,185,990,802</td><td class="whitespace-nowrap px-4 py-3 tabular">270,025,831</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">259,898,519,994</td><td class="whitespace-nowrap px-4 py-3 tabular">1,612,539,510</td><td class="whitespace-nowrap px-4 py-3 tabular">834,183</td><td class="whitespace-nowrap px-4 py-3 tabular">1,743,937</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1,615,117,630</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">9</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">708,027,759,953,502</span></td><td class="whitespace-nowrap px-4 py-3 tabular">134,002,020,234,634</td><td class="whitespace-nowrap px-4 py-3 tabular">184,698,440,605</td><td class="whitespace-nowrap px-4 py-3 tabular">12,153,817,624,221</td><td class="whitespace-nowrap px-4 py-3 tabular">188,843,973,180</td><td class="whitespace-nowrap px-4 py-3 tabular">18,505,619,740,420</td><td class="whitespace-nowrap px-4 py-3 tabular">332,628,385,969</td><td class="whitespace-nowrap px-4 py-3 tabular">41,551,994,610</td><td class="whitespace-nowrap px-4 py-3 tabular">3,876</td><td class="whitespace-nowrap px-4 py-3 tabular">18,879,800,124,875</td><td class="whitespace-nowrap px-4 py-3 tabular">285,353,900,638</td><td class="whitespace-nowrap px-4 py-3 tabular">47,192,855</td><td class="whitespace-nowrap px-4 py-3 tabular">401,573,251</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">285,802,666,744</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">10</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">29,344,805,396,643,919</span></td><td class="whitespace-nowrap px-4 py-3 tabular">5,959,928,383,894,810</td><td class="whitespace-nowrap px-4 py-3 tabular">11,394,307,136,496</td><td class="whitespace-nowrap px-4 py-3 tabular">395,107,667,957,400</td><td class="whitespace-nowrap px-4 py-3 tabular">364,355,113,900,536</td><td class="whitespace-nowrap px-4 py-3 tabular">631,678,887,233,200</td><td class="whitespace-nowrap px-4 py-3 tabular">11,676,589,649,334</td><td class="whitespace-nowrap px-4 py-3 tabular">958,611,880,677</td><td class="whitespace-nowrap px-4 py-3 tabular">774</td><td class="whitespace-nowrap px-4 py-3 tabular">644,314,088,763,985</td><td class="whitespace-nowrap px-4 py-3 tabular">5,370,315,185,664</td><td class="whitespace-nowrap px-4 py-3 tabular">6,588,607,239</td><td class="whitespace-nowrap px-4 py-3 tabular">13,006,529,799</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">5,389,910,322,702</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="work" class="scroll-mt-20 border-b border-slate-200 bg-slate-50 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Computation work by depth</h2>
+          <p class="mt-4 max-w-2xl text-slate-600">Per-depth wall-clock duration, task count, and the contributors whose workers performed the search.</p>
+
+          <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600"><tr><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Depth</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Nodes</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Duration</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Tasks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Contributors</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Started</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Finished</th></tr></thead>
+                <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">0</span></td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">1</span></td><td class="px-4 py-3 align-top tabular">48</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">2</span></td><td class="px-4 py-3 align-top tabular">2.0k</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:45</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">3</span></td><td class="px-4 py-3 align-top tabular">97.9k</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">4</span></td><td class="px-4 py-3 align-top tabular">4.1m</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">5</span></td><td class="px-4 py-3 align-top tabular">193.7m</td><td class="px-4 py-3 align-top tabular">0m 1s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:46</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">6</span></td><td class="px-4 py-3 align-top tabular">8.0b</td><td class="px-4 py-3 align-top tabular">0m 41s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:43</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 08:44</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">7</span></td><td class="px-4 py-3 align-top tabular">374.2b</td><td class="px-4 py-3 align-top tabular">2m 1s</td><td class="px-4 py-3 align-top tabular">2,038</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-indigo-500">2.0k</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-12 23:04</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-12 23:06</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">8</span></td><td class="px-4 py-3 align-top tabular">15.5t</td><td class="px-4 py-3 align-top tabular">42m 48s</td><td class="px-4 py-3 align-top tabular">59,198</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-violet-600">59.2k</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-12 23:13</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-12 23:56</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">9</span></td><td class="px-4 py-3 align-top tabular">708.0t</td><td class="px-4 py-3 align-top tabular">23h 18m</td><td class="px-4 py-3 align-top tabular">59,198</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-violet-600">52.3k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Chester-alt</span><span class="text-indigo-600">6.9k</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-12 23:56</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-13 23:14</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">10</span></td><td class="px-4 py-3 align-top tabular">29.3q</td><td class="px-4 py-3 align-top tabular">4d 16h</td><td class="px-4 py-3 align-top tabular">1,374,152</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-amber-600">817.5k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">xyzzy</span><span class="text-amber-500">303.7k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">prljav</span><span class="text-violet-700">160.5k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">HansTibberio</span><span class="text-violet-600">51.8k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">McTwist</span><span class="text-violet-500">35.9k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">OWR</span><span class="text-indigo-500">3.0k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">madbot</span><span class="text-sky-700">1.2k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Chester-alt</span><span class="text-sky-600">388</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-26 22:53</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-03-03 15:27</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="unique" class="py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Distinct positions by depth</h2>
+            <p class="mt-4 max-w-2xl text-slate-600">Counts of unique board states reachable at each depth, ignoring transpositions.</p>
+
+            <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                <tr>
+                  <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-700">Depth</th>
+                  <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-700">Distinct positions</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">0</span></td><td class="px-4 py-3 tabular">1</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">1</span></td><td class="px-4 py-3 tabular">48</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">2</span></td><td class="px-4 py-3 tabular">2,038</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">3</span></td><td class="px-4 py-3 tabular">57,548</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">4</span></td><td class="px-4 py-3 tabular">1,374,152</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">5</span></td><td class="px-4 py-3 tabular">27,404,650</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">6</span></td><td class="px-4 py-3 tabular">472,499,859</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">7</span></td><td class="px-4 py-3 tabular">7,476,732,715</td></tr></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-slate-200 bg-slate-50 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Other studied positions</h2>
+            <p class="mt-3 text-slate-600">Continue browsing the catalogue.</p>
+          </div>
+          <div class="mt-8 grid gap-4 md:grid-cols-2">
+            <article class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 class="text-base font-semibold tracking-tight text-slate-900">Startpos</h3>
+              <a href="startpos.html" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">
+                View results
+                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
+              </a>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 class="text-base font-semibold tracking-tight text-slate-900">SJE's Symmetric Alternative</h3>
+              <a href="sje.html" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">
+                View results
+                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+  </body>
+</html>

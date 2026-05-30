@@ -1,0 +1,244 @@
+{
+  "name": "prune",
+  "owner": "tgirolami09",
+  "repo": "https://github.com/tgirolami09/Prune",
+  "language": "C++",
+  "versions": {
+    "dev": {
+      "ran_at": "2026-05-25T07:31:41Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66585444352,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.0038,
+                  "nps": 5263,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.9,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 0.000315,
+                  "nps": 1270817,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 0.000268,
+                  "nps": 33169262,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.001002,
+                  "nps": 196922601,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.017934,
+                  "nps": 271304691,
+                  "av_cpu_pct": 111.5,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 0.428751,
+                  "nps": 277691000,
+                  "av_cpu_pct": 98.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 7,
+                  "nodes": 3195901860,
+                  "elapsed_sec": 10.978407,
+                  "nps": 291107981,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                }
+              ],
+              "note": "skipped d8 (estimated 292.0s > 78.6s remaining at 1.5x budget cap)",
+              "best_depth": 7,
+              "best_nodes": 3195901860,
+              "best_elapsed_sec": 10.978407,
+              "best_nps": 291107981,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 9.5,
+              "best_peak_rss_mb": 9.5
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.004065,
+                  "nps": 11808,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 3.8,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 0.00042,
+                  "nps": 4851365,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.000599,
+                  "nps": 163299837,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.011725,
+                  "nps": 348447674,
+                  "av_cpu_pct": 85.3,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 0.469065,
+                  "nps": 412929535,
+                  "av_cpu_pct": 100.2,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 6,
+                  "nodes": 8031647685,
+                  "elapsed_sec": 21.602457,
+                  "nps": 371793255,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                }
+              ],
+              "note": "skipped d7 (estimated 1006.4s > 67.9s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 8031647685,
+              "best_elapsed_sec": 21.602457,
+              "best_nps": 371793255,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 9.5,
+              "best_peak_rss_mb": 9.5
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.004245,
+                  "nps": 10836,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.3,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 0.000416,
+                  "nps": 4999807,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.000628,
+                  "nps": 143221096,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.010149,
+                  "nps": 383737717,
+                  "av_cpu_pct": 98.5,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 0.415298,
+                  "nps": 395079449,
+                  "av_cpu_pct": 98.7,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                },
+                {
+                  "depth": 6,
+                  "nodes": 6923051137,
+                  "elapsed_sec": 17.554845,
+                  "nps": 394366973,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 9.5,
+                  "peak_rss_mb": 9.5
+                }
+              ],
+              "note": "skipped d7 (estimated 728.2s > 72.0s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 6923051137,
+              "best_elapsed_sec": 17.554845,
+              "best_nps": 394366973,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 9.5,
+              "best_peak_rss_mb": 9.5
+            }
+          ],
+          "mean_nps": 352422736
+        }
+      }
+    }
+  }
+}

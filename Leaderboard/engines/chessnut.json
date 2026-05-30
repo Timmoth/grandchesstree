@@ -1,0 +1,19 @@
+{
+  "name": "chessnut",
+  "version": "1.0",
+  "owner": "FireFather",
+  "repo": "https://github.com/FireFather/chessnut",
+  "language": "C++",
+  "_note": "Chessnut is a UCI engine by FireFather. Perft is invoked via the top-level command `perft <depth>` (NOT `go perft`). Output is `<n> <move> <count>` divide lines followed by `nodes <total>` and `time <ms> ms`. Only Hash is exposed via setoption — the engine is single-threaded for perft, so only single-no-cache is defined.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/chessnut/chessnut",
+      "setup": [
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\nperft {depth}",
+      "end_re": "^nodes \\d+$",
+      "quit":   "quit"
+    }
+  }
+}

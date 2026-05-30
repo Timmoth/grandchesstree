@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Encoding a Move &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="We&#39;ve got a `Position` we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a `Position`, we can both apply it and undo it without ambiguity." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/03-move-encoding.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/03-move-encoding.html" />
+    <meta property="og:title" content="Encoding a Move — Let&#39;s build a move generator" />
+    <meta property="og:description" content="We&#39;ve got a `Position` we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a `Position`, we can both apply it and undo it without ambiguity." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Encoding a Move — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="We&#39;ve got a `Position` we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a `Position`, we can both apply it and undo it without ambiguity." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Encoding a Move",
+      "description": "We&#39;ve got a `Position` we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a `Position`, we can both apply it and undo it without ambiguity.",
+      "url": "https://grandchesstree.com/move-generator/03-move-encoding.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 3</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 3 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Encoding a Move</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">We&#39;ve got a `Position` we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a `Position`, we can both apply it and undo it without ambiguity.</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">We&#39;ve got a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code> we can load from FEN and print back. Next we need a representation for the moves we&#39;ll generate from it. A move needs to carry enough information that, given a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code>, we can both apply it and undo it without ambiguity.</p>
+<p class="mt-4 leading-relaxed text-slate-700">Today we&#39;ll build a 16-bit <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> struct and the UCI string helpers that go with it. Short article, mostly mechanical — but every line of code in Parts 4–7 will use this type.</p>
+<h2 id="what-a-move-needs-to-carry" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-a-move-needs-to-carry" class="no-underline">What a move needs to carry</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Chess has more than one kind of move:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5">A <strong>quiet</strong> move: piece moves to an empty square.</li><li class="mt-1.5">A <strong>capture</strong>: piece moves to a square holding an enemy piece.</li><li class="mt-1.5">A <strong>double pawn push</strong>: pawn from rank 2 (or 7) advances two squares. We need to flag it because it sets up the en-passant target.</li><li class="mt-1.5"><strong>Castling</strong>: kingside and queenside, two variants. The rook moves too — but the move itself only records the king&#39;s from/to.</li><li class="mt-1.5">An <strong>en-passant capture</strong>: looks like a pawn capture, but the captured pawn is <em>not</em> on the destination square — it&#39;s one rank behind.</li><li class="mt-1.5">A <strong>promotion</strong>: pawn reaches the back rank and becomes one of four pieces.</li><li class="mt-1.5">A <strong>promotion capture</strong>: a promotion <em>and</em> a capture in one move.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">To distinguish all of those, plus carry from and to squares, we need:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5">6 bits for the <strong>from</strong> square (0..63).</li><li class="mt-1.5">6 bits for the <strong>to</strong> square (0..63).</li><li class="mt-1.5">4 bits for a <strong>flag</strong> that tells make/unmake what kind of move this is.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">Total: 16 bits. Comfortably fits in a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">ushort</code>.</p>
+<h2 id="the-flag-table" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-flag-table" class="no-underline">The flag table</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The convention we&#39;ll use — borrowed straight from the chess-programming wiki — lets us pack the seven kinds of move (and the four promotion piece choices) into one nibble with structure we can exploit:</p>
+<div class="mt-4 overflow-x-auto"><table class="w-full border-collapse"><thead><tr><th class="border-b border-slate-300 px-3 py-2 text-right text-sm font-semibold text-slate-700">Code</th><th class="border-b border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700">Promo</th><th class="border-b border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700">Cap</th><th class="border-b border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700">S1</th><th class="border-b border-slate-300 px-3 py-2 text-center text-sm font-semibold text-slate-700">S0</th><th class="border-b border-slate-300 px-3 py-2 text-left text-sm font-semibold text-slate-700">Meaning</th></tr></thead><tbody><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Quiet</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Double pawn push</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">2</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Kingside castle</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">3</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Queenside castle</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">4</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Capture</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">5</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">En-passant capture</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">8</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promotion to knight</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">9</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promotion to bishop</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">10</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promotion to rook</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">11</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promotion to queen</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">12</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promo-capture to knight</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">13</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promo-capture to bishop</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">14</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promo-capture to rook</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">15</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-center align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promo-capture to queen</td></tr></tbody></table></div>
+<p class="mt-4 leading-relaxed text-slate-700">The structure: <strong>bit 3 = &quot;is promotion&quot;</strong>, <strong>bit 2 = &quot;is capture&quot;</strong>, <strong>bits 1-0 = sub-type / promotion piece</strong>. So once we have a flag, the predicates <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsCapture</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsPromotion</code>, and &quot;which piece did we promote to?&quot; are all one masked compare.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The promotion sub-codes follow the chess-conventional ordering — <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">00 = N, 01 = B, 10 = R, 11 = Q</code>. We&#39;ll lean on that in Part 4&#39;s move-emit loop: a single <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">for</code> over <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">i = 0..3</code> walks all four promotion variants by adding <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">i</code> to a base flag. Knight first because it&#39;s the lowest value; queen last because it&#39;s by far the most common choice and we&#39;ll want to score it highest in move ordering later.</p>
+<h2 id="the-move-struct" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-move-struct" class="no-underline">The <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> struct</a></h2>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System;
+
+public enum MoveFlag : byte
+{
+    Quiet                = 0,
+    DoublePawnPush       = 1,
+    KingsideCastle       = 2,
+    QueensideCastle      = 3,
+    Capture              = 4,
+    EnPassant            = 5,
+    PromoteKnight        = 8,
+    PromoteBishop        = 9,
+    PromoteRook          = 10,
+    PromoteQueen         = 11,
+    PromoCaptureKnight   = 12,
+    PromoCaptureBishop   = 13,
+    PromoCaptureRook     = 14,
+    PromoCaptureQueen    = 15,
+}
+
+public readonly struct Move : IEquatable&lt;Move&gt;
+{
+    private readonly ushort _value;
+
+    public Move(int from, int to, MoveFlag flag)
+    {
+        _value = (ushort)(((int)flag &lt;&lt; 12) | ((from &amp; 0x3F) &lt;&lt; 6) | (to &amp; 0x3F));
+    }
+
+    public int      To    =&gt;             _value         &amp; 0x3F;
+    public int      From  =&gt;            (_value &gt;&gt;  6)  &amp; 0x3F;
+    public MoveFlag Flag  =&gt; (MoveFlag)((_value &gt;&gt; 12)  &amp; 0x0F);
+
+    public bool IsCapture   =&gt; ((int)Flag &amp; 0b0100) != 0;
+    public bool IsPromotion =&gt; ((int)Flag &amp; 0b1000) != 0;
+    public bool IsEnPassant =&gt; Flag == MoveFlag.EnPassant;
+    public bool IsCastle    =&gt; Flag == MoveFlag.KingsideCastle
+                            || Flag == MoveFlag.QueensideCastle;
+
+    /// 0=Knight, 1=Bishop, 2=Rook, 3=Queen. Only valid when IsPromotion.
+    public int PromotionPieceIndex =&gt; (int)Flag &amp; 0b0011;
+
+    public bool Equals(Move other) =&gt; _value == other._value;
+    public override bool Equals(object? o) =&gt; o is Move m &amp;&amp; Equals(m);
+    public override int GetHashCode() =&gt; _value;
+    public static bool operator ==(Move a, Move b) =&gt; a._value == b._value;
+    public static bool operator !=(Move a, Move b) =&gt; a._value != b._value;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsCapture</code> works for both straight captures <em>and</em> promo-captures <em>and</em> en-passant — they all set bit 2. <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsPromotion</code> works for both promotions and promo-captures — both set bit 3. This is the payoff for the carefully-chosen flag numbering.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&amp; 0x3F</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&amp; 0x0F</code> masks aren&#39;t strictly necessary inside the constructor (legal callers pass values that fit), but they guard against the occasional sign-extended <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">int</code> slipping through and corrupting an adjacent field.</p>
+<h2 id="uci-strings" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#uci-strings" class="no-underline">UCI strings</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">UCI is the format engines use to exchange moves over <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">stdin</code>/<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">stdout</code>: from-square + to-square + an optional promotion piece letter. <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e2e4</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e1g1</code> (white kingside castle), <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e7e8q</code> (queen promotion), <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e5d6</code> (an en-passant capture — note we don&#39;t write <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">ep</code> anywhere; the position context tells the engine which it is).</p>
+<p class="mt-4 leading-relaxed text-slate-700">Going from a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> to UCI is direct:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Text;
+
+public static class MoveIo
+{
+    public static string ToUci(this Move m)
+    {
+        var sb = new StringBuilder(5);
+        AppendSquare(sb, m.From);
+        AppendSquare(sb, m.To);
+        if (m.IsPromotion)
+            sb.Append(&quot;nbrq&quot;[m.PromotionPieceIndex]);
+        return sb.ToString();
+    }
+
+    static void AppendSquare(StringBuilder sb, int sq)
+    {
+        sb.Append((char)(&#39;a&#39; + (sq &amp; 7)));
+        sb.Append((char)(&#39;1&#39; + (sq &gt;&gt; 3)));
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The other direction — UCI → <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> — is trickier, because the UCI string alone doesn&#39;t say whether it&#39;s a capture, a castle, or an en-passant capture. To disambiguate we&#39;d need the current <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code>. We&#39;ll defer that until Part 4 lands a generator: at that point we can parse a UCI string by generating all moves and finding the one whose <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">ToUci()</code> matches. Simple and correct.</p>
+<h2 id="verifying-it-works" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#verifying-it-works" class="no-underline">Verifying it works</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Drop this into <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Program.cs</code>:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    static void Main()
+    {
+        int Sq(string s) =&gt; (s[1] - &#39;1&#39;) * 8 + (s[0] - &#39;a&#39;);
+
+        Move pawnPush = new(Sq(&quot;e2&quot;), Sq(&quot;e4&quot;), MoveFlag.DoublePawnPush);
+        Move castle   = new(Sq(&quot;e1&quot;), Sq(&quot;g1&quot;), MoveFlag.KingsideCastle);
+        Move promo    = new(Sq(&quot;e7&quot;), Sq(&quot;e8&quot;), MoveFlag.PromoteQueen);
+        Move ep       = new(Sq(&quot;e5&quot;), Sq(&quot;d6&quot;), MoveFlag.EnPassant);
+
+        foreach (var m in new[] { pawnPush, castle, promo, ep })
+        {
+            System.Console.WriteLine(
+                $&quot;{m.ToUci(),-5}  flag={m.Flag,-15} &quot;
+              + $&quot;capture={m.IsCapture} promo={m.IsPromotion} &quot;
+              + $&quot;castle={m.IsCastle} ep={m.IsEnPassant}&quot;);
+        }
+
+        // Round-trip sanity: pack and unpack
+        Move m2 = new(Sq(&quot;a1&quot;), Sq(&quot;h8&quot;), MoveFlag.Capture);
+        System.Diagnostics.Debug.Assert(m2.From == Sq(&quot;a1&quot;));
+        System.Diagnostics.Debug.Assert(m2.To   == Sq(&quot;h8&quot;));
+        System.Diagnostics.Debug.Assert(m2.IsCapture);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Output:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">e2e4   flag=DoublePawnPush   capture=False promo=False castle=False ep=False
+e1g1   flag=KingsideCastle   capture=False promo=False castle=True  ep=False
+e7e8q  flag=PromoteQueen     capture=False promo=True  castle=False ep=False
+e5d6   flag=EnPassant        capture=True  promo=False castle=False ep=True</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The flag predicates all agree with what we&#39;d expect. The promotion move correctly appends <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">q</code> to its UCI string. The en-passant move reports <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsCapture</code> even though no piece sits on <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">d6</code> — that&#39;s exactly the property we&#39;ll lean on in Part 5 when MakeMove handles the irregular capture target.</p>
+<h2 id="recap" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#recap" class="no-underline">Recap</a></h2>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5">A move is three pieces of information: from square, to square, kind.</li><li class="mt-1.5">We pack them into 16 bits: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">flag &lt;&lt; 12 | from &lt;&lt; 6 | to</code>.</li><li class="mt-1.5">The flag&#39;s bit pattern makes <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsCapture</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsPromotion</code> cheap masked compares.</li><li class="mt-1.5">UCI is from + to + optional promotion letter.</li></ul>
+<h2 id="what-s-next" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-s-next" class="no-underline">What&#39;s next</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Part 4 is the heart of the series: we&#39;ll build a <strong>pseudo-legal move generator</strong>. Given a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code>, it&#39;ll hand back every move that follows the rules of piece movement — pawns push, knights hop, sliders slide — without yet checking whether each move leaves the king in check. That&#39;s enough to make the perft skeleton from Part 1 actually do something — at depth 1 from the initial position we should count exactly 20 moves.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a href="02-board.html" class="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">← Previous</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 2: Representing the Board</p>
+          </a>
+          <a href="04-pseudo-legal-moves.html" class="group rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Next →</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 4: Generating Pseudo-Legal Moves</p>
+          </a>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Engine version'
-        default: '0.0.3'
+        description: 'Engine version (semver, no leading v)'
+        default: '0.1.16-r2r'
         required: false
+      draft:
+        description: 'Publish as a draft release (so you can review before it goes live)'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -18,45 +22,74 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup .NET Core
+      - name: Setup .NET 10 SDK
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
       - name: Get application version
         run: |
-          VERSION=${{ github.event.inputs.version }}
-          FORMATTED_VERSION=$(echo $VERSION | tr '.' '_')
+          VERSION="${{ github.event.inputs.version }}"
+          FORMATTED_VERSION=$(echo "$VERSION" | tr '.' '_')
           echo "Engine version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
           echo "formatted_version=$FORMATTED_VERSION" >> $GITHUB_ENV
 
       - name: Build and Package Engine
         run: |
-          FORMATTED_VERSION=${{ env.formatted_version }}
-          OUTPUT_DIR=${{ github.workspace }}/output
-          mkdir -p $OUTPUT_DIR
+          set -euo pipefail
+          FORMATTED_VERSION="${{ env.formatted_version }}"
+          OUTPUT_DIR="${{ github.workspace }}/output"
+          mkdir -p "$OUTPUT_DIR"
           APP=GrandChessTree.Engine
-          APP_PATH=Distributed-Perft/$APP
+          APP_PATH=Engine/$APP
           OUTPUT_NAME=tgct_engine
+
+          # Strip the CI runner's absolute paths from anything the compiler
+          # embeds. Maps the workspace root to "/src/" so debug metadata
+          # never carries `/home/runner/work/...` references.
+          PATHMAP="${{ github.workspace }}=/src/"
+
           for PLATFORM in win-x64 linux-x64 linux-arm64 osx-x64 osx-arm64; do
-            PLATFORM_OUTPUT_PATH=$OUTPUT_DIR/${PLATFORM}
-            mkdir -p $PLATFORM_OUTPUT_PATH
+            PLATFORM_OUTPUT_PATH="$OUTPUT_DIR/${PLATFORM}"
+            mkdir -p "$PLATFORM_OUTPUT_PATH"
+
+            EXTRA_DEFINES=""
             if [[ "$PLATFORM" == "linux-arm64" || "$PLATFORM" == "osx-arm64" ]]; then
-              dotnet publish $APP_PATH -r $PLATFORM /p:Release=true -p:DefineConstants="ARM" -o $PLATFORM_OUTPUT_PATH
-            else
-              dotnet publish $APP_PATH -r $PLATFORM /p:Release=true -o $PLATFORM_OUTPUT_PATH
+              # ARM builds swap PEXT for the magic-multiplication path in
+              # GrandChessTree.Shared/Precomputed/AttackTables.cs.
+              EXTRA_DEFINES='-p:DefineConstants=ARM'
             fi
 
+            dotnet publish "$APP_PATH" \
+              -r "$PLATFORM" \
+              /p:Release=true \
+              $EXTRA_DEFINES \
+              -p:DeterministicSourcePaths=true \
+              -p:PathMap="$PATHMAP" \
+              -o "$PLATFORM_OUTPUT_PATH"
+
             if [[ "$PLATFORM" == "win-x64" ]]; then
-              mv $PLATFORM_OUTPUT_PATH/${APP}.exe $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe
+              mv "$PLATFORM_OUTPUT_PATH/${APP}.exe" "$OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}.exe"
             else
-              mv $PLATFORM_OUTPUT_PATH/${APP} $OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}
+              mv "$PLATFORM_OUTPUT_PATH/${APP}" "$OUTPUT_DIR/${OUTPUT_NAME}_${FORMATTED_VERSION}_${PLATFORM}"
             fi
           done
 
+      - name: Smoke-test linux-x64 binary
+        # Quick sanity that the built binary runs and produces the canonical
+        # startpos d5 = 4,865,609. Catches BMI2-fallback regressions and
+        # totally-broken builds before the release goes live.
+        run: |
+          set -euo pipefail
+          BIN="${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_linux-x64"
+          chmod +x "$BIN"
+          OUT=$(printf "nodes:5:0:rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\nquit\n" | "$BIN" 2>&1)
+          echo "$OUT"
+          echo "$OUT" | grep -q "^nodes: 4865609$" || { echo "smoke FAILED: startpos d5 mismatch"; exit 1; }
+
       - name: Verify output files
-        run: ls -R ${{ github.workspace }}/output
+        run: ls -lh "${{ github.workspace }}/output"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
@@ -73,4 +106,4 @@ jobs:
             ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_linux-arm64
             ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_osx-x64
             ${{ github.workspace }}/output/tgct_engine_${{ env.formatted_version }}_osx-arm64
-          draft: true
+          draft: ${{ github.event.inputs.draft }}

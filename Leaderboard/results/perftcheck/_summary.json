@@ -1,0 +1,109 @@
+{
+  "generated_at": "2026-05-27T17:52:54Z",
+  "options": {
+    "depth_cap": 4,
+    "per_case_timeout_sec": 5.0,
+    "workers": 32,
+    "shards_per_engine": 4,
+    "epd_dir": "../Perft-Checker/data"
+  },
+  "total_duration_sec": 28.304,
+  "rows": [
+    {
+      "engine": "caps",
+      "version": "main",
+      "language": "Rust",
+      "mode_used": "single-no-cache",
+      "duration_sec": 15.447,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126858,
+        "failed": 0,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    },
+    {
+      "engine": "chessnut",
+      "version": "master",
+      "language": "C++",
+      "mode_used": "single-no-cache",
+      "duration_sec": 23.516,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126858,
+        "failed": 0,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    },
+    {
+      "engine": "clover",
+      "version": "9.1",
+      "language": "C++",
+      "mode_used": "single-no-cache",
+      "duration_sec": 18.844,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126858,
+        "failed": 0,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    },
+    {
+      "engine": "jet",
+      "version": "1.2",
+      "language": "C++",
+      "mode_used": "single-no-cache",
+      "duration_sec": 13.055,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126770,
+        "failed": 88,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    },
+    {
+      "engine": "maestro",
+      "version": "1.2",
+      "language": "C++",
+      "mode_used": "single-no-cache",
+      "duration_sec": 28.054,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126858,
+        "failed": 0,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    },
+    {
+      "engine": "xiphos",
+      "version": "master",
+      "language": "C",
+      "mode_used": "single-no-cache",
+      "duration_sec": 20.917,
+      "shards": 4,
+      "totals": {
+        "cases": 126858,
+        "passed": 126858,
+        "failed": 0,
+        "timeout": 0,
+        "error": 0,
+        "skipped_min_depth": 0
+      }
+    }
+  ]
+}

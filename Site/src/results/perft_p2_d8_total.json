@@ -1,0 +1,38 @@
+{
+  "position": 2,
+  "depth": 8,
+  "nodes": 11923589843526,
+  "captures": 1615552099219,
+  "enpassants": 29144239,
+  "castles": 0,
+  "promotions": 1972668,
+  "direct_checks": 191158825449,
+  "single_discovered_check": 2692451333,
+  "direct_discovered_check": 733157520,
+  "double_discovered_check": 0,
+  "total_checks": 194584434302,
+  "direct_mates": 144453426,
+  "single_discovered_mates": 104377,
+  "direct_discovered_mates": 1605074,
+  "double_discovered_mates": 0,
+  "total_mates": 146162877,
+  "total_tasks": 52831,
+  "started_at": 1739536803,
+  "finished_at": 1739537869,
+  "contributors": [
+    {
+      "id": 1,
+      "name": "Timmoth",
+      "nodes": 3559140744250,
+      "tasks": 27210,
+      "compute_time": 62799
+    },
+    {
+      "id": 7,
+      "name": "Chester-alt",
+      "nodes": 3358906184839,
+      "tasks": 25621,
+      "compute_time": 137473
+    }
+  ]
+}

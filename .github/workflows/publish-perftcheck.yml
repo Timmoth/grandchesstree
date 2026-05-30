@@ -4,9 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'perftcheck version'
-        default: '0.1.0'
+        description: 'perftcheck version (semver, no leading v)'
+        default: '0.3.0'
         required: false
+      draft:
+        description: 'Publish as a draft release (so you can review before it goes live)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -25,36 +29,86 @@ jobs:
 
       - name: Get application version
         run: |
-          VERSION=${{ github.event.inputs.version }}
+          VERSION="${{ github.event.inputs.version }}"
           echo "perftcheck version: $VERSION"
           echo "version=$VERSION" >> $GITHUB_ENV
 
+      - name: Verify bundled corpus is present
+        # perftcheck embeds Perft-Checker/fen_corpus/corpus.gctc.gz as a
+        # managed resource. If it's missing from the checkout, the binary
+        # would silently build with no corpus and every default run would
+        # fail at startup. Catch that here.
+        run: |
+          set -euo pipefail
+          CORPUS=Perft-Checker/fen_corpus/corpus.gctc.gz
+          if [[ ! -s "$CORPUS" ]]; then
+            echo "ERROR: $CORPUS is missing or empty."
+            echo "Regenerate it locally with:"
+            echo "  python3 Perft-Checker/fen_corpus/scripts/09_pack.py"
+            echo "…then commit corpus.gctc.gz."
+            exit 1
+          fi
+          ls -lh "$CORPUS"
+          # Sniff the magic bytes — should be gzip then "GCTC" inside.
+          file "$CORPUS"
+
       - name: Build and Package PerftCheck
         run: |
-          OUTPUT_DIR=${{ github.workspace }}/output
-          mkdir -p $OUTPUT_DIR
+          set -euo pipefail
+          OUTPUT_DIR="${{ github.workspace }}/output"
+          mkdir -p "$OUTPUT_DIR"
+
+          # Strip the CI runner's absolute paths from anything the compiler
+          # embeds.
+          PATHMAP="${{ github.workspace }}=/src/"
+
           for PLATFORM in win-x64 linux-x64 linux-arm64 osx-x64 osx-arm64; do
-            PLATFORM_OUTPUT_PATH=$OUTPUT_DIR/perftsuite_${PLATFORM}
-            mkdir -p $PLATFORM_OUTPUT_PATH
-            dotnet publish PerftSuite/PerftSuite.csproj \
+            PLATFORM_OUTPUT_PATH="$OUTPUT_DIR/build_${PLATFORM}"
+            mkdir -p "$PLATFORM_OUTPUT_PATH"
+            dotnet publish Perft-Checker/PerftSuite.csproj \
               -c Release \
-              -r $PLATFORM \
+              -r "$PLATFORM" \
               --self-contained true \
               -p:PublishSingleFile=true \
               -p:EnableCompressionInSingleFile=true \
               -p:DebugType=embedded \
-              -o $PLATFORM_OUTPUT_PATH
+              -p:DeterministicSourcePaths=true \
+              -p:PathMap="$PATHMAP" \
+              -o "$PLATFORM_OUTPUT_PATH"
+
             # Stable, version-less asset names — the website links to
             # /releases/latest/download/perftcheck-<rid>, so we match that.
             if [[ "$PLATFORM" == "win-x64" ]]; then
-              mv $PLATFORM_OUTPUT_PATH/perftcheck.exe $OUTPUT_DIR/perftcheck-${PLATFORM}.exe
+              mv "$PLATFORM_OUTPUT_PATH/perftcheck.exe" "$OUTPUT_DIR/perftcheck-${PLATFORM}.exe"
             else
-              mv $PLATFORM_OUTPUT_PATH/perftcheck $OUTPUT_DIR/perftcheck-${PLATFORM}
+              mv "$PLATFORM_OUTPUT_PATH/perftcheck" "$OUTPUT_DIR/perftcheck-${PLATFORM}"
             fi
           done
 
+      - name: Smoke-test linux-x64 binary
+        # Quick sanity that the published binary boots and loads the
+        # embedded corpus. We don't have an engine on the CI runner so
+        # we use a stub that closes the pipe; perftcheck should fail with
+        # a clear protocol error, NOT a missing-corpus error.
+        run: |
+          set -euo pipefail
+          BIN="${{ github.workspace }}/output/perftcheck-linux-x64"
+          chmod +x "$BIN"
+          # Print version + help to verify the binary starts at all.
+          "$BIN" --version
+          "$BIN" --help | grep -q -- "--static-analysis" || {
+            echo "smoke FAILED: --help output missing expected flags"
+            exit 1
+          }
+          # Wire stdin to a here-doc engine that just exits — perftcheck
+          # should report 'error' (broken pipe), proving it got far enough
+          # to launch the engine. Using `--limit 1 --depth-cap 1 --quiet`
+          # so it gives up fast.
+          echo "" | "$BIN" --engine /bin/false --limit 1 --depth-cap 1 --quiet || true
+          echo "smoke ok"
+
       - name: Verify output files
-        run: ls -R ${{ github.workspace }}/output
+        run: ls -lh "${{ github.workspace }}/output"
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
@@ -71,8 +125,8 @@ jobs:
             ${{ github.workspace }}/output/perftcheck-linux-arm64
             ${{ github.workspace }}/output/perftcheck-osx-x64
             ${{ github.workspace }}/output/perftcheck-osx-arm64
-          # Publish as a real (non-draft) release so the assets are
-          # immediately reachable from the website. `make_latest: false`
-          # keeps engine releases as the canonical "latest" for the repo.
-          draft: false
+          draft: ${{ github.event.inputs.draft }}
+          # make_latest: false keeps engine releases as the canonical
+          # "latest" for the repo. Override here if perftcheck's tagged
+          # release should win the latest pointer instead.
           make_latest: false

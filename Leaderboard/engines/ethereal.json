@@ -1,0 +1,19 @@
+{
+  "name": "ethereal",
+  "version": "14.40 (PEXT)",
+  "owner": "AndyGrant",
+  "repo": "https://github.com/AndyGrant/Ethereal",
+  "language": "C",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/ethereal/src/Ethereal",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\nperft {depth}",
+      "end_re": "^\\d+$",
+      "quit": "quit"
+    }
+  }
+}

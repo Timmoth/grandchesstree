@@ -1,0 +1,16 @@
+{
+  "name": "jordanbray-chess",
+  "version": "3.2.0",
+  "owner": "jordanbray",
+  "repo": "https://github.com/jordanbray/chess",
+  "language": "Rust",
+  "modes": {
+    "single-no-cache": {
+      "launch": "wrappers/jordanbray-chess/target/release/jordan-perft",
+      "setup": [],
+      "case": "position fen {fen}\nperft {depth}",
+      "end_re": "^Nodes searched: \\d+$",
+      "quit": "quit"
+    }
+  }
+}

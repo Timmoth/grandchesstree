@@ -1,0 +1,845 @@
+{
+  "engine": "jet",
+  "version": "1.2",
+  "language": "C++",
+  "mode_used": "single-no-cache",
+  "ran_at": "2026-05-27T17:52:39Z",
+  "duration_sec": 13.055,
+  "shards": 4,
+  "options": {
+    "depth_cap": 4,
+    "epd_files": [
+      "ferdy_perft_double_checks.epd",
+      "ferdy_perft_double_checks_v2.epd",
+      "ferdy_perft_enpassant_1.epd",
+      "ferdy_perft_single_check_1.epd",
+      "ferdy_perft_single_check_10.epd",
+      "ferdy_perft_single_check_11.epd",
+      "ferdy_perft_single_check_12.epd",
+      "ferdy_perft_single_check_13.epd",
+      "ferdy_perft_single_check_14.epd",
+      "ferdy_perft_single_check_15.epd",
+      "ferdy_perft_single_check_16.epd",
+      "ferdy_perft_single_check_17.epd",
+      "ferdy_perft_single_check_18.epd",
+      "ferdy_perft_single_check_19.epd",
+      "ferdy_perft_single_check_2.epd",
+      "ferdy_perft_single_check_3.epd",
+      "ferdy_perft_single_check_4.epd",
+      "ferdy_perft_single_check_5.epd",
+      "ferdy_perft_single_check_6.epd",
+      "ferdy_perft_single_check_7.epd",
+      "ferdy_perft_single_check_8.epd",
+      "ferdy_perft_single_check_9.epd",
+      "perft-canonical-deep.epd",
+      "perft-ethereal.epd",
+      "perft-jchess-extra.epd",
+      "perft-marcel.epd",
+      "perft.epd"
+    ],
+    "per_case_timeout_sec": 5.0,
+    "fail_fast": false
+  },
+  "totals": {
+    "cases": 126858,
+    "passed": 126770,
+    "failed": 88,
+    "timeout": 0,
+    "error": 0,
+    "skipped_min_depth": 0
+  },
+  "failures": [
+    {
+      "fen": "r1b2r2/2q1ppkp/2p1n1p1/p2nP3/PpP1N3/3B1N1P/1P1Q1PP1/R3R1K1 b - c3  0 1",
+      "depth": 4,
+      "expected": 2705117,
+      "got": "2705144",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c7b6: 74665\nc7d6: 71562\nc7a7: 70782\nc7b7: 67378\nc7d7: 67353\nc7b8: 69231\nc7d8: 63578\nNodes: 2705144"
+    },
+    {
+      "fen": "4rq1k/1p1Q1p2/2p5/p5P1/8/1PP5/PKP5/7R b - -  0 1",
+      "depth": 4,
+      "expected": 103990,
+      "got": "103991",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h8g7: 32267\nh8g8: 33373\nf8h6: 38351\nNodes: 103991"
+    },
+    {
+      "fen": "4q3/7Q/k1pPn3/3pP3/1p6/8/PP1Bn3/2K3R1 w - -  0 1",
+      "depth": 4,
+      "expected": 123906,
+      "got": "123909",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c1b1: 40977\nc1d1: 41967\nc1c2: 40965\nNodes: 123909"
+    },
+    {
+      "fen": "r1b1k2r/ppp1bpp1/3Nn2p/2p1P3/8/1P3N1P/PBPR1PP1/3R2K1 b - -  0 1",
+      "depth": 4,
+      "expected": 167259,
+      "got": "167260",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e8d7: 36338\ne8d8: 32670\ne8f8: 37153\nc7d6: 32114\ne7d6: 28985\nNodes: 167260"
+    },
+    {
+      "fen": "1r6/p5k1/5p2/q5pn/2P1p1N1/4P3/P1QKBP2/3R4 w - -  0 1",
+      "depth": 4,
+      "expected": 70676,
+      "got": "70678",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2c1: 41202\nc2c3: 29476\nNodes: 70678"
+    },
+    {
+      "fen": "1k3b2/pr1qppr1/2Np3p/2pP4/2P5/R5P1/P2Q1P2/4R1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 241550,
+      "got": "241552",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b8c7: 63156\nb8a8: 63664\nb8c8: 62800\nd7c6: 51932\nNodes: 241552"
+    },
+    {
+      "fen": "5k2/5p2/p7/8/4P3/Q7/1P1q2PK/8 b - -  0 1",
+      "depth": 4,
+      "expected": 46813,
+      "got": "46814",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f8g7: 13126\nf8e8: 11459\nf8g8: 12144\nd2b4: 8386\nd2d6: 1699\nNodes: 46814"
+    },
+    {
+      "fen": "2b1r2q/5k2/p2p1p2/2pNp3/2P1P1p1/1P4Rr/2PR1PQK/8 w - -  0 1",
+      "depth": 4,
+      "expected": 59432,
+      "got": "59433",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2g1: 24262\ng3h3: 17878\ng2h3: 17293\nNodes: 59433"
+    },
+    {
+      "fen": "5qr1/pp1kbp2/2p1p3/4P1p1/2PQ2Rp/1P5P/2B2PP1/6K1 b - -  0 1",
+      "depth": 4,
+      "expected": 105333,
+      "got": "105334",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d7c7: 28782\nd7c8: 26233\nd7e8: 21518\ne7d6: 28801\nNodes: 105334"
+    },
+    {
+      "fen": "3k4/p3bpp1/2r1p1p1/2p1P3/P1N3P1/2P4P/1P3PK1/3R4 b - -  0 1",
+      "depth": 4,
+      "expected": 80519,
+      "got": "80521",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d8c7: 16812\nd8c8: 16730\nd8e8: 16263\ne7d6: 14059\nc6d6: 16657\nNodes: 80521"
+    },
+    {
+      "fen": "8/3b1qkp/6p1/pprp3n/3N1p1P/2PB1P2/PP1Q2P1/1K2r2R w - -  0 1",
+      "depth": 4,
+      "expected": 238079,
+      "got": "238082",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1c2: 57042\nh1e1: 40174\nd2c1: 51319\nd2d1: 51092\nd2e1: 38455\nNodes: 238082"
+    },
+    {
+      "fen": "1q1r4/2n1bpk1/4N1pn/p1NpP2p/Pp1P2PP/4BPK1/1P1Q4/2R5 b - -  0 1",
+      "depth": 4,
+      "expected": 298250,
+      "got": "298282",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7h7: 64816\ng7g8: 61555\ng7h8: 65276\nf7e6: 51228\nc7e6: 55407\nNodes: 298282"
+    },
+    {
+      "fen": "8/1p4kp/5P2/1QP2qP1/3ppP2/4P1K1/8/8 b - -  0 1",
+      "depth": 4,
+      "expected": 58327,
+      "got": "58328",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7g6: 8003\ng7f7: 8294\ng7f8: 9558\ng7g8: 8853\ng7h8: 8843\nf5f6: 14777\nNodes: 58328"
+    },
+    {
+      "fen": "2q3k1/pp3pb1/2p2n1p/6p1/1P2p3/PN2P2P/2Q2PP1/2Rr2K1 w - -  0 1",
+      "depth": 4,
+      "expected": 105026,
+      "got": "105028",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g1h2: 41186\nc1d1: 33742\nc2d1: 30100\nNodes: 105028"
+    },
+    {
+      "fen": "5rk1/pp3q2/7p/3Nb1p1/4p2n/1P2P1PP/P1Q2PK1/3R1R2 w - -  0 1",
+      "depth": 4,
+      "expected": 266160,
+      "got": "266164",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g2g1: 66417\ng2h1: 69871\ng2h2: 66051\ng3h4: 63825\nNodes: 266164"
+    },
+    {
+      "fen": "r4r2/2q2ppk/p7/nppnP1bQ/8/4B2P/PP1N1PP1/R3R1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 136543,
+      "got": "136545",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h7g8: 69462\ng5h6: 67083\nNodes: 136545"
+    },
+    {
+      "fen": "4k2Q/2q2p2/4p3/1p2P2p/p7/P3P1K1/1P6/8 b - -  0 1",
+      "depth": 4,
+      "expected": 15868,
+      "got": "15890",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e8d7: 8149\ne8e7: 7741\nNodes: 15890"
+    },
+    {
+      "fen": "r1r5/3npbkp/p2p4/1p3P2/2P5/1PN1BP2/P2KB2P/6R1 b - -  0 1",
+      "depth": 4,
+      "expected": 221939,
+      "got": "221941",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7f6: 54882\ng7f8: 55017\ng7h8: 58599\nf7g6: 53443\nNodes: 221941"
+    },
+    {
+      "fen": "r1br2k1/1p2ppbp/2n1n1p1/q2pP3/pP1N4/2P2N1P/P1BB1PP1/R1Q1R1K1 b - b3  0 1",
+      "depth": 4,
+      "expected": 2849574,
+      "got": "2849575",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "a5b4: 75793\na5b5: 63363\na5c5: 73670\na5a6: 63104\na5b6: 67887\na5a7: 61460\na5c7: 66329\nNodes: 2849575"
+    },
+    {
+      "fen": "r1b2rk1/ppp2pp1/3q3p/3P4/2P1pPn1/2N3K1/PPPN2P1/R1BQ1R2 b - f3  0 1",
+      "depth": 4,
+      "expected": 1154149,
+      "got": "1154150",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d6c6: 30989\nd6e6: 30278\nd6f6: 27036\nd6g6: 23590\nd6d7: 26365\nd6e7: 27885\nd6d8: 24200\nNodes: 1154150"
+    },
+    {
+      "fen": "r1b2r2/2q1ppkp/2p1N1p1/p1n1P3/PpP5/3BQN1P/1P3PP1/R3R1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 306929,
+      "got": "306933",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7g8: 68981\ng7h8: 70999\nf7e6: 52810\nc5e6: 52508\nc8e6: 61635\nNodes: 306933"
+    },
+    {
+      "fen": "5rk1/1pqP2p1/7p/r7/p2Pp3/P1P5/1PB2PPK/R1Q2R2 w - -  0 1",
+      "depth": 4,
+      "expected": 313979,
+      "got": "313983",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2g1: 53223\nh2h1: 53750\nh2h3: 52270\ng2g3: 53844\nf2f4: 47841\nc1f4: 53055\nNodes: 313983"
+    },
+    {
+      "fen": "4q3/pppk1p2/1b5R/3PpQ2/1P6/2P2P2/1P6/1K6 b - -  0 1",
+      "depth": 4,
+      "expected": 74445,
+      "got": "74446",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d7e7: 27272\nd7d8: 26187\ne8e6: 20987\nNodes: 74446"
+    },
+    {
+      "fen": "1r6/p5k1/5p2/6pn/2P1p1N1/q3P3/P1Q1BP2/2KR4 w - -  0 1",
+      "depth": 4,
+      "expected": 64378,
+      "got": "64380",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c1d2: 31206\nc2b2: 33174\nNodes: 64380"
+    },
+    {
+      "fen": "1k6/p2qpp2/3p3p/Q1pP4/2Pb4/1R4P1/P4P2/6K1 b - -  0 1",
+      "depth": 4,
+      "expected": 74982,
+      "got": "74984",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b8a8: 22505\nb8c8: 20810\nd7b5: 14882\nd7b7: 16787\nNodes: 74984"
+    },
+    {
+      "fen": "r2qr1k1/1pp2pp1/p1n1Bn1p/8/3Pp3/P1N1P2P/1PQB1PPb/4RRK1 w - -  0 1",
+      "depth": 4,
+      "expected": 112831,
+      "got": "112833",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g1h1: 63293\ng1h2: 49540\nNodes: 112833"
+    },
+    {
+      "fen": "3R2k1/1bq2p2/pp2p2p/2r1P1p1/P7/1P2Q2P/4NPP1/5RK1 b - -  0 1",
+      "depth": 4,
+      "expected": 150599,
+      "got": "150601",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8g7: 56708\ng8h7: 55252\nc7d8: 38641\nNodes: 150601"
+    },
+    {
+      "fen": "1q1r4/4bpk1/4n1pB/p1NpP2p/Pp1P2PP/5PK1/1P1Q4/2R5 b - -  0 1",
+      "depth": 4,
+      "expected": 173956,
+      "got": "174063",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7h7: 60311\ng7g8: 56718\ng7h8: 57034\nNodes: 174063"
+    },
+    {
+      "fen": "2rqk2r/3n1p2/p2Np3/1bb1P1Np/3Q3P/1pP2P2/1P3BP1/R3R1K1 b k -  0 1",
+      "depth": 4,
+      "expected": 232377,
+      "got": "232378",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e8e7: 76220\ne8f8: 76523\nc5d6: 79635\nNodes: 232378"
+    },
+    {
+      "fen": "6r1/2q1bpk1/2n1p1bB/3pP3/p2p4/P2P1N1B/1rPQ1P2/R5RK b - -  0 1",
+      "depth": 4,
+      "expected": 182353,
+      "got": "182355",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7h7: 91482\ng7h8: 90873\nNodes: 182355"
+    },
+    {
+      "fen": "8/3R1p2/1r1b1kp1/4P3/7N/4P2P/5PK1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 44585,
+      "got": "44589",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f6e5: 6909\nf6g5: 8886\nf6e6: 8519\nf6g7: 9296\nd6e5: 10979\nNodes: 44589"
+    },
+    {
+      "fen": "8/2q2p2/2k1p3/1p2P3/p7/P3PQK1/1P6/8 b - -  0 1",
+      "depth": 4,
+      "expected": 37928,
+      "got": "37974",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c6c5: 10731\nc6b6: 14453\nc6d7: 12790\nNodes: 37974"
+    },
+    {
+      "fen": "2r1k2r/2Qbbpp1/p2N4/4P3/7P/Pq3Pp1/6K1/R1B2R2 b k -  0 1",
+      "depth": 4,
+      "expected": 128186,
+      "got": "128187",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e8f8: 72835\ne7d6: 55352\nNodes: 128187"
+    },
+    {
+      "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      "depth": 3,
+      "expected": 9467,
+      "got": "9468",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g1h1: 1753\nc4c5: 1410\nd2d4: 1643\nf3d4: 1687\nb4c5: 1352\nf1f2: 1623\nNodes: 9468"
+    },
+    {
+      "fen": "r3k2r/p1pb1pp1/2p5/4q3/Q1PNpPnp/2N1P2K/PB1P2P1/R4R2 b kq f3  0 1",
+      "depth": 4,
+      "expected": 2336083,
+      "got": "2336087",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e5f5: 55971\ne5g5: 64053\ne5h5: 56783\ne5d6: 65382\ne5e6: 54255\ne5f6: 57539\ne5e7: 57970\nNodes: 2336087"
+    },
+    {
+      "fen": "r1r3k1/1p1bqpp1/3p1n1p/pNpPn3/2P1p3/P1B1P2P/1PQ2PP1/1K1R1BR1 w - c6  0 1",
+      "depth": 4,
+      "expected": 2053715,
+      "got": "2053743",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c2c1: 46230\nc2d2: 47704\nc2e2: 53499\nc2b3: 49283\nc2d3: 51232\nc2a4: 48602\nc2e4: 61277\nNodes: 2053743"
+    },
+    {
+      "fen": "5rk1/1pqP2p1/7p/7r/p2Pp3/P1P3P1/1PB2P1K/R1Q2R2 w - -  0 1",
+      "depth": 4,
+      "expected": 102979,
+      "got": "102981",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2g1: 50116\nh2g2: 52865\nNodes: 102981"
+    },
+    {
+      "fen": "8/p5k1/3q1p2/6pn/2P1p1N1/4P3/PrQKBP2/2R5 w - -  0 1",
+      "depth": 4,
+      "expected": 110420,
+      "got": "110426",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2e1: 39267\nd2c3: 38363\ne2d3: 32796\nNodes: 110426"
+    },
+    {
+      "fen": "5b2/3R2kp/1r4p1/5rP1/8/5NKP/6B1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 74983,
+      "got": "74984",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7g8: 21363\ng7h8: 21124\nf8e7: 17659\nf5f7: 14838\nNodes: 74984"
+    },
+    {
+      "fen": "r3r1k1/1pp2pp1/p1nqBn1p/8/3Pp3/P1N1P2P/1PQB1PPK/4RR2 w - -  0 1",
+      "depth": 4,
+      "expected": 317591,
+      "got": "317594",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2g1: 78956\nh2h1: 81007\ng2g3: 78365\nf2f4: 79266\nNodes: 317594"
+    },
+    {
+      "fen": "Rk4r1/1pq1bp2/1Qp1p3/4P1p1/2P1B2p/1P5P/5PP1/6K1 b - -  0 1",
+      "depth": 4,
+      "expected": 19241,
+      "got": "19242",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b8a8: 19242\nNodes: 19242"
+    },
+    {
+      "fen": "6k1/2b1Np1p/8/4P3/1P1P1pP1/r1Pb1K2/8/2R5 b - -  0 1",
+      "depth": 4,
+      "expected": 41879,
+      "got": "41882",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8g7: 14380\ng8f8: 14133\ng8h8: 13369\nNodes: 41882"
+    },
+    {
+      "fen": "8/1bq2pk1/pp2p2P/4P3/P7/1Pr1Q2P/6P1/5RK1 b - -  0 1",
+      "depth": 4,
+      "expected": 168706,
+      "got": "168711",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7g6: 31893\ng7h7: 32231\ng7f8: 35102\ng7g8: 33892\ng7h8: 35593\nNodes: 168711"
+    },
+    {
+      "fen": "2Q5/5pb1/4p2k/3p1p2/P7/8/6P1/1r2K3 w - -  0 1",
+      "depth": 4,
+      "expected": 55610,
+      "got": "55611",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e1d2: 18196\ne1e2: 18878\ne1f2: 17511\nc8c1: 1026\nNodes: 55611"
+    },
+    {
+      "fen": "4r1k1/p5pp/8/5P2/8/1Q4P1/P5KP/2r1q3 b - -  0 1",
+      "depth": 4,
+      "expected": 117966,
+      "got": "117967",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8f8: 22103\ng8h8: 24774\nc1c4: 22720\ne8e6: 20555\ne1e6: 27815\nNodes: 117967"
+    },
+    {
+      "fen": "5n1R/2p2kpn/3pB2q/3PpP2/1P2P3/3K4/6Q1/8 b - -  0 1",
+      "depth": 4,
+      "expected": 79805,
+      "got": "79806",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f7f6: 13145\nf7e7: 18035\nf7e8: 14286\nf8e6: 20249\nh6e6: 14091\nNodes: 79806"
+    },
+    {
+      "fen": "r4rk1/2q1bppB/p7/nppnP2b/8/4BN1P/PP1N1PP1/R2QR1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 138895,
+      "got": "138897",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8h7: 57553\ng8h8: 81344\nNodes: 138897"
+    },
+    {
+      "fen": "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1",
+      "depth": 3,
+      "expected": 9467,
+      "got": "9468",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g1h1: 1753\nc4c5: 1410\nd2d4: 1643\nf3d4: 1687\nb4c5: 1352\nf1f2: 1623\nNodes: 9468"
+    },
+    {
+      "fen": "r2q1rk1/pP1p2pp/Q4n2/bbp1p3/Np6/1B3NBn/pPPP1PPP/R3K2R b KQ - 0 1",
+      "depth": 3,
+      "expected": 9467,
+      "got": "9468",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8h8: 1753\nc5c4: 1410\nd7d5: 1643\nf6d5: 1687\nb5c4: 1352\nf8f7: 1623\nNodes: 9468"
+    },
+    {
+      "fen": "rn1q1b1r/p1p1pppp/1pk2n2/3p4/2P1PP1P/6PN/PP1Pb1B1/RNBQK2R b KQ - 0 1",
+      "depth": 3,
+      "expected": 34010,
+      "got": "34011",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2g4: 1026\ne2h5: 920\nh8g8: 901\nd8d6: 1001\nd8d7: 948\nd8c8: 1052\nd8e8: 873\nNodes: 34011"
+    },
+    {
+      "fen": "r5nr/nb1p1p2/4N2b/pppqk1p1/2P4P/P3KP2/3RP2P/1Q3BNR w - - 0 1",
+      "depth": 3,
+      "expected": 39294,
+      "got": "39295",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1d3: 976\nb1b4: 1069\nb1e4: 76\nb1b5: 1094\nb1f5: 66\nb1g6: 1122\nb1h7: 1095\nNodes: 39295"
+    },
+    {
+      "fen": "r1k4r/p4pQ1/3p2pb/1pp3P1/P2p4/2nR2Nb/1PK4P/2B4R w - - 0 1",
+      "depth": 3,
+      "expected": 42509,
+      "got": "42510",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g7g6: 1333\ng7h6: 1096\ng7f7: 1430\ng7h7: 1144\ng7f8: 165\ng7g8: 168\ng7h8: 153\nNodes: 42510"
+    },
+    {
+      "fen": "5b2/r1B5/nP4k1/NP2P3/2P3p1/3bKBP1/5r1P/4R2R b - - 0 1",
+      "depth": 3,
+      "expected": 42431,
+      "got": "42432",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f2e2: 162\nf2g2: 1223\nf2h2: 1330\nf2f3: 72\na7b7: 1204\na7c7: 1373\na7a8: 1303\nNodes: 42432"
+    },
+    {
+      "fen": "r4rk1/1p2npbp/pq2p1p1/n2pP3/1PpP4/P1P1BQ1P/2B2PP1/RRN3K1 b - b3  0 1",
+      "depth": 4,
+      "expected": 1580476,
+      "got": "1580478",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b6b5: 42865\nb6c5: 53274\nb6c6: 46287\nb6d6: 51239\nb6a7: 40770\nb6c7: 49181\nb6d8: 39319\nNodes: 1580478"
+    },
+    {
+      "fen": "r1b2rk1/3nqppp/p1pb1n2/Pp4N1/2BPp3/2N1P2P/1PQ2PP1/R1B2RK1 w - b6  0 1",
+      "depth": 4,
+      "expected": 2153975,
+      "got": "2153976",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c2d1: 49189\nc2d2: 44769\nc2e2: 47026\nc2b3: 43874\nc2d3: 47291\nc2a4: 48000\nc2e4: 58690\nNodes: 2153976"
+    },
+    {
+      "fen": "r3k2r/p4p2/4p1p1/q1bnP2p/Pp1pQ2P/1P1B4/3B1PP1/R4RK1 b kq a3  0 1",
+      "depth": 4,
+      "expected": 1880716,
+      "got": "1880718",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h8g8: 49784\na5a4: 63550\na5b5: 62587\na5a6: 59461\na5b6: 58323\na5c7: 63088\na5d8: 59975\nNodes: 1880718"
+    },
+    {
+      "fen": "2rq1k2/ppn2p2/8/3NP1pr/1Q5p/P4P1P/1P4P1/R3R1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 268011,
+      "got": "268012",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f8g7: 64385\nf8e8: 42033\nf8g8: 54509\nd8d6: 55353\nd8e7: 51732\nNodes: 268012"
+    },
+    {
+      "fen": "8/5p2/6kp/6p1/1QB1p3/P3P1P1/2b2PP1/q5K1 w - -  0 1",
+      "depth": 4,
+      "expected": 68817,
+      "got": "68820",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g1h2: 21989\nc4f1: 17373\nb4b1: 14101\nb4e1: 15357\nNodes: 68820"
+    },
+    {
+      "fen": "8/1b6/pq6/1p3ppk/1P2p3/P3K1P1/4NP2/3Q4 w - -  0 1",
+      "depth": 4,
+      "expected": 18247,
+      "got": "18245",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e3d2: 9250\ne2d4: 1338\nd1d4: 7657\nNodes: 18245"
+    },
+    {
+      "fen": "3r4/4R3/pk6/1p3p1R/1P1pnP2/8/P1P1K1r1/4B3 w - -  0 1",
+      "depth": 4,
+      "expected": 119067,
+      "got": "119090",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2d1: 25898\ne2f1: 24861\ne2d3: 22775\ne2f3: 24657\ne1f2: 20899\nNodes: 119090"
+    },
+    {
+      "fen": "2rr2k1/2q2pp1/p3b2p/1p6/1P1Np2R/P2nP1P1/2BQ1PP1/R3K3 w Q -  0 1",
+      "depth": 4,
+      "expected": 375665,
+      "got": "375667",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e1d1: 68774\ne1f1: 85459\ne1e2: 82853\nc2d3: 70747\nd2d3: 67834\nNodes: 375667"
+    },
+    {
+      "fen": "r4r2/2q1bppk/p7/nppnP1Nb/8/4B2P/PP1N1PP1/R2QR1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 336764,
+      "got": "336769",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h7g6: 67101\nh7h6: 63934\nh7g8: 71226\nh7h8: 69331\ne7g5: 65177\nNodes: 336769"
+    },
+    {
+      "fen": "1n6/rb2B1b1/1P4k1/pP2p3/2P1P1p1/1N3rP1/1R4BP/4K2R w - - 0 1",
+      "depth": 4,
+      "expected": 1054513,
+      "got": "1054514",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1g1: 32918\nb2b1: 30139\nb2a2: 34780\nb2c2: 32807\nb2d2: 34736\nb2e2: 31589\nb2f2: 32836\nNodes: 1054514"
+    },
+    {
+      "fen": "1nb2b2/r1B5/1P4k1/pP2p3/2P1P1p1/1N2r1P1/1R4BP/5K1R w - - 0 1",
+      "depth": 4,
+      "expected": 811453,
+      "got": "811454",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1g1: 29316\nb2b1: 28443\nb2a2: 32627\nb2c2: 30410\nb2d2: 33630\nb2e2: 30233\nb2f2: 30110\nNodes: 811454"
+    },
+    {
+      "fen": "1nb3nr/2p1p3/P4rk1/bpP2pq1/3pP1Q1/N2B1KPP/P4P1R/1RB3N1 w - - 0 1",
+      "depth": 4,
+      "expected": 1159999,
+      "got": "1160001",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2h1: 35868\nh2g2: 34448\ng4f4: 48287\ng4h4: 42673\ng4f5: 5832\ng4g5: 2161\ng4h5: 3818\nNodes: 1160001"
+    },
+    {
+      "fen": "1n6/rb2B1b1/1P4k1/pP2pr2/2P1P1p1/1N2K1P1/1R4BP/7R w - - 0 1",
+      "depth": 4,
+      "expected": 1175188,
+      "got": "1175189",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1g1: 31434\nb2b1: 29942\nb2a2: 33022\nb2c2: 31403\nb2d2: 33097\nb2e2: 29783\nb2f2: 30563\nNodes: 1175189"
+    },
+    {
+      "fen": "rnbk2r1/3pqpb1/1P1Np1Q1/p1p3p1/1P1PPP2/B6p/2PK2PP/RN3B1R b - - 0 1",
+      "depth": 4,
+      "expected": 1824142,
+      "got": "1824143",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8e8: 59885\ng8f8: 58199\ng8h8: 68298\ne7d6: 51949\ne7f6: 52314\ne7e8: 56180\ne7f8: 54151\nNodes: 1824143"
+    },
+    {
+      "fen": "rn1q1b1r/p1p1pppp/1pk2n2/3p4/4PPbP/6P1/PPPP2B1/RNBQK1NR w KQ - 0 1",
+      "depth": 4,
+      "expected": 891122,
+      "got": "891142",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g2f3: 28982\ng2h3: 32086\nh1h2: 35803\nh1h3: 33108\nd1e2: 37675\nd1f3: 38656\nd1g4: 27824\nNodes: 891142"
+    },
+    {
+      "fen": "1n6/rb2B1b1/1P4k1/pP2p3/2P1P1p1/1N1K2P1/1R4BP/5r1R w - - 0 1",
+      "depth": 4,
+      "expected": 1185826,
+      "got": "1185827",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1g1: 35469\nb2b1: 33785\nb2a2: 39198\nb2c2: 36155\nb2d2: 34749\nb2e2: 36139\nb2f2: 29270\nNodes: 1185827"
+    },
+    {
+      "fen": "r5nr/nb1p1p2/4k2b/pppR2p1/2P4P/P3KP1N/4P2P/1Q3B1R b - - 0 1",
+      "depth": 4,
+      "expected": 762808,
+      "got": "762826",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b7c8: 22289\na8b8: 31980\na8c8: 32004\na8d8: 32007\na8e8: 32086\na8f8: 30753\nh8h7: 31915\nNodes: 762826"
+    },
+    {
+      "fen": "r6r/1bp1knpp/1N4P1/pP3p2/1b1p2nP/BP1P1pqR/1QP1P1B1/4RKN1 w - - 0 1",
+      "depth": 4,
+      "expected": 2263658,
+      "got": "2263679",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h3g3: 64947\nb2a1: 87726\nb2b1: 79084\nb2c1: 79942\nb2a2: 79029\nb2c3: 84951\nb2d4: 89944\nNodes: 2263679"
+    },
+    {
+      "fen": "2bqk1nr/p6p/n2p1P1b/p1pPp3/P5p1/1rP5/1P2PP1P/RNB1KBNR w KQk - 0 1",
+      "depth": 4,
+      "expected": 569488,
+      "got": "569489",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c1f4: 26818\nc1g5: 24605\nc1h6: 21285\nf1g2: 30208\nf1h3: 26315\na1a2: 26458\na1a3: 26213\nNodes: 569489"
+    },
+    {
+      "fen": "3r3r/p2k1pQ1/3p2pb/1pp3P1/P2p4/2nR3b/1PK4P/2B2N1R b - - 0 1",
+      "depth": 4,
+      "expected": 1341951,
+      "got": "1341955",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d8e8: 43176\nd8f8: 36503\nd8g8: 36352\nh8h7: 36473\nh8e8: 38810\nh8f8: 34375\nh8g8: 36454\nNodes: 1341955"
+    },
+    {
+      "fen": "rn2k1r1/pb2ppb1/1N4p1/1qpP3p/2P2P2/P3P3/RP2K1Pn/2BQ2NR b q - 0 1",
+      "depth": 4,
+      "expected": 1400907,
+      "got": "1400910",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b5b4: 29326\nb5c4: 5800\nb5a5: 28740\nb5a6: 28158\nb5b6: 27497\nb5c6: 35128\nb5d7: 35855\nNodes: 1400910"
+    },
+    {
+      "fen": "rnb1qbnr/6pp/1p1kp3/2p2p2/P1p3P1/BQN1KP1P/3PP1B1/R5NR w - - 0 1",
+      "depth": 4,
+      "expected": 1321505,
+      "got": "1321511",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b3a2: 34281\nb3b2: 36539\nb3c2: 40732\nb3b4: 38363\nb3c4: 39920\nb3b5: 33055\nb3b6: 5053\nNodes: 1321511"
+    },
+    {
+      "fen": "5b2/r1B5/nP6/pP2P1k1/2P1B1p1/1N1b2P1/5K1P/1R1r3R w - - 0 1",
+      "depth": 4,
+      "expected": 1007345,
+      "got": "1007346",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1c1: 27498\nb1d1: 21262\nb1b2: 31984\nh1d1: 21238\nh1e1: 27912\nh1f1: 27018\nh1g1: 28865\nNodes: 1007346"
+    },
+    {
+      "fen": "r2n3r/1bp3pp/1N1k2Pn/pP3p2/1b1pp2P/BP3PqR/2PPP1B1/1Q2RKN1 b - - 0 1",
+      "depth": 4,
+      "expected": 1200334,
+      "got": "1200335",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g3h3: 24742\ng3f4: 26395\ng3g4: 31436\ng3h4: 29549\ng3e5: 31701\ng3g5: 34257\ng3g6: 28361\nNodes: 1200335"
+    },
+    {
+      "fen": "5b2/r1B5/nP4k1/NP2P3/2P3p1/3bK1P1/1r4BP/1R5R w - - 0 1",
+      "depth": 4,
+      "expected": 1531420,
+      "got": "1531421",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1g1: 36987\nb1b2: 28306\nh1c1: 42274\nh1d1: 44430\nh1e1: 43602\nh1f1: 45280\nh1g1: 44759\nNodes: 1531421"
+    },
+    {
+      "fen": "2b5/1r2n2r/1Nn1k1p1/pP1p1p1Q/P2p1P1P/8/2RBP3/4KBNR w K - 0 1",
+      "depth": 4,
+      "expected": 584179,
+      "got": "584180",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h5f3: 20799\nh5g4: 20233\nh5f5: 3262\nh5g5: 15700\nh5g6: 984\nh5h6: 13841\nh5h7: 9047\nNodes: 584180"
+    },
+    {
+      "fen": "rn1q1b1r/pkp2ppp/1p2pn2/3p4/2P1PP1P/6P1/PP1PbNB1/RNBQK2R w KQ - 0 1",
+      "depth": 4,
+      "expected": 1614692,
+      "got": "1614714",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1g1: 54277\nh1h2: 54281\nh1h3: 50537\nd1c2: 58086\nd1e2: 46877\nd1b3: 63352\nd1a4: 58917\nNodes: 1614714"
+    },
+    {
+      "fen": "5b2/r1B5/nP4k1/pP3b2/2P1P1p1/1N4P1/1R3KBP/4r2R w - - 0 1",
+      "depth": 4,
+      "expected": 1105756,
+      "got": "1105757",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1f1: 33513\nh1g1: 35382\nb2b1: 33806\nb2a2: 39559\nb2c2: 37191\nb2d2: 40810\nb2e2: 34098\nNodes: 1105757"
+    },
+    {
+      "fen": "1B3b2/r7/nP4k1/NP2P3/2P3p1/4KBP1/2r4P/4Rb1R w - - 0 1",
+      "depth": 4,
+      "expected": 1355264,
+      "got": "1355288",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e1b1: 50935\ne1c1: 47752\ne1d1: 53459\ne1f1: 36805\ne1e2: 36141\nh1f1: 37686\nh1g1: 49961\nNodes: 1355288"
+    },
+    {
+      "fen": "1n4nr/P1p1p3/4brk1/bpP2pq1/4P1QP/N2B1KP1/P3pP1R/1R4N1 w - - 0 1",
+      "depth": 4,
+      "expected": 1586826,
+      "got": "1586828",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h2g2: 40792\nh2h3: 40560\ng4h3: 59762\ng4f4: 60577\ng4f5: 7593\ng4g5: 2596\ng4h5: 4572\nNodes: 1586828"
+    },
+    {
+      "fen": "2bqk1nr/p5bp/n2p1P2/p1pPp3/P5p1/RrP5/1P1NPP1P/2B1KBNR w Kk - 0 1",
+      "depth": 4,
+      "expected": 564894,
+      "got": "564895",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2c4: 29996\nd2e4: 28929\nf1g2: 30260\nf1h3: 26627\na3a1: 25769\na3a2: 24580\na3b3: 16693\nNodes: 564895"
+    },
+    {
+      "fen": "r5nr/nb1p1p2/3qNk1b/pppP2p1/2P4P/P3KP1B/3RP2P/1Q4NR b - - 0 1",
+      "depth": 4,
+      "expected": 1415536,
+      "got": "1415538",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d6b6: 42072\nd6c6: 40974\nd6e6: 5218\nd6c7: 46240\nd6e7: 25869\nd6b8: 38898\nd6f8: 40909\nNodes: 1415538"
+    },
+    {
+      "fen": "1Qn3k1/4pb2/N7/p4P1P/3K4/7p/1R4r1/1r5n b - - 0 1",
+      "depth": 4,
+      "expected": 1378035,
+      "got": "1378037",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g2f2: 38239\ng2h2: 36837\ng2g3: 37435\ng2g4: 6857\ng2g5: 43866\ng2g6: 49034\ng2g7: 41589\nNodes: 1378037"
+    },
+    {
+      "fen": "3rk2r/p4pQ1/3p1npb/1pp3P1/P2pN3/5R1b/1PK4P/2B4R b k - 0 1",
+      "depth": 4,
+      "expected": 1561118,
+      "got": "1561124",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d8d7: 46451\nd8a8: 51468\nd8b8: 54857\nd8c8: 52935\nh8h7: 47690\nh8f8: 51460\nh8g8: 50510\nNodes: 1561124"
+    },
+    {
+      "fen": "r1b3n1/3pqpbr/4Nkp1/ppp4p/1nPP4/P4PP1/3RP2P/2Q1KBNR w K - 0 1",
+      "depth": 4,
+      "expected": 1199204,
+      "got": "1199207",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2d3: 39364\nc1a1: 33456\nc1b1: 37580\nc1d1: 32945\nc1b2: 33433\nc1c2: 34527\nc1c3: 35575\nNodes: 1199207"
+    }
+  ]
+}

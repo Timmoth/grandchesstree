@@ -1,0 +1,17 @@
+{
+  "name": "quanticade",
+  "version": "main",
+  "owner": "Quanticade",
+  "repo": "https://github.com/Quanticade/Quanticade",
+  "language": "C",
+  "_note": "Quanticade is a UCI engine but its perft has an upstream bug — searchinfo->nodes is not reset between perft calls, so consecutive `go perft` in one session report compounding totals. We drive it through a bash wrapper that re-spawns Quanticade per call to get clean per-call counters.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "wrappers/quanticade/run.sh",
+      "setup": [],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^perft-done$",
+      "quit":   "quit"
+    }
+  }
+}

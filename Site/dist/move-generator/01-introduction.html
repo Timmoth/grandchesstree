@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>The Pipeline and Perft &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct **move generator** underneath — the function that, given a position, hands back every legal move available." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/01-introduction.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/01-introduction.html" />
+    <meta property="og:title" content="The Pipeline and Perft — Let&#39;s build a move generator" />
+    <meta property="og:description" content="A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct **move generator** underneath — the function that, given a position, hands back every legal move available." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="The Pipeline and Perft — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct **move generator** underneath — the function that, given a position, hands back every legal move available." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "The Pipeline and Perft",
+      "description": "A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct **move generator** underneath — the function that, given a position, hands back every legal move available.",
+      "url": "https://grandchesstree.com/move-generator/01-introduction.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 1</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 1 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">The Pipeline and Perft</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct **move generator** underneath — the function that, given a position, hands back every legal move available.</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">A chess engine plays moves by searching: it explores the tree of &quot;what if we played this, then they played that, then...&quot; and picks the move at the root that leads to the best position. Search is glamorous. But search is also useless without a fast and correct <strong>move generator</strong> underneath — the function that, given a position, hands back every legal move available.</p>
+<p class="mt-4 leading-relaxed text-slate-700">This series is about building that function in C#. By the end we&#39;ll have a cross-platform .NET move generator that produces only legal moves and passes the standard validation tests. Today, in Part 1, we&#39;ll do three things: see where move generation fits in the engine, set up the validation tool we&#39;ll use throughout the rest of the series, and write our first compiling code.</p>
+<h2 id="where-move-generation-fits" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#where-move-generation-fits" class="no-underline">Where move generation fits</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The classic engine pipeline looks like this:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">position
+  → generate moves
+  → for each move:
+      make move
+      score recursively (search + eval)
+      unmake move
+  → return best</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Three things stand out:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5">The generator produces a <strong>set of moves</strong>, not just one.</li><li class="mt-1.5">After each generated move we <strong>apply</strong> it (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code>), then <strong>reverse</strong> it (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code>), so the original position is intact for the next sibling.</li><li class="mt-1.5">The generator runs at <strong>every node</strong> of the search tree. A modern engine touches tens or hundreds of millions of nodes per second. Speed matters — but correctness matters more.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">A correct but slow generator gives us a slow engine. A fast generator that emits one wrong move will eventually produce a position with the king missing, a phantom piece, or a perpetual-check loop that doesn&#39;t exist. The search above it will happily report nonsense.</p>
+<h2 id="pseudo-legal-vs-legal" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#pseudo-legal-vs-legal" class="no-underline">Pseudo-legal vs legal</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">A move is <strong>pseudo-legal</strong> if it follows the rules of how pieces move — pawns push forward, knights jump in L-shapes, rooks slide along ranks and files — but might leave our own king in check. A move is <strong>legal</strong> if it&#39;s pseudo-legal <em>and</em> doesn&#39;t leave our king in check.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The distinction matters because pseudo-legal moves are cheap to generate (just shifts and table lookups), while filtering down to the strictly legal ones is fiddly. We need to handle pins, checks, and a famously subtle en-passant case where two pawns vacate the same rank at once.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The series follows that order. We&#39;ll build a pseudo-legal generator first (Part 4), pair it with <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code> (Part 5), optimise the slider attacks with magic bitboards (Part 6), and then refine the generator to emit only legal moves (Part 7). We&#39;ll know we got it right when our perft numbers match the published references.</p>
+<h2 id="perft-the-yardstick" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#perft-the-yardstick" class="no-underline">Perft — the yardstick</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700"><strong>Perft</strong> (short for <em>performance test</em> or <em>move-path enumeration</em>) walks the legal move tree to a given depth and counts the leaves. It&#39;s the standard way to validate a move generator. If our numbers match the references at every depth, our generator is correct. If they don&#39;t, we have a specific bug to find.</p>
+<p class="mt-4 leading-relaxed text-slate-700">For the initial position, the canonical leaf counts are:</p>
+<div class="mt-4 overflow-x-auto"><table class="w-full border-collapse"><thead><tr><th class="border-b border-slate-300 px-3 py-2 text-right text-sm font-semibold text-slate-700">Depth</th><th class="border-b border-slate-300 px-3 py-2 text-right text-sm font-semibold text-slate-700">Nodes</th></tr></thead><tbody><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">0</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">1</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">20</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">2</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">400</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">3</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">8,902</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">4</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">197,281</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">5</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">4,865,609</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">6</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">119,060,324</td></tr></tbody></table></div>
+<p class="mt-4 leading-relaxed text-slate-700">Matching these to depth 6 from the initial position catches the majority of generator bugs. But the initial position never tests castling, en passant, or promotion — so we also lean on a second position, <strong>Kiwipete</strong>, picked specifically because it stresses every special move at once:</p>
+<p class="mt-4 leading-relaxed text-slate-700">FEN: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -</code></p>
+<p class="mt-4 leading-relaxed text-slate-700"><img src="img/kiwipete.png" alt="Kiwipete starting position" loading="lazy" class="mx-auto block rounded-md border border-slate-200 shadow-sm" /></p>
+<p class="mt-4 leading-relaxed text-slate-700">Expected Kiwipete counts:</p>
+<div class="mt-4 overflow-x-auto"><table class="w-full border-collapse"><thead><tr><th class="border-b border-slate-300 px-3 py-2 text-right text-sm font-semibold text-slate-700">Depth</th><th class="border-b border-slate-300 px-3 py-2 text-right text-sm font-semibold text-slate-700">Nodes</th></tr></thead><tbody><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">1</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">48</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">2</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">2,039</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">3</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">97,862</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">4</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">4,085,603</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">5</td><td class="border-b border-slate-100 px-3 py-2 text-right align-middle text-sm text-slate-700">193,690,690</td></tr></tbody></table></div>
+<p class="mt-4 leading-relaxed text-slate-700">These are the two positions we&#39;ll come back to at the end of each article in the series.</p>
+<h2 id="a-first-piece-of-code" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#a-first-piece-of-code" class="no-underline">A first piece of code</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We can&#39;t compute perft yet — we have no move generator. But we can already do two useful things: print a FEN string as an ASCII board (handy for debugging from here on), and write the perft skeleton we&#39;ll wire a real generator into over the next six articles.</p>
+<h3 id="fenboard-cs-render-a-fen-to-ascii" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#fenboard-cs-render-a-fen-to-ascii" class="no-underline">FenBoard.cs — render a FEN to ASCII</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">We&#39;ll only process the first field of the FEN (piece placement). Full FEN parsing comes in Part 2 when we set up the <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code> type properly.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Text;
+
+public static class FenBoard
+{
+    public static string Render(string fen)
+    {
+        string placement = fen.Split(&#39; &#39;)[0];
+        string[] ranks   = placement.Split(&#39;/&#39;); // rank 8 first, rank 1 last
+
+        var sb = new StringBuilder();
+        for (int r = 0; r &lt; 8; r++)
+        {
+            sb.Append(8 - r).Append(&#39; &#39;);
+            foreach (char c in ranks[r])
+            {
+                if (char.IsDigit(c))
+                {
+                    int empties = c - &#39;0&#39;;
+                    for (int i = 0; i &lt; empties; i++) sb.Append(&quot;. &quot;);
+                }
+                else
+                {
+                    sb.Append(c).Append(&#39; &#39;);
+                }
+            }
+            sb.AppendLine();
+        }
+        sb.Append(&quot;  a b c d e f g h&quot;);
+        return sb.ToString();
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Uppercase letters are white pieces, lowercase are black, dots are empty squares. Enough to make our test positions readable.</p>
+<h3 id="perft-cs-the-skeleton" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#perft-cs-the-skeleton" class="no-underline">Perft.cs — the skeleton</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">Perft itself is tiny — it recurses to the requested depth, making each move on the way down and unmaking it on the way back up. At depth 0, every position counts as a single node.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Perft
+{
+    public static ulong Run(Position position, int depth)
+    {
+        if (depth == 0) return 1UL;
+
+        ulong nodes = 0UL;
+        Move[] moves = MoveGenerator.GenerateMoves(position);
+
+        for (int i = 0; i &lt; moves.Length; i++)
+        {
+            position.MakeMove(moves[i]);
+            nodes += Run(position, depth - 1);
+            position.UnmakeMove(moves[i]);
+        }
+
+        return nodes;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">That&#39;s it. The whole loop is six lines: generate, then <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">make</code> → recurse → <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">unmake</code> for each. Notice we count nodes only at the leaves — interior nodes don&#39;t add to the total. The shape of perft never changes throughout the series; only the things it calls do.</p>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code>, and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MoveGenerator</code> don&#39;t exist yet. To keep the project compiling we&#39;ll define throwaway stubs we&#39;ll replace in Part 2:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public sealed class Position { }
+
+public readonly struct Move { }
+
+public static class MoveGenerator
+{
+    public static Move[] GenerateMoves(Position position) =&gt; System.Array.Empty&lt;Move&gt;();
+}
+
+public static class PositionExtensions
+{
+    public static void MakeMove  (this Position p, Move m) { }
+    public static void UnmakeMove(this Position p, Move m) { }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">And a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Program.cs</code> to exercise both:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    const string InitialFen  = &quot;rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&quot;;
+    const string KiwipeteFen = &quot;r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -&quot;;
+
+    static void Main()
+    {
+        System.Console.WriteLine(&quot;Initial position:&quot;);
+        System.Console.WriteLine(FenBoard.Render(InitialFen));
+        System.Console.WriteLine();
+        System.Console.WriteLine(&quot;Kiwipete:&quot;);
+        System.Console.WriteLine(FenBoard.Render(KiwipeteFen));
+        System.Console.WriteLine();
+
+        ulong nodes = Perft.Run(new Position(), 0);
+        System.Console.WriteLine($&quot;perft(0) = {nodes}&quot;);  // 1
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Run it and we see two boards and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">perft(0) = 1</code>. Try <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Perft.Run(new Position(), 1)</code> and we get 0 — because our stub generator returns no moves. That&#39;s a hard-coded failure waiting for us to fix.</p>
+<h2 id="what-we-ve-got" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-we-ve-got" class="no-underline">What we&#39;ve got</a></h2>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5">A FEN-to-ASCII printer we&#39;ll use for debugging every position from now on.</li><li class="mt-1.5">A perft function whose shape is final — the rest of the series fills in everything around it.</li><li class="mt-1.5">Two reference positions (initial + Kiwipete) and their expected node counts, so we always know when a generator change makes things better or worse.</li></ul>
+<h2 id="what-s-next" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-s-next" class="no-underline">What&#39;s next</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">In Part 2 we throw away those stub types and build a real <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code>: twelve piece bitboards, a parallel 8×8 mailbox, full FEN parsing, and a board printer that shows the <em>whole</em> position — side to move, castling rights, en-passant square, and all. By the end of Part 2 we&#39;ll load Kiwipete, print it correctly, and round-trip it back to a FEN string.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <span></span>
+          <a href="02-board.html" class="group rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Next →</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 2: Representing the Board</p>
+          </a>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

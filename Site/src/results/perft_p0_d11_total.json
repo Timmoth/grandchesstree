@@ -1,0 +1,45 @@
+{
+  "position": 0,
+  "depth": 11,
+  "nodes": 2097651003696806,
+  "captures": 142537161824567,
+  "enpassants": 313603617408,
+  "castles": 2641343463566,
+  "promotions": 49560932860,
+  "direct_checks": 39068470901662,
+  "single_discovered_check": 67494850305,
+  "direct_discovered_check": 11721852393,
+  "double_discovered_check": 57443,
+  "total_checks": 39147687661803,
+  "direct_checkmate": 360675926605,
+  "single_discovered_checkmate": 60344676,
+  "direct_discoverd_checkmate": 1553739626,
+  "double_discoverd_checkmate": 0,
+  "total_mates": 362290010907,
+  "total_tasks": 101240,
+  "started_at": 1738600029,
+  "finished_at": 1738744310,
+  "contributors": [
+    {
+      "id": 1,
+      "name": "Timmoth",
+      "nodes": 1136417768004282,
+      "tasks": 100875,
+      "compute_time": 17994699
+    },
+    {
+      "id": 3,
+      "name": "ProgramciDusunur",
+      "nodes": 2333500279812,
+      "tasks": 302,
+      "compute_time": 95219
+    },
+    {
+      "id": 2,
+      "name": "eduherminio",
+      "nodes": 1444702642655,
+      "tasks": 63,
+      "compute_time": 106238
+    }
+  ]
+}

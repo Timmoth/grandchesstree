@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>perftcheck &mdash; The Grand Chess Tree</title>
+    <meta
+      name="description"
+      content="A cross-platform CLI that validates a UCI chess engine's perft output against ~142,000 known-correct positions, with automatic drill-down to pinpoint the exact buggy move."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/perftcheck.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://grandchesstree.com/perftcheck.html" />
+    <meta property="og:title" content="perftcheck &mdash; The Grand Chess Tree" />
+    <meta property="og:description" content="Cross-platform CLI to validate a chess engine's perft output against ~142,000 known-correct positions, with automatic drill-down to the exact buggy move." />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      .term {
+        font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+        font-size: 13px;
+        line-height: 1.55;
+        background-color: #0b1220;
+        color: #cbd5e1;
+        border-radius: 0.75rem;
+        padding: 1rem 1.25rem;
+        overflow-x: auto;
+        white-space: pre;
+      }
+      .term .grey   { color: #94a3b8; }
+      .term .prompt { color: #38bdf8; }
+      .term .key    { color: #f1f5f9; }
+      .term .val    { color: #fbbf24; }
+      .cmd-copy-btn {
+        font-family: inherit;
+        font-size: 10px;
+        line-height: 1;
+        color: #94a3b8;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 0.25rem;
+        padding: 2px 6px;
+        margin-left: 0.5rem;
+        cursor: pointer;
+        opacity: 0.55;
+        transition: opacity 120ms ease, background 120ms ease, color 120ms ease;
+        vertical-align: 1px;
+      }
+      .cmd-copy-btn:hover {
+        opacity: 1;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.14);
+      }
+      .cmd-copy-btn-ok {
+        opacity: 1 !important;
+        background: rgba(74, 222, 128, 0.18);
+        color: #4ade80;
+        border-color: rgba(74, 222, 128, 0.3);
+      }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">&#9822;</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+          <li><a href="tools.html" class="text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 md:py-20">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">perftcheck</li>
+            </ol>
+          </nav>
+
+          <div class="flex flex-wrap items-baseline gap-x-4 gap-y-2">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">perftcheck</h1>
+            <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-medium text-emerald-700">CLI</span>
+            <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-xs font-medium text-slate-700">linux &middot; macOS &middot; windows</span>
+          </div>
+
+          <p class="mt-5 max-w-3xl text-slate-600 md:text-lg">
+            Cross-platform CLI that points at a UCI chess engine and
+            validates its
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">go perft N</code>
+            output against
+            <strong class="text-slate-900">142,953 known-correct positions</strong>
+            (depths&nbsp;1&ndash;7) bundled inside the binary. When a
+            mismatch is found, optionally drills down move-by-move until
+            it surfaces the exact leaf position where the engine's
+            move-generator diverges from truth.
+          </p>
+        </div>
+      </section>
+
+      <section id="install" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Install</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            Self-contained single-file binary, ~84&nbsp;MB
+            (the corpus is embedded). Published to
+            <a href="https://github.com/Timmoth/grandchesstree/releases?q=tag%3Aperftcheck&amp;expanded=true" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">GitHub Releases</a>
+            on every tagged build. No .NET runtime required on the target machine.
+            The downloads below point at <span class="font-mono text-sm text-slate-800">perftcheck-0.3.0</span>.
+          </p>
+
+          <div class="mt-8 overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                  <th scope="col" class="px-4 py-3 text-left font-medium">Platform</th>
+                  <th scope="col" class="px-4 py-3 text-left font-medium">Architecture</th>
+                  <th scope="col" class="px-4 py-3 text-left font-medium">Asset</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Linux</td>
+                  <td class="px-4 py-3 tabular">x86_64</td>
+                  <td class="px-4 py-3"><a href="https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-linux-x64" class="font-mono text-xs text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck-linux-x64</a></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Linux</td>
+                  <td class="px-4 py-3 tabular">aarch64</td>
+                  <td class="px-4 py-3"><a href="https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-linux-arm64" class="font-mono text-xs text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck-linux-arm64</a></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">macOS</td>
+                  <td class="px-4 py-3 tabular">Intel</td>
+                  <td class="px-4 py-3"><a href="https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-osx-x64" class="font-mono text-xs text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck-osx-x64</a></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">macOS</td>
+                  <td class="px-4 py-3 tabular">Apple Silicon</td>
+                  <td class="px-4 py-3"><a href="https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-osx-arm64" class="font-mono text-xs text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck-osx-arm64</a></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium text-slate-900">Windows</td>
+                  <td class="px-4 py-3 tabular">x86_64</td>
+                  <td class="px-4 py-3"><a href="https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-win-x64.exe" class="font-mono text-xs text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">perftcheck-win-x64.exe</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-8 grid gap-6 lg:grid-cols-2">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">macOS / Linux</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> curl -L -o perftcheck \
+    https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-<span class="grey">&lt;rid&gt;</span>
+<span class="prompt">$</span> chmod +x perftcheck
+<span class="prompt">$</span> ./perftcheck --engine ./your-engine</pre>
+              <p class="mt-3 text-xs text-slate-500">
+                On macOS, Gatekeeper may quarantine the binary on first run.
+                Right-click &rarr; Open, or run
+                <code class="font-mono text-[11px] text-slate-700">xattr -d com.apple.quarantine perftcheck</code>.
+              </p>
+            </div>
+
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Windows (PowerShell)</h3>
+              <pre class="term mt-3"><span class="prompt">PS&gt;</span> Invoke-WebRequest `
+    https://github.com/Timmoth/grandchesstree/releases/download/perftcheck-0.3.0/perftcheck-win-x64.exe `
+    -OutFile perftcheck.exe
+<span class="prompt">PS&gt;</span> .\perftcheck.exe --engine .\your-engine.exe</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="usage" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Usage</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            One required flag &mdash;
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">--engine</code>,
+            pointing at a UCI executable. The default run walks every
+            bundled position to depth 4 and writes
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">perft-report.json</code>.
+            Source &amp; full docs:
+            <a href="https://github.com/Timmoth/grandchesstree/tree/main/Perft-Checker" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Perft-Checker/</a>.
+          </p>
+
+          <pre class="term mt-6"><span class="prompt">$</span> ./perftcheck --engine ./stockfish</pre>
+
+          <div class="mt-8 overflow-x-auto rounded-xl border border-slate-200">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+              <thead class="bg-slate-50 text-slate-600">
+                <tr>
+                  <th class="px-4 py-3 text-left font-medium">Flag</th>
+                  <th class="px-4 py-3 text-left font-medium">Default</th>
+                  <th class="px-4 py-3 text-left font-medium">Description</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white font-mono text-xs text-slate-800">
+                <tr><td class="px-4 py-3"><code>-e, --engine &lt;PATH&gt;</code></td><td class="px-4 py-3 text-slate-500">required</td><td class="px-4 py-3 font-sans">UCI engine executable</td></tr>
+                <tr><td class="px-4 py-3"><code>-s, --static-analysis &lt;FILE&gt;</code></td><td class="px-4 py-3 text-slate-500">embedded corpus</td><td class="px-4 py-3 font-sans">Override the bundled corpus. Accepts <code>corpus.gctc.gz</code> (binary) or <code>static_analysis.jsonl</code>.</td></tr>
+                <tr><td class="px-4 py-3"><code>--depth-cap &lt;N&gt;</code></td><td class="px-4 py-3 text-slate-500">4</td><td class="px-4 py-3 font-sans">Skip cases deeper than this</td></tr>
+                <tr><td class="px-4 py-3"><code>--depth-min &lt;N&gt;</code></td><td class="px-4 py-3 text-slate-500">1</td><td class="px-4 py-3 font-sans">Skip cases shallower than this</td></tr>
+                <tr><td class="px-4 py-3"><code>--timeout &lt;SECS&gt;</code></td><td class="px-4 py-3 text-slate-500">30</td><td class="px-4 py-3 font-sans">Per-case timeout; engine is killed and restarted on exceed</td></tr>
+                <tr><td class="px-4 py-3"><code>--filter &lt;SUBSTR&gt;</code></td><td class="px-4 py-3 text-slate-500">&mdash;</td><td class="px-4 py-3 font-sans">Only run cases whose FEN contains this substring</td></tr>
+                <tr><td class="px-4 py-3"><code>--quality &lt;TIER&gt;</code></td><td class="px-4 py-3 text-slate-500">all</td><td class="px-4 py-3 font-sans">Restrict by context-quality tier: <code>high</code>, <code>medium</code>, <code>low</code>, <code>both</code> (high+med), <code>all</code></td></tr>
+                <tr><td class="px-4 py-3"><code>--tag &lt;NAME&gt;</code></td><td class="px-4 py-3 text-slate-500">&mdash;</td><td class="px-4 py-3 font-sans">Only run cases whose tags contain this tag. Repeatable; AND across all flags.</td></tr>
+                <tr><td class="px-4 py-3"><code>--limit &lt;N&gt;</code></td><td class="px-4 py-3 text-slate-500">&mdash;</td><td class="px-4 py-3 font-sans">Take only the first N matching cases</td></tr>
+                <tr><td class="px-4 py-3"><code>--report &lt;PATH&gt;</code></td><td class="px-4 py-3 text-slate-500">perft-report.json</td><td class="px-4 py-3 font-sans">Path to write the JSON report</td></tr>
+                <tr><td class="px-4 py-3"><code>--fail-fast</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Stop on the first non-pass</td></tr>
+                <tr><td class="px-4 py-3"><code>--quiet</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Suppress live console output (CI mode)</td></tr>
+                <tr><td class="px-4 py-3"><code>--perft-command &lt;CMD&gt;</code></td><td class="px-4 py-3 text-slate-500">go perft</td><td class="px-4 py-3 font-sans">UCI verb sent before the depth number. Set to <code>perft</code> for engines like Potential that accept the bare form.</td></tr>
+                <tr><td class="px-4 py-3"><code>--drill-down</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">On every mismatch, walk divides depth-by-depth until the leaf position where move-gen first diverges. Requires <code>--ref-engine</code>.</td></tr>
+                <tr><td class="px-4 py-3"><code>--ref-engine &lt;PATH&gt;</code></td><td class="px-4 py-3 text-slate-500">&mdash;</td><td class="px-4 py-3 font-sans">GrandChessTree.Engine binary used as the divide+apply oracle for <code>--drill-down</code>.</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="mt-6 text-sm text-slate-500">
+            Exit codes:
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-emerald-700">0</code> all passed,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-rose-700">1</code> at least one failure,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-amber-700">2</code> bad args.
+          </p>
+        </div>
+      </section>
+
+      <section id="corpus" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">The corpus</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            142,953 positions scraped from forum posts, GitHub issues,
+            EPDs, and chessprogramming.org &mdash; each carrying its
+            source URLs, deterministic feature tags
+            (<code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">en_passant_capture_possible</code>,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">castling_white_kingside</code>, etc.),
+            full
+            <strong class="text-slate-900">d1&ndash;d7 perft node counts</strong>,
+            and the
+            <strong class="text-slate-900">per-move root divides</strong>
+            used by drill-down.
+          </p>
+
+          <div class="mt-6 grid gap-6 md:grid-cols-2">
+            <div class="rounded-xl border border-slate-200 p-5">
+              <h3 class="text-sm font-semibold text-slate-900">Binary format &mdash; bundled</h3>
+              <p class="mt-2 text-sm text-slate-600">
+                <code class="font-mono text-xs text-slate-800">corpus.gctc.gz</code> &mdash;
+                custom gzipped binary, <strong>~46&nbsp;MB</strong>. URL
+                dedup, packed 16-bit UCI moves, varint counts. Embedded
+                in the perftcheck binary. Format spec lives at the top
+                of
+                <code class="font-mono text-xs text-slate-800">fen_corpus/scripts/09_pack.py</code>.
+              </p>
+            </div>
+            <div class="rounded-xl border border-slate-200 p-5">
+              <h3 class="text-sm font-semibold text-slate-900">JSONL &mdash; authoring</h3>
+              <p class="mt-2 text-sm text-slate-600">
+                <code class="font-mono text-xs text-slate-800">static_analysis.jsonl</code> &mdash;
+                one JSON row per FEN, ~388&nbsp;MB. Greppable; used as
+                the input that 09_pack.py compresses. Pass either format
+                to <code class="font-mono text-xs text-slate-800">--static-analysis</code>
+                and perftcheck transparently detects which one.
+              </p>
+            </div>
+          </div>
+
+          <p class="mt-6 text-sm text-slate-500">
+            The pipeline that builds the corpus (search &rarr; fetch
+            &rarr; extract &rarr; describe &rarr; perft &rarr; pack)
+            lives in
+            <a href="https://github.com/Timmoth/grandchesstree/tree/main/Perft-Checker/fen_corpus" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Perft-Checker/fen_corpus</a>.
+            d1&ndash;d6 totals are computed by GrandChessTree.Engine
+            divide; d7 stragglers come from
+            <a href="https://github.com/abulmo/MPerft" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">MPerft</a>
+            with nullmove counting on a small set of pathological
+            multi-queen / mass-promotion positions.
+          </p>
+        </div>
+      </section>
+
+      <section id="aggregation" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Failure aggregation</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            After every run, the summary cross-tabulates the deterministic
+            feature tags across the failure set. Tags present in
+            <strong class="text-slate-900">&ge;50%</strong>
+            of failures are highlighted as strong root-cause signals.
+          </p>
+
+          <pre class="term mt-6"><span class="grey">Tags across the 17 failure(s) (top 20 of 23, ≥50% highlighted):</span>
+╭────────────────────────────────┬──────────┬──────────╮
+│ <span class="key">tag</span>                            │ <span class="key">failures</span> │ <span class="key">fraction</span> │
+├────────────────────────────────┼──────────┼──────────┤
+│ <span class="val">en_passant_capture_possible</span>    │       16 │     <span class="val">94 %</span> │ ← strong signal
+│ <span class="val">side_to_move_black</span>             │       14 │     <span class="val">82 %</span> │ ← strong signal
+│ <span class="val">castling_white_kingside</span>        │        9 │     <span class="val">53 %</span> │ ← strong signal
+│ material_equal                 │        6 │     35 % │
+│ middlegame_phase               │        5 │     29 % │
+…</pre>
+
+          <p class="mt-4 text-sm text-slate-500">
+            Same data lands in
+            <code class="font-mono text-xs text-slate-800">failureTags.countByTag</code>
+            /
+            <code class="font-mono text-xs text-slate-800">fractionByTag</code>
+            in the JSON report for programmatic analysis.
+          </p>
+        </div>
+      </section>
+
+      <section id="drill-down" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Drill-down: find the exact buggy move</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            When the engine's perft total disagrees with truth at depth
+            <em>N</em>, the bug is usually one move in one sub-tree.
+            Manually narrowing that down is the classic "perft divide
+            &rarr; pick wrong root &rarr; apply &rarr; divide again"
+            loop, repeated until depth 1 where the divide is the legal
+            move list and the diff is the bug.
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">--drill-down</code>
+            automates that loop.
+          </p>
+
+          <p class="mt-4 max-w-3xl text-slate-600">
+            Point it at a trusted reference engine &mdash; the
+            GrandChessTree.Engine in this repo, which accepts the
+            extended
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-sm text-slate-800">divide:&lt;d&gt;:&lt;mb&gt;:&lt;fen&gt;:&lt;moves&gt;</code>
+            command (per-move divide
+            <em>and</em> the resulting FEN after applying an optional
+            move list, in one round-trip):
+          </p>
+
+          <pre class="term mt-6"><span class="prompt">$</span> ./perftcheck \
+    --engine ./your-buggy-engine \
+    --drill-down --ref-engine ./GrandChessTree.Engine</pre>
+
+          <p class="mt-6 max-w-3xl text-slate-600">For every mismatch the runner:</p>
+          <ol class="mt-3 ml-6 list-decimal max-w-3xl text-slate-600 text-sm space-y-1">
+            <li>Compares the test engine's divide at the failing position to the corpus's <code class="font-mono text-xs">divide_d&lt;N&gt;</code>.</li>
+            <li>Picks the first move whose count differs (missing &rarr; extra &rarr; wrong-count; missing moves are usually the actionable signal).</li>
+            <li>Applies that move via the reference engine, descends to depth N&minus;1, asks the reference for the new expected divide, and compares again.</li>
+            <li>Stops at depth 1, where the diff between the test engine's and the reference's move lists <em>is</em> the bug &mdash; which moves the engine illegally generates, and which it failed to generate, at a single specific position.</li>
+          </ol>
+
+          <p class="mt-6 max-w-3xl text-slate-600">
+            Each failure in the JSON report gains a
+            <code class="font-mono text-xs">drillDown</code>
+            block:
+          </p>
+
+          <pre class="term mt-3">{
+  <span class="key">"drillDown"</span>: {
+    <span class="key">"bugDepth"</span>:      1,
+    <span class="key">"moveSequence"</span>:  [<span class="val">"e2e4"</span>, <span class="val">"g8f6"</span>, <span class="val">"f1c4"</span>],
+    <span class="key">"leafFen"</span>:       <span class="val">"rnbqkb1r/pppp1ppp/5n2/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR b KQkq - 2 2"</span>,
+    <span class="key">"missingMoves"</span>:  [<span class="val">"d8e7"</span>],
+    <span class="key">"extraMoves"</span>:    [],
+    <span class="key">"wrongCount"</span>:    {}
+  }
+}</pre>
+
+          <p class="mt-4 max-w-3xl text-slate-600">
+            A bug-depth histogram is printed at the end of the run.
+            A tall <code class="font-mono text-xs">d=1</code> column
+            means a pure move-generator issue; deeper bottom-outs point
+            at make-move / unmake bugs (where the engine's d=1 divide
+            after a fresh
+            <code class="font-mono text-xs">position fen</code>
+            agrees with truth, but its internal state after applying the
+            same moves doesn't).
+          </p>
+
+          <p class="mt-3 text-sm text-slate-500">
+            Cost: each mismatch adds roughly <em>N</em> reference-engine
+            round-trips. For ~400 failures at depth 4, drill-down
+            typically adds 5&ndash;15 minutes.
+          </p>
+        </div>
+      </section>
+
+      <section id="recipes" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Common recipes</h2>
+
+          <div class="mt-6 grid gap-6 lg:grid-cols-2">
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">CI gate &mdash; quiet output</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./engine \
+    --quiet --report perft.json</pre>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Just the curated subset</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./engine --quality high</pre>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Only en-passant positions</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./engine \
+    --tag en_passant_capture_possible</pre>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Bisection &mdash; halt on first divergence</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./engine --fail-fast</pre>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Engines using bare <code>perft N</code></h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./potential \
+    --perft-command perft</pre>
+              <p class="mt-2 text-xs text-slate-500">Potential and a few others omit the <code class="font-mono text-[11px]">go</code> prefix.</p>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Diagnose every mismatch to a leaf</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./buggy \
+    --drill-down \
+    --ref-engine ./GrandChessTree.Engine</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="report" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">JSON report</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            Every run writes a single self-describing JSON file
+            (default
+            <code class="font-mono text-xs text-slate-800">perft-report.json</code>).
+            Structured for programmatic ingestion &mdash; CI systems,
+            spreadsheets, comparison scripts.
+          </p>
+
+          <pre class="term mt-6">{
+  <span class="key">"tool"</span>:      <span class="val">"perftcheck"</span>,
+  <span class="key">"version"</span>:   <span class="val">"0.3.0"</span>,
+  <span class="key">"engine"</span>:    <span class="val">"/abs/path/to/engine"</span>,
+  <span class="key">"engineId"</span>:  <span class="val">"Stockfish 18"</span>,
+  <span class="key">"startedUtc"</span>: <span class="val">"2026-05-30T12:00:00Z"</span>,
+  <span class="key">"durationSeconds"</span>: 21.94,
+  <span class="key">"options"</span>: {
+    <span class="key">"depthMin"</span>: 1, <span class="key">"depthCap"</span>: 4, <span class="key">"timeoutSeconds"</span>: 30,
+    <span class="key">"staticAnalysisFile"</span>: <span class="val">"embedded:corpus.gctc.gz"</span>
+  },
+  <span class="key">"totals"</span>:   { <span class="key">"cases"</span>: 570293, <span class="key">"passed"</span>: 569869, <span class="key">"failed"</span>: 424 },
+  <span class="key">"failures"</span>: [
+    {
+      <span class="key">"kind"</span>:     <span class="val">"mismatch"</span>,
+      <span class="key">"fen"</span>:      <span class="val">"…"</span>,
+      <span class="key">"depth"</span>:    3,
+      <span class="key">"expected"</span>: 12345,
+      <span class="key">"actual"</span>:   12344,
+      <span class="key">"diff"</span>:     -1,
+      <span class="key">"source"</span>:   <span class="val">"&lt;embedded:corpus.gctc.gz&gt;:8721"</span>,
+      <span class="key">"tags"</span>:     [<span class="val">"en_passant_capture_possible"</span>, <span class="val">"side_to_move_black"</span>, …],
+      <span class="key">"sourceUrls"</span>: [<span class="val">"https://github.com/X/Y/issues/123"</span>, …],
+      <span class="key">"drillDown"</span>: { … }    <span class="grey">// when --drill-down is on</span>
+    }
+  ],
+  <span class="key">"failureTags"</span>: {
+    <span class="key">"failuresWithTags"</span>: 17,
+    <span class="key">"countByTag"</span>:    { <span class="val">"en_passant_capture_possible"</span>: 16, … },
+    <span class="key">"fractionByTag"</span>: { <span class="val">"en_passant_capture_possible"</span>: 0.94, … }
+  }
+}</pre>
+
+          <p class="mt-4 text-sm text-slate-500">
+            Failure kinds:
+            <code class="font-mono text-xs">"mismatch"</code> (node-count
+            differs &mdash;
+            <code class="font-mono text-xs">expected</code>/<code class="font-mono text-xs">actual</code>/<code class="font-mono text-xs">diff</code>
+            populated),
+            <code class="font-mono text-xs">"timeout"</code>
+            (engine didn't respond within
+            <code class="font-mono text-xs">--timeout</code>
+            seconds),
+            <code class="font-mono text-xs">"error"</code>
+            (engine pipe closed or output unparseable; raw output
+            captured in <code class="font-mono text-xs">engineOutput</code>,
+            truncated to ~2 KB).
+          </p>
+        </div>
+      </section>
+
+      <section id="engines" class="border-b border-slate-200 py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Engine compatibility</h2>
+
+          <ul class="mt-4 max-w-3xl text-slate-600 text-sm space-y-3">
+            <li>
+              <strong class="text-slate-900">Stockfish</strong> &mdash;
+              works out of the box. Uses
+              <code class="font-mono text-xs">Nodes searched: N</code>
+              for the total and
+              <code class="font-mono text-xs">e2e4: 600</code>
+              for divide lines.
+            </li>
+            <li>
+              <strong class="text-slate-900">Komodo, Ethereal, Berserk, Lc0</strong>
+              &mdash; UCI-standard, work out of the box.
+            </li>
+            <li>
+              <strong class="text-slate-900">Potential</strong> &mdash; accepts
+              only the bare
+              <code class="font-mono text-xs">perft N</code>
+              form (no
+              <code class="font-mono text-xs">go</code>
+              prefix). Pass
+              <code class="font-mono text-xs">--perft-command perft</code>.
+              Divide lines are
+              <code class="font-mono text-xs">e2e4 600</code>
+              (space, no colon) and parse correctly.
+            </li>
+            <li>
+              <strong class="text-slate-900">GrandChessTree.Engine</strong>
+              (this repo) &mdash; has a minimal UCI shim so it works as
+              a test engine, <em>and</em> serves as the drill-down
+              oracle via its colon-delimited extension command
+              <code class="font-mono text-xs">divide:&lt;depth&gt;:&lt;mb&gt;:&lt;fen&gt;[:&lt;moves&gt;]</code>
+              (apply moves + divide + return resulting FEN in one
+              round-trip).
+            </li>
+            <li>
+              <strong class="text-slate-900">MoveGen</strong>
+              (this repo,
+              <code class="font-mono text-xs">MoveGen/</code>)
+              &mdash; adds UCI mode to the demo Program.cs.
+            </li>
+          </ul>
+
+          <p class="mt-6 text-sm text-slate-500">
+            A divide line is matched by the regex
+            <code class="font-mono text-xs">^\s*([a-h][1-8][a-h][1-8][rnbqRNBQ]?)\s*[:\s]\s*(\d+)$</code>,
+            so both
+            <code class="font-mono text-xs">e2e4: 600</code>
+            and
+            <code class="font-mono text-xs">e2e4 600</code>
+            work, lowercase or uppercase promotion characters welcomed.
+          </p>
+        </div>
+      </section>
+
+      <section id="build" class="py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900">Build from source</h2>
+          <p class="mt-3 max-w-3xl text-slate-600">
+            You'll need the
+            <a href="https://dotnet.microsoft.com/download/dotnet/10.0" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">.NET 10 SDK</a>.
+            One NuGet dep
+            (<a href="https://github.com/spectreconsole/spectre.console" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Spectre.Console.Cli</a>)
+            is restored automatically. The corpus
+            (<code class="font-mono text-xs text-slate-800">corpus.gctc.gz</code>, ~46&nbsp;MB)
+            is embedded as a resource in the assembly &mdash; no extra
+            files to fetch.
+          </p>
+
+          <h3 class="mt-8 text-sm font-semibold text-slate-900">Run straight from the repo</h3>
+          <pre class="term mt-3"><span class="prompt">$</span> git clone https://github.com/Timmoth/grandchesstree.git
+<span class="prompt">$</span> cd grandchesstree/Perft-Checker
+<span class="prompt">$</span> dotnet run -c Release -- --engine /path/to/your-engine</pre>
+
+          <h3 class="mt-8 text-sm font-semibold text-slate-900">Publish a single-file binary</h3>
+          <p class="mt-2 max-w-3xl text-sm text-slate-600">
+            Same incantation the
+            <a href="https://github.com/Timmoth/grandchesstree/blob/main/.github/workflows/publish-perftcheck.yml" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">release workflow</a>
+            uses. Substitute the
+            <a href="https://learn.microsoft.com/dotnet/core/rid-catalog" target="_blank" rel="noopener noreferrer" class="font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">runtime identifier</a>
+            for your host:
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">linux-x64</code>,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">linux-arm64</code>,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">osx-x64</code>,
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">osx-arm64</code>, or
+            <code class="rounded bg-slate-100 px-1.5 py-0.5 text-xs text-slate-800">win-x64</code>.
+          </p>
+          <pre class="term mt-3"><span class="prompt">$</span> dotnet publish Perft-Checker/PerftSuite.csproj \
+    -c Release \
+    -r <span class="grey">&lt;rid&gt;</span> \
+    --self-contained true \
+    -p:PublishSingleFile=true \
+    -p:EnableCompressionInSingleFile=true \
+    -p:DebugType=embedded</pre>
+          <p class="mt-3 text-xs text-slate-500">
+            Resulting binary:
+            <code class="font-mono text-[11px] text-slate-700">Perft-Checker/bin/Release/net10.0/&lt;rid&gt;/publish/perftcheck</code>
+            (or
+            <code class="font-mono text-[11px] text-slate-700">perftcheck.exe</code>
+            on Windows). Strip the
+            <code class="font-mono text-[11px] text-slate-700">--self-contained</code>
+            flag for a framework-dependent build if .NET 10 will be
+            present on the target host.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">&#9822;</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // Inject a small inline "copy" button at the end of each command in
+      // every terminal block. A command starts at a <span class="prompt">
+      // marker and extends until the next prompt (or end of block); the
+      // copied text strips the prompt and its trailing single space, so the
+      // user gets a paste-ready command without "$ " / "PS> " junk.
+      document.querySelectorAll("pre.term").forEach((pre) => {
+        const prompts = Array.from(pre.querySelectorAll(":scope > .prompt"));
+        if (prompts.length === 0) return;
+
+        prompts.forEach((prompt, i) => {
+          const nextPrompt = prompts[i + 1] || null;
+
+          // Walk forward from this prompt to (exclusive) the next prompt,
+          // collecting the command's nodes.
+          const cmdNodes = [];
+          let n = prompt.nextSibling;
+          while (n && n !== nextPrompt) {
+            cmdNodes.push(n);
+            n = n.nextSibling;
+          }
+
+          // Build the clipboard string: drop the leading space that follows
+          // the prompt span, and any trailing newline that separates this
+          // command from the next.
+          let text = cmdNodes.map((n) => n.textContent || "").join("");
+          text = text.replace(/^ /, "").replace(/\n$/, "");
+
+          // Insert the button right before the trailing newline (if any) so
+          // it sits on the command's last text line, not the line below.
+          let insertBefore = nextPrompt;
+          const last = cmdNodes[cmdNodes.length - 1];
+          if (last && last.nodeType === Node.TEXT_NODE && last.textContent.endsWith("\n")) {
+            last.textContent = last.textContent.slice(0, -1);
+            const nl = document.createTextNode("\n");
+            pre.insertBefore(nl, insertBefore);
+            insertBefore = nl;
+          }
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "cmd-copy-btn";
+          btn.textContent = "copy";
+          btn.setAttribute("aria-label", "Copy command to clipboard");
+          pre.insertBefore(btn, insertBefore);
+
+          btn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.textContent = "copied";
+              btn.classList.add("cmd-copy-btn-ok");
+            } catch {
+              btn.textContent = "failed";
+            }
+            setTimeout(() => {
+              btn.textContent = "copy";
+              btn.classList.remove("cmd-copy-btn-ok");
+            }, 1500);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

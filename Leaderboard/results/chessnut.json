@@ -1,0 +1,244 @@
+{
+  "name": "chessnut",
+  "owner": "FireFather",
+  "repo": "https://github.com/FireFather/chessnut",
+  "language": "C++",
+  "versions": {
+    "master": {
+      "ran_at": "2026-05-27T18:01:35Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66589437952,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.316095,
+                  "nps": 63,
+                  "av_cpu_pct": 98.1,
+                  "av_rss_mb": 6.2,
+                  "peak_rss_mb": 27.6
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 0.000109,
+                  "nps": 3654169,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 8e-05,
+                  "nps": 111108347,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.000572,
+                  "nps": 344784137,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.012649,
+                  "nps": 384656080,
+                  "av_cpu_pct": 79.1,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 0.306152,
+                  "nps": 388893144,
+                  "av_cpu_pct": 101.3,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 7,
+                  "nodes": 3195901860,
+                  "elapsed_sec": 7.896573,
+                  "nps": 404720127,
+                  "av_cpu_pct": 99.9,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                }
+              ],
+              "note": "skipped d8 (estimated 210.0s > 81.5s remaining at 1.5x budget cap)",
+              "best_depth": 7,
+              "best_nodes": 3195901860,
+              "best_elapsed_sec": 7.896573,
+              "best_nps": 404720127,
+              "best_av_cpu_pct": 99.9,
+              "best_av_rss_mb": 4.1,
+              "best_peak_rss_mb": 4.1
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.29285,
+                  "nps": 163,
+                  "av_cpu_pct": 99.0,
+                  "av_rss_mb": 2.0,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 0.000155,
+                  "nps": 13148900,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.000288,
+                  "nps": 339294368,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.008392,
+                  "nps": 486823450,
+                  "av_cpu_pct": 119.2,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 0.362168,
+                  "nps": 534809074,
+                  "av_cpu_pct": 99.4,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 6,
+                  "nodes": 8031647685,
+                  "elapsed_sec": 16.282739,
+                  "nps": 493261465,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                }
+              ],
+              "note": "skipped d7 (estimated 758.6s > 73.1s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 8031647685,
+              "best_elapsed_sec": 16.282739,
+              "best_nps": 493261465,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 4.1,
+              "best_peak_rss_mb": 4.1
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.340358,
+                  "nps": 135,
+                  "av_cpu_pct": 97.0,
+                  "av_rss_mb": 2.5,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 0.000135,
+                  "nps": 15371306,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.000265,
+                  "nps": 339034839,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.007913,
+                  "nps": 492150052,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 0.333332,
+                  "nps": 492228704,
+                  "av_cpu_pct": 102.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                },
+                {
+                  "depth": 6,
+                  "nodes": 6923051137,
+                  "elapsed_sec": 14.045289,
+                  "nps": 492909114,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 4.1,
+                  "peak_rss_mb": 4.1
+                }
+              ],
+              "note": "skipped d7 (estimated 582.6s > 75.3s remaining at 1.5x budget cap)",
+              "best_depth": 6,
+              "best_nodes": 6923051137,
+              "best_elapsed_sec": 14.045289,
+              "best_nps": 492909114,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 4.1,
+              "best_peak_rss_mb": 4.1
+            }
+          ],
+          "mean_nps": 463630235
+        }
+      }
+    }
+  }
+}

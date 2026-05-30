@@ -1,0 +1,32 @@
+{
+  "name": "jet",
+  "owner": "rafid-dev",
+  "repo": "https://github.com/rafid-dev/jet",
+  "language": "C++",
+  "versions": {
+    "1.2": {
+      "ran_at": "2026-05-27T18:02:42Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66589437952,
+        "mem_speed_mts": null
+      },
+      "disqualified": true,
+      "reason": "wrong node count",
+      "failed_case": {
+        "mode": "single-no-cache",
+        "name": "kiwipete",
+        "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+        "depth": 6,
+        "expected_nodes": 8031647685,
+        "captured_stdout": "e2f1: 174218453\ne2d3: 167737155\ne2c4: 170094798\ne2b5: 158033152\ne2a6: 130642863\na1b1: 160413321\na1c1: 159720218\na1d1: 149265033\nh1f1: 154273720\nh1g1: 166086672\nf3d3: 164583144\nf3e3: 189120807\nf3g3: 198078522\nf3h3: 210100865\nf3f4: 181938761\nf3g4: 189789456\nf3f5: 226135507\nf3h5: 197839051\nf3f6: 146338070\nNodes: 8031647705"
+      }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "position": 2,
+  "depth": 1,
+  "nodes": 46,
+  "captures": 4,
+  "enpassants": 0,
+  "castles": 0,
+  "promotions": 0,
+  "direct_checks": 1,
+  "single_discovered_check": 0,
+  "direct_discovered_check": 0,
+  "double_discovered_check": 0,
+  "total_checks": 1,
+  "direct_mates": 0,
+  "single_discovered_mates": 0,
+  "direct_discovered_mates": 0,
+  "double_discovered_mates": 0,
+  "total_mates": 0,
+  "total_tasks": 1,
+  "started_at": 1739534217,
+  "finished_at": 1739534218,
+  "contributors": [
+    {
+      "id": 1,
+      "name": "Timmoth",
+      "nodes": 46,
+      "tasks": 1,
+      "compute_time": 1
+    }
+  ]
+}

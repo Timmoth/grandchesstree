@@ -1,0 +1,20 @@
+{
+  "name": "maestro",
+  "version": "1.2-82e70dd",
+  "owner": "Hin-Yu-Evan-Fung",
+  "repo": "https://github.com/Hin-Yu-Evan-Fung/Maestro-Chess-Engine",
+  "language": "C++",
+  "_note": "Maestro (Evan Fung) is a UCI engine in C++ with a Stockfish NNUE embedded at build time via incbin (../bin/nn-eba324f53044.nnue relative to src/nnue.cpp). Perft is invoked via `go perft N`. The output is a divide listing (`Move: m Nodes: c`) followed by a tab-indented summary block — `Total Nodes:`, `Duration:`, `Performance:` lines. The perft routine in src/engine.cpp is single-threaded (just calls perftTest), so even though Threads is exposed (declared max 12), only single-no-cache is meaningful. End regex matches the Performance line so the runner reads through the whole summary.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/maestro/maestro",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "Performance:\\s+\\d+\\s+MNPS",
+      "quit":   "quit"
+    }
+  }
+}

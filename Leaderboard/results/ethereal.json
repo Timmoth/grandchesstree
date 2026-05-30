@@ -1,0 +1,217 @@
+{
+  "name": "ethereal",
+  "owner": "AndyGrant",
+  "repo": "https://github.com/AndyGrant/Ethereal",
+  "versions": {
+    "14.40 (PEXT)": {
+      "ran_at": "2026-05-24T11:55:26Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66585452544,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.002712,
+                  "nps": 7375,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.2,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 6.2e-05,
+                  "nps": 6450988,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 0.000237,
+                  "nps": 37524290,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.004438,
+                  "nps": 44452300,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.10688,
+                  "nps": 45524069,
+                  "av_cpu_pct": 102.9,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 2.593782,
+                  "nps": 45902214,
+                  "av_cpu_pct": 99.9,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                }
+              ],
+              "note": "timeout at d7",
+              "best_depth": 6,
+              "best_nodes": 119060324,
+              "best_elapsed_sec": 2.593782,
+              "best_nps": 45902214,
+              "best_av_cpu_pct": 99.9,
+              "best_av_rss_mb": 5.9,
+              "best_peak_rss_mb": 5.9
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.002823,
+                  "nps": 17003,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 3.2,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 0.000121,
+                  "nps": 16790599,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.002163,
+                  "nps": 45247094,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.089776,
+                  "nps": 45508786,
+                  "av_cpu_pct": 100.2,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 4.101519,
+                  "nps": 47224130,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                }
+              ],
+              "note": "timeout at d6",
+              "best_depth": 5,
+              "best_nodes": 193690690,
+              "best_elapsed_sec": 4.101519,
+              "best_nps": 47224130,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 5.9,
+              "best_peak_rss_mb": 5.9
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.002764,
+                  "nps": 16639,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 0.00012,
+                  "nps": 17367985,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.001961,
+                  "nps": 45842855,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.083021,
+                  "nps": 46910932,
+                  "av_cpu_pct": 96.4,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 3.438819,
+                  "nps": 47712762,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 5.9,
+                  "peak_rss_mb": 5.9
+                }
+              ],
+              "note": "timeout at d6",
+              "best_depth": 5,
+              "best_nodes": 164075551,
+              "best_elapsed_sec": 3.438819,
+              "best_nps": 47712762,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 5.9,
+              "best_peak_rss_mb": 5.9
+            }
+          ],
+          "mean_nps": 46946368
+        }
+      }
+    }
+  },
+  "language": "C"
+}

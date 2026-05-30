@@ -1,0 +1,19 @@
+# Supplemental GitHub repos for the issue/PR fetcher (01b_github_issues.py).
+# Auto-merged with the engine repos parsed from PerftWar/engines/*.json.
+#
+# Format: owner/repo per line. Blank lines and `#` comments are ignored.
+# Re-running the fetcher is safe — issues already cached are skipped.
+#
+# Goal: high-context bug-report sources. Chess libraries (not just engines)
+# accumulate a lot of "this FEN crashes/parses wrong" issues that engine
+# repos don't see, because the library authors are the ones validating
+# weird input.
+
+# Chess move-generation / FEN libraries
+niklasf/python-chess         # Python chess library — very active, lots of FEN bug reports
+jhlywa/chess.js              # JavaScript chess library — chess.com / lichess use forks of this
+lichess-org/scalachess       # Lichess's chess validator (Scala)
+
+# Engines not in PerftWar/engines/
+fairy-stockfish/Fairy-Stockfish  # Stockfish fork for fairy chess variants
+LeelaChessZero/lc0               # NN-based chess engine

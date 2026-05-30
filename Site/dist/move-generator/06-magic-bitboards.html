@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Magic Bitboards &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in `RookAttacks` and `BishopAttacks` — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/06-magic-bitboards.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/06-magic-bitboards.html" />
+    <meta property="og:title" content="Magic Bitboards — Let&#39;s build a move generator" />
+    <meta property="og:description" content="The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in `RookAttacks` and `BishopAttacks` — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Magic Bitboards — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in `RookAttacks` and `BishopAttacks` — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Magic Bitboards",
+      "description": "The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in `RookAttacks` and `BishopAttacks` — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node.",
+      "url": "https://grandchesstree.com/move-generator/06-magic-bitboards.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 6</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 6 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Magic Bitboards</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in `RookAttacks` and `BishopAttacks` — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node.</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">The generator from Part 4 is correct, and the make/unmake from Part 5 is correct, and together they give us matching perft numbers. They&#39;re also slow. Most of the time is spent in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">RookAttacks</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">BishopAttacks</code> — the classical ray-scan does up to four bitscans and four conditional XORs per slider, every time it&#39;s called, on every search node.</p>
+<p class="mt-4 leading-relaxed text-slate-700">This is the article where we make those two functions fast. We&#39;ll replace the ray-scan with <strong>magic bitboards</strong>: a single multiply, a single shift, and a single table lookup, in exchange for ~840 KiB of precomputed attack tables. No new perft numbers — the move generator still produces the same moves — but the runtime drops by several times.</p>
+<h2 id="the-hashing-problem" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-hashing-problem" class="no-underline">The hashing problem</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">For a rook on <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">sq</code>, the squares it attacks depend on <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">sq</code> and on which squares along its rays are blocked. Different occupancy bitboards can produce the same attack set — only the <em>first</em> blocker along each ray matters; everything past it is hidden. So if we could feed an occupancy bitboard through a function that mapped it to a small dense index, we could just look up the answer.</p>
+<p class="mt-4 leading-relaxed text-slate-700">That function is the magic-bitboard hash:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">index = ((occupancy &amp; mask[sq]) * magic[sq]) &gt;&gt; (64 - bits[sq])
+attack = attackTable[sq][index]</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Four steps:</p>
+<ol class="mt-4 list-decimal space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><strong>Mask</strong> — keep only the occupancy bits that <em>could</em> be blockers along this square&#39;s rays. Edge squares don&#39;t matter; if there&#39;s no square beyond them, &quot;blocked at the edge&quot; looks the same as &quot;no blocker&quot;. A rook on d4 has 10 relevant occupancy bits (the inner squares along its rank and file); a bishop has at most 9.</li><li class="mt-1.5"><strong>Multiply</strong> — multiply by a precomputed 64-bit <em>magic</em> constant. The result is essentially nonsense, <em>except</em> that its top <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">n</code> bits form a unique fingerprint of the masked occupancy.</li><li class="mt-1.5"><strong>Shift</strong> — right-shift by <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">64 - n</code> to extract those top n bits as a small index.</li><li class="mt-1.5"><strong>Lookup</strong> — index a per-square attack table.</li></ol>
+<p class="mt-4 leading-relaxed text-slate-700">Why does it work? Because the number of <em>distinct attack sets</em> for a slider on a square is far smaller than the number of possible occupancy bitmasks. A rook on a corner has only 49 unique attack sets across all 4096 possible occupancies. A bishop on d4 has 108 across its 512. So we don&#39;t need a perfect-hash function — we need any function that maps each occupancy to <em>some</em> index such that two occupancies with the <em>same</em> attack set may collide but two with <em>different</em> attack sets never do. That&#39;s exactly what magic numbers give us.</p>
+<h2 id="how-to-find-a-magic" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#how-to-find-a-magic" class="no-underline">How to find a magic</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We try random 64-bit candidates and accept the first one whose <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">(occ * magic) &gt;&gt; (64 - n)</code> doesn&#39;t conflate two occupancies with different attack sets. The trick is a <strong>sparse PRNG</strong> — most working magics have very few set bits, so we AND together three random values to bias toward sparse candidates:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static ulong SparseRandom(System.Random rng)
+{
+    ulong R() =&gt; ((ulong)(uint)rng.Next() &lt;&lt; 32) | (uint)rng.Next();
+    return R() &amp; R() &amp; R();
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The whole search loop is a few dozen lines. We&#39;ll build it after we have the supporting pieces.</p>
+<h2 id="masks-what-counts-as-relevant" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#masks-what-counts-as-relevant" class="no-underline">Masks: what counts as &quot;relevant&quot;</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">For each square we want the bits along that piece&#39;s rays, excluding both the square itself and the outer edges:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Numerics;
+
+public static class Magic
+{
+    static readonly ulong[] RookMasks   = new ulong[64];
+    static readonly ulong[] BishopMasks = new ulong[64];
+
+    static void InitMasks()
+    {
+        for (int sq = 0; sq &lt; 64; sq++)
+        {
+            RookMasks[sq]   = BuildRookMask(sq);
+            BishopMasks[sq] = BuildBishopMask(sq);
+        }
+    }
+
+    static ulong BuildRookMask(int sq)
+    {
+        ulong m = 0;
+        int r = sq &gt;&gt; 3, f = sq &amp; 7;
+        for (int rr = r + 1; rr &lt;= 6; rr++) m |= 1UL &lt;&lt; (rr * 8 + f);
+        for (int rr = r - 1; rr &gt;= 1; rr--) m |= 1UL &lt;&lt; (rr * 8 + f);
+        for (int ff = f + 1; ff &lt;= 6; ff++) m |= 1UL &lt;&lt; (r  * 8 + ff);
+        for (int ff = f - 1; ff &gt;= 1; ff--) m |= 1UL &lt;&lt; (r  * 8 + ff);
+        return m;
+    }
+
+    static ulong BuildBishopMask(int sq)
+    {
+        ulong m = 0;
+        int r = sq &gt;&gt; 3, f = sq &amp; 7;
+        for (int rr = r+1, ff = f+1; rr &lt;= 6 &amp;&amp; ff &lt;= 6; rr++, ff++) m |= 1UL &lt;&lt; (rr * 8 + ff);
+        for (int rr = r+1, ff = f-1; rr &lt;= 6 &amp;&amp; ff &gt;= 1; rr++, ff--) m |= 1UL &lt;&lt; (rr * 8 + ff);
+        for (int rr = r-1, ff = f+1; rr &gt;= 1 &amp;&amp; ff &lt;= 6; rr--, ff++) m |= 1UL &lt;&lt; (rr * 8 + ff);
+        for (int rr = r-1, ff = f-1; rr &gt;= 1 &amp;&amp; ff &gt;= 1; rr--, ff--) m |= 1UL &lt;&lt; (rr * 8 + ff);
+        return m;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Notice the masks stop one short of the edge (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">rr &lt;= 6</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">ff &gt;= 1</code>) — edge squares can never <em>be</em> blockers in a meaningful way (the ray ends there regardless).</p>
+<p class="mt-4 leading-relaxed text-slate-700">The popcount of a square&#39;s mask tells us how many index bits we need. Corner rooks see 12; central rooks see 10. Corner bishops see 6; central bishops see 9. (Bishops are easier because their masks are smaller.)</p>
+<h2 id="enumerating-occupancies" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#enumerating-occupancies" class="no-underline">Enumerating occupancies</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">To validate a candidate magic we need every possible occupancy along the mask&#39;s bits. There are <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">2^popcount(mask)</code> of them. We enumerate by treating an index <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">0..2^n - 1</code> as a bitmask over the set bits of the mask:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static ulong OccupancyAtIndex(int index, ulong mask)
+{
+    ulong result = 0;
+    int n = BitOperations.PopCount(mask);
+    for (int i = 0; i &lt; n; i++)
+    {
+        int bit = BitOperations.TrailingZeroCount(mask);
+        mask &amp;= mask - 1;
+        if (((index &gt;&gt; i) &amp; 1) != 0)
+            result |= 1UL &lt;&lt; bit;
+    }
+    return result;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">For each occupancy we also need to know the <em>correct</em> attack set — the answer the magic table will eventually return. We&#39;ve already got that: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Attacks.RookAttacks</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Attacks.BishopAttacks</code> from Part 4. The classical ray-scan is slow but right, and that&#39;s exactly what we want for setting things up.</p>
+<h2 id="the-finder" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-finder" class="no-underline">The finder</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We try sparse-random magics, hash all 2^n occupancies through each, and accept the first magic whose results never collide on different attack sets:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Magic
+{
+    static ulong FindMagic(int sq, ulong mask, int bits, bool isBishop)
+    {
+        int n = 1 &lt;&lt; bits;
+        ulong[] occupancies = new ulong[n];
+        ulong[] reference   = new ulong[n];
+        ulong[] used        = new ulong[n];
+
+        for (int i = 0; i &lt; n; i++)
+        {
+            occupancies[i] = OccupancyAtIndex(i, mask);
+            reference[i]   = isBishop
+                ? Attacks.BishopAttacks(sq, occupancies[i])
+                : Attacks.RookAttacks  (sq, occupancies[i]);
+        }
+
+        var rng = new System.Random(sq + (isBishop ? 1000 : 0));
+        for (int attempt = 0; attempt &lt; 100_000_000; attempt++)
+        {
+            ulong magic = SparseRandom(rng);
+
+            // Quick reject — magic must spread the top bits enough.
+            if (BitOperations.PopCount((mask * magic) &amp; 0xFF00000000000000UL) &lt; 6)
+                continue;
+
+            System.Array.Clear(used, 0, n);
+            bool ok = true;
+            for (int i = 0; i &lt; n &amp;&amp; ok; i++)
+            {
+                int idx = (int)((occupancies[i] * magic) &gt;&gt; (64 - bits));
+                if (used[idx] == 0)        used[idx] = reference[i];
+                else if (used[idx] != reference[i]) ok = false;
+            }
+            if (ok) return magic;
+        }
+        throw new System.Exception($&quot;No magic found for sq={sq} bishop={isBishop}&quot;);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The &quot;spread the top bits&quot; pre-filter is a heuristic — the high byte of <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">mask * magic</code> needs at least 6 set bits, or the index distribution will be terrible. It&#39;s optional but skipping it makes the search much slower.</p>
+<h2 id="wiring-it-all-together" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#wiring-it-all-together" class="no-underline">Wiring it all together</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We need, per square, the mask, the magic, the shift (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">64 - bits</code>), and the populated attack table:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Magic
+{
+    static readonly ulong[] RookMasks    = new ulong[64];
+    static readonly ulong[] BishopMasks  = new ulong[64];
+    static readonly ulong[] RookMagics   = new ulong[64];
+    static readonly ulong[] BishopMagics = new ulong[64];
+    static readonly int[]   RookShifts   = new int[64];
+    static readonly int[]   BishopShifts = new int[64];
+    static readonly ulong[][] RookTable   = new ulong[64][];
+    static readonly ulong[][] BishopTable = new ulong[64][];
+
+    static bool _initialised;
+
+    // Static constructor runs on first access — keeps things working without
+    // requiring callers to remember an explicit Init().
+    static Magic() =&gt; Init();
+
+    public static void Init()
+    {
+        if (_initialised) return;
+        InitMasks();
+
+        for (int sq = 0; sq &lt; 64; sq++)
+        {
+            int rbits = BitOperations.PopCount(RookMasks[sq]);
+            int bbits = BitOperations.PopCount(BishopMasks[sq]);
+
+            RookMagics[sq]   = FindMagic(sq, RookMasks[sq],   rbits, isBishop: false);
+            BishopMagics[sq] = FindMagic(sq, BishopMasks[sq], bbits, isBishop: true);
+
+            RookShifts[sq]   = 64 - rbits;
+            BishopShifts[sq] = 64 - bbits;
+
+            RookTable[sq]   = BuildTable(sq, RookMasks[sq],   RookMagics[sq],   rbits, isBishop: false);
+            BishopTable[sq] = BuildTable(sq, BishopMasks[sq], BishopMagics[sq], bbits, isBishop: true);
+        }
+
+        _initialised = true;
+    }
+
+    static ulong[] BuildTable(int sq, ulong mask, ulong magic, int bits, bool isBishop)
+    {
+        ulong[] table = new ulong[1 &lt;&lt; bits];
+        int n = 1 &lt;&lt; bits;
+        for (int i = 0; i &lt; n; i++)
+        {
+            ulong occ = OccupancyAtIndex(i, mask);
+            int idx   = (int)((occ * magic) &gt;&gt; (64 - bits));
+            ulong attack = isBishop
+                ? Attacks.BishopAttacks(sq, occ)
+                : Attacks.RookAttacks  (sq, occ);
+            table[idx] = attack;
+        }
+        return table;
+    }
+
+    public static ulong RookAttacks(int sq, ulong occ)
+    {
+        ulong idx = ((occ &amp; RookMasks[sq]) * RookMagics[sq]) &gt;&gt; RookShifts[sq];
+        return RookTable[sq][idx];
+    }
+
+    public static ulong BishopAttacks(int sq, ulong occ)
+    {
+        ulong idx = ((occ &amp; BishopMasks[sq]) * BishopMagics[sq]) &gt;&gt; BishopShifts[sq];
+        return BishopTable[sq][idx];
+    }
+
+    public static ulong QueenAttacks(int sq, ulong occ)
+        =&gt; RookAttacks(sq, occ) | BishopAttacks(sq, occ);
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Total memory: bishops use up to 512 entries per square (9 bits in the middle, smaller at the edges), rooks up to 4096. Adding up the actual sizes per square gives ~840 KiB total. Comfortably within L2 on any modern CPU.</p>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Magic.Init()</code> does roughly 128 magic searches and builds the tables. On a recent machine it takes a fraction of a second. The static constructor calls it automatically on first access, so callers don&#39;t need to remember; if you want to control <em>when</em> the cost is paid (e.g. eagerly at program start before timing-sensitive code), call <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Magic.Init()</code> explicitly — it&#39;s idempotent.</p>
+<h2 id="dropping-it-in" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#dropping-it-in" class="no-underline">Dropping it in</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Two lines change in the rest of the engine. In <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MoveGenerator.GenSliders</code> from Part 4:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">ulong attacks = isBishop
+    ? Magic.BishopAttacks(from, occ)   // was Attacks.BishopAttacks
+    : Magic.RookAttacks  (from, occ);  // was Attacks.RookAttacks</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">And in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Attacks.IsAttackedBy</code>:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">if ((Magic.BishopAttacks(sq, occ) &amp; (bishops | queens)) != 0) return true;
+if ((Magic.RookAttacks  (sq, occ) &amp; (rooks   | queens)) != 0) return true;</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Run perft. Numbers should be identical to Part 5. Time should be a <em>lot</em> shorter — typically 3–5× speedup, more on hardware with fast 64-bit multiply.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    static void Main()
+    {
+        Magic.Init();   // call once at startup
+
+        var pos = Fen.Parse(Fen.Initial);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        ulong nodes = Perft.Run(pos, 5);
+        sw.Stop();
+        System.Console.WriteLine(
+            $&quot;perft(5) = {nodes} in {sw.Elapsed.TotalSeconds:F2}s &quot;
+          + $&quot;({nodes / sw.Elapsed.TotalSeconds / 1_000_000:F2} Mnps)&quot;);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Worth keeping the classical ray-scan around in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Attacks</code> for two reasons: the magic-finder uses it to compute reference attack sets, and it&#39;s a useful fallback if we ever want to double-check a magic implementation.</p>
+<h2 id="a-note-on-saving-magics" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#a-note-on-saving-magics" class="no-underline">A note on saving magics</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The finder runs every time the program starts. That&#39;s fine — it&#39;s fast. But if we wanted to skip the startup cost we could just print the found magics once and paste them in as a constant array. There&#39;s nothing dynamic about them; any magic that works will keep working forever. Doing it that way:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">// Optional — precomputed; replaces the search step.
+static readonly ulong[] PrecomputedRookMagics = new ulong[]
+{
+    0xa8002c000108020UL, /* a1 */ 0x6c00049b0002001UL, /* b1 */ ...
+};</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">I find that easier to debug while developing (re-finding is automatic if you change the layout) and easier to ship when stable (no startup cost). Take whichever you prefer.</p>
+<h2 id="what-s-next" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-s-next" class="no-underline">What&#39;s next</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Part 7 — the final article. We replace the make-then-check-king-attacked filter with a proper <strong>legal move generator</strong>. We&#39;ll compute three bitboards per node — the <em>checkers</em> attacking our king, the <em>pinned</em> friendly pieces, and the <em>king-danger</em> squares — and use them to emit only moves that are genuinely legal. The perft numbers stay the same (Part 5&#39;s filter was already correct), but the generator gets cleaner <em>and</em> faster because we no longer make-and-undo illegal candidates. Plus we&#39;ll handle the en-passant pin and the full castling legality test inside the generator itself.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a href="05-make-move.html" class="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">← Previous</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 5: Making a Move</p>
+          </a>
+          <a href="07-legal-moves.html" class="group rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Next →</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 7: Legal Move Generation</p>
+          </a>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

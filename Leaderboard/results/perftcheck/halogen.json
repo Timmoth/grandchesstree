@@ -1,0 +1,48 @@
+{
+  "engine": "halogen",
+  "version": "13",
+  "language": "C++",
+  "mode_used": "single-no-cache",
+  "ran_at": "2026-05-25T10:04:50Z",
+  "duration_sec": 32.146,
+  "shards": 4,
+  "options": {
+    "depth_cap": 4,
+    "epd_files": [
+      "ferdy_perft_double_checks.epd",
+      "ferdy_perft_enpassant_1.epd",
+      "ferdy_perft_single_check_1.epd",
+      "ferdy_perft_single_check_10.epd",
+      "ferdy_perft_single_check_11.epd",
+      "ferdy_perft_single_check_12.epd",
+      "ferdy_perft_single_check_13.epd",
+      "ferdy_perft_single_check_14.epd",
+      "ferdy_perft_single_check_15.epd",
+      "ferdy_perft_single_check_16.epd",
+      "ferdy_perft_single_check_17.epd",
+      "ferdy_perft_single_check_18.epd",
+      "ferdy_perft_single_check_19.epd",
+      "ferdy_perft_single_check_2.epd",
+      "ferdy_perft_single_check_3.epd",
+      "ferdy_perft_single_check_4.epd",
+      "ferdy_perft_single_check_5.epd",
+      "ferdy_perft_single_check_6.epd",
+      "ferdy_perft_single_check_7.epd",
+      "ferdy_perft_single_check_8.epd",
+      "ferdy_perft_single_check_9.epd",
+      "perft-marcel.epd",
+      "perft.epd"
+    ],
+    "per_case_timeout_sec": 5.0,
+    "fail_fast": false
+  },
+  "totals": {
+    "cases": 125625,
+    "passed": 125625,
+    "failed": 0,
+    "timeout": 0,
+    "error": 0,
+    "skipped_min_depth": 0
+  },
+  "failures": []
+}

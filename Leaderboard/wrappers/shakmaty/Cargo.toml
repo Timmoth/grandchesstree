@@ -1,0 +1,21 @@
+[package]
+name = "shakmaty-perft"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Minimal UCI wrapper around the shakmaty crate for PerftWar."
+
+[[bin]]
+name = "shakmaty-perft"
+path = "src/main.rs"
+
+[dependencies]
+# Pull shakmaty from crates.io. Pinned to a recent 0.x line — if cargo
+# can't resolve, bump this and re-run the install script.
+shakmaty = "0.27"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"

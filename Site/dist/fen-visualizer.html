@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FEN visualizer &mdash; The Grand Chess Tree</title>
+    <meta
+      name="description"
+      content="Paste a FEN string and render the chess position on a board. Shareable via URL, with flip and preset positions."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/fen-visualizer.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="FEN, chess, visualizer, board, chess engine, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/fen-visualizer.html" />
+    <meta property="og:title" content="FEN visualizer &mdash; The Grand Chess Tree" />
+    <meta
+      property="og:description"
+      content="Paste a FEN string and render the chess position on a board."
+    />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="FEN visualizer &mdash; The Grand Chess Tree" />
+    <meta name="twitter:description" content="Paste a FEN string and render the chess position on a board." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      .board-piece { image-rendering: pixelated; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "FEN visualizer",
+      "description": "Render a chess position from a FEN string. Flip the board, copy a shareable link, save a PNG of the board.",
+      "url": "https://grandchesstree.com/fen-visualizer.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">FEN visualizer</li>
+            </ol>
+          </nav>
+
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">FEN visualizer</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">
+            Paste a FEN string to render the position. The URL updates as you
+            type &mdash; share the link and it will load the same board.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-10 md:py-14">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="grid gap-8 md:grid-cols-5">
+
+            <div class="md:col-span-3">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="text-slate-500">Side to move:</span>
+                  <span id="sideToMoveBadge" class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-0.5 font-medium text-slate-900">—</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <button id="savePngBtn" type="button" title="Save board as PNG"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10m0 0l-4-4m4 4l4-4M4 17h12"/></svg>
+                    Save PNG
+                  </button>
+                  <button id="flipBtn" type="button"
+                    class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h12M4 8l3-3M4 8l3 3M16 12H4M16 12l-3-3M16 12l-3 3"/></svg>
+                    Flip board
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-3 md:p-4">
+                <svg id="board" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"
+                  class="w-full h-auto select-none" role="img" aria-label="Chess board">
+                </svg>
+              </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-6">
+              <div>
+                <label for="fenInput" class="block text-sm font-medium text-slate-700">FEN</label>
+                <textarea id="fenInput" rows="3" spellcheck="false" autocomplete="off"
+                  class="mono mt-1 block w-full resize-y rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400"></textarea>
+                <p id="fenError" class="mt-1 hidden text-xs text-red-600"></p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <button id="copyFenBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Copy FEN
+                  </button>
+                  <button id="copyLinkBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Copy share link
+                  </button>
+                  <button id="resetBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h2 class="text-sm font-medium text-slate-700">Preset positions</h2>
+                <div class="mt-2 flex flex-wrap gap-2" id="presetButtons"></div>
+              </div>
+
+              <div>
+                <h2 class="text-sm font-medium text-slate-700">Parsed</h2>
+                <dl class="mt-2 grid grid-cols-2 gap-x-4 gap-y-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm">
+                  <dt class="text-slate-500">Side to move</dt>
+                  <dd id="parsedSide" class="mono text-slate-900">—</dd>
+                  <dt class="text-slate-500">Castling</dt>
+                  <dd id="parsedCastling" class="mono text-slate-900">—</dd>
+                  <dt class="text-slate-500">En passant</dt>
+                  <dd id="parsedEp" class="mono text-slate-900">—</dd>
+                  <dt class="text-slate-500">Halfmove</dt>
+                  <dd id="parsedHalfmove" class="mono text-slate-900">—</dd>
+                  <dt class="text-slate-500">Fullmove</dt>
+                  <dd id="parsedFullmove" class="mono text-slate-900">—</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="assets/js/board-export.js"></script>
+    <script>
+      (function () {
+        const STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        const PRESETS = [
+          { name: "Startpos", fen: STARTPOS },
+          { name: "Kiwipete", fen: "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1" },
+          { name: "SJE", fen: "rnbqkbnr/p3pppp/8/1ppp4/5PPP/8/PPPPP3/RNBQKBNR w KQkq - 0 1" },
+          { name: "Position 3", fen: "8/2p5/3p4/KP5r/1R3p1k/8/4P1P1/8 w - - 0 1" },
+          { name: "Position 4", fen: "r3k2r/Pppp1ppp/1b3nbN/nP6/BBP1P3/q4N2/Pp1P2PP/R2Q1RK1 w kq - 0 1" },
+          { name: "Position 5", fen: "rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8" },
+        ];
+
+        const PIECE_TO_FILE = {
+          P: "white_pawn.png",  N: "white_knight.png", B: "white_bishop.png",
+          R: "white_rook.png",  Q: "white_queen.png",  K: "white_king.png",
+          p: "black_pawn.png",  n: "black_knight.png", b: "black_bishop.png",
+          r: "black_rook.png",  q: "black_queen.png",  k: "black_king.png",
+        };
+
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const SQUARE = 48;
+        const MARGIN = 22;
+        const BOARD_PX = SQUARE * 8;
+        const TOTAL = BOARD_PX + MARGIN * 2;
+        const PIECE_SCALE = 0.8;
+
+        const els = {
+          board: document.getElementById("board"),
+          fenInput: document.getElementById("fenInput"),
+          fenError: document.getElementById("fenError"),
+          flipBtn: document.getElementById("flipBtn"),
+          copyFenBtn: document.getElementById("copyFenBtn"),
+          copyLinkBtn: document.getElementById("copyLinkBtn"),
+          resetBtn: document.getElementById("resetBtn"),
+          savePngBtn: document.getElementById("savePngBtn"),
+          presetButtons: document.getElementById("presetButtons"),
+          sideToMoveBadge: document.getElementById("sideToMoveBadge"),
+          parsedSide: document.getElementById("parsedSide"),
+          parsedCastling: document.getElementById("parsedCastling"),
+          parsedEp: document.getElementById("parsedEp"),
+          parsedHalfmove: document.getElementById("parsedHalfmove"),
+          parsedFullmove: document.getElementById("parsedFullmove"),
+        };
+
+        els.board.setAttribute("viewBox", `0 0 ${TOTAL} ${TOTAL}`);
+
+        const state = {
+          fen: STARTPOS,
+          flipped: false,
+          lastValidBoard: null,
+        };
+
+        // ---- FEN parsing ----
+        function parseFen(fen) {
+          if (typeof fen !== "string") return { ok: false, error: "FEN must be a string" };
+          const trimmed = fen.trim();
+          if (!trimmed) return { ok: false, error: "FEN is empty" };
+          const parts = trimmed.split(/\s+/);
+          if (parts.length < 1 || parts.length > 6) {
+            return { ok: false, error: "FEN must have 1–6 space-separated fields" };
+          }
+          const [placement, side = "w", castling = "-", ep = "-", halfmove = "0", fullmove = "1"] = parts;
+
+          const ranks = placement.split("/");
+          if (ranks.length !== 8) return { ok: false, error: `Expected 8 ranks, got ${ranks.length}` };
+
+          // board[0] = rank 8 from white's perspective; board[r][f] with f=0 = file a.
+          const board = [];
+          for (let r = 0; r < 8; r++) {
+            const row = new Array(8).fill(null);
+            let file = 0;
+            for (const ch of ranks[r]) {
+              if (/[1-8]/.test(ch)) {
+                file += parseInt(ch, 10);
+              } else if (PIECE_TO_FILE[ch]) {
+                if (file > 7) return { ok: false, error: `Rank ${8 - r}: too many squares` };
+                row[file] = ch;
+                file += 1;
+              } else {
+                return { ok: false, error: `Rank ${8 - r}: invalid character '${ch}'` };
+              }
+            }
+            if (file !== 8) return { ok: false, error: `Rank ${8 - r}: squares sum to ${file}, expected 8` };
+            board.push(row);
+          }
+
+          if (side !== "w" && side !== "b") {
+            return { ok: false, error: `Side to move must be 'w' or 'b', got '${side}'` };
+          }
+          if (castling !== "-" && !/^[KQkq]+$/.test(castling)) {
+            return { ok: false, error: `Invalid castling rights '${castling}'` };
+          }
+          if (ep !== "-" && !/^[a-h][36]$/.test(ep)) {
+            return { ok: false, error: `Invalid en-passant square '${ep}'` };
+          }
+          if (!/^\d+$/.test(halfmove)) {
+            return { ok: false, error: `Halfmove must be a non-negative integer, got '${halfmove}'` };
+          }
+          if (!/^\d+$/.test(fullmove)) {
+            return { ok: false, error: `Fullmove must be a non-negative integer, got '${fullmove}'` };
+          }
+
+          return {
+            ok: true,
+            board, side, castling, ep,
+            halfmove: parseInt(halfmove, 10),
+            fullmove: parseInt(fullmove, 10),
+          };
+        }
+
+        // ---- Rendering ----
+        function buildBoard(board, flipped) {
+          const svg = els.board;
+          while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+          // Background border ring
+          const bg = document.createElementNS(SVG_NS, "rect");
+          bg.setAttribute("x", "0");
+          bg.setAttribute("y", "0");
+          bg.setAttribute("width", String(TOTAL));
+          bg.setAttribute("height", String(TOTAL));
+          bg.setAttribute("rx", "6");
+          bg.setAttribute("fill", "#1f2937"); // slate-800 frame
+          svg.appendChild(bg);
+
+          const pieceSize = SQUARE * PIECE_SCALE;
+          const pieceInset = (SQUARE - pieceSize) / 2;
+
+          // Squares + pieces
+          for (let displayRank = 0; displayRank < 8; displayRank++) {
+            for (let displayFile = 0; displayFile < 8; displayFile++) {
+              const r = flipped ? 7 - displayRank : displayRank;
+              const f = flipped ? 7 - displayFile : displayFile;
+
+              const x = MARGIN + displayFile * SQUARE;
+              const y = MARGIN + displayRank * SQUARE;
+
+              const isLight = (r + f) % 2 === 0;
+              const rect = document.createElementNS(SVG_NS, "rect");
+              rect.setAttribute("x", String(x));
+              rect.setAttribute("y", String(y));
+              rect.setAttribute("width", String(SQUARE));
+              rect.setAttribute("height", String(SQUARE));
+              rect.setAttribute("fill", isLight ? "#f0d9b5" : "#b58863");
+              svg.appendChild(rect);
+
+              const piece = board[r][f];
+              if (piece) {
+                const img = document.createElementNS(SVG_NS, "image");
+                img.setAttributeNS("http://www.w3.org/1999/xlink", "href", `assets/img/pieces/${PIECE_TO_FILE[piece]}`);
+                img.setAttribute("href", `assets/img/pieces/${PIECE_TO_FILE[piece]}`);
+                img.setAttribute("x", String(x + pieceInset));
+                img.setAttribute("y", String(y + pieceInset));
+                img.setAttribute("width", String(pieceSize));
+                img.setAttribute("height", String(pieceSize));
+                img.setAttribute("class", "board-piece");
+                img.setAttribute("preserveAspectRatio", "xMidYMid meet");
+                svg.appendChild(img);
+              }
+            }
+          }
+
+          // File labels (a–h) below the board, in the bottom margin
+          for (let displayFile = 0; displayFile < 8; displayFile++) {
+            const f = flipped ? 7 - displayFile : displayFile;
+            const cx = MARGIN + displayFile * SQUARE + SQUARE / 2;
+            const cy = MARGIN + BOARD_PX + MARGIN / 2;
+            const label = document.createElementNS(SVG_NS, "text");
+            label.setAttribute("x", String(cx));
+            label.setAttribute("y", String(cy));
+            label.setAttribute("text-anchor", "middle");
+            label.setAttribute("dominant-baseline", "middle");
+            label.setAttribute("font-size", "12");
+            label.setAttribute("font-family", "ui-monospace, monospace");
+            label.setAttribute("font-weight", "600");
+            label.setAttribute("fill", "#e2e8f0");
+            label.textContent = "abcdefgh"[f];
+            svg.appendChild(label);
+          }
+
+          // Rank labels (1–8) to the left of the board, in the left margin
+          for (let displayRank = 0; displayRank < 8; displayRank++) {
+            const r = flipped ? 7 - displayRank : displayRank;
+            const cx = MARGIN / 2;
+            const cy = MARGIN + displayRank * SQUARE + SQUARE / 2;
+            const label = document.createElementNS(SVG_NS, "text");
+            label.setAttribute("x", String(cx));
+            label.setAttribute("y", String(cy));
+            label.setAttribute("text-anchor", "middle");
+            label.setAttribute("dominant-baseline", "middle");
+            label.setAttribute("font-size", "12");
+            label.setAttribute("font-family", "ui-monospace, monospace");
+            label.setAttribute("font-weight", "600");
+            label.setAttribute("fill", "#e2e8f0");
+            label.textContent = String(8 - r);
+            svg.appendChild(label);
+          }
+        }
+
+        function renderParsed(parsed) {
+          if (!parsed.ok) {
+            els.sideToMoveBadge.textContent = "—";
+            els.parsedSide.textContent = "—";
+            els.parsedCastling.textContent = "—";
+            els.parsedEp.textContent = "—";
+            els.parsedHalfmove.textContent = "—";
+            els.parsedFullmove.textContent = "—";
+            return;
+          }
+          const sideLabel = parsed.side === "w" ? "White" : "Black";
+          els.sideToMoveBadge.textContent = sideLabel;
+          els.parsedSide.textContent = `${parsed.side} (${sideLabel})`;
+          els.parsedCastling.textContent = parsed.castling;
+          els.parsedEp.textContent = parsed.ep;
+          els.parsedHalfmove.textContent = String(parsed.halfmove);
+          els.parsedFullmove.textContent = String(parsed.fullmove);
+        }
+
+        function setError(msg) {
+          if (msg) {
+            els.fenError.textContent = msg;
+            els.fenError.classList.remove("hidden");
+            els.fenInput.classList.add("border-red-400", "focus:ring-red-300", "focus:border-red-400");
+            els.fenInput.classList.remove("border-slate-300");
+          } else {
+            els.fenError.textContent = "";
+            els.fenError.classList.add("hidden");
+            els.fenInput.classList.remove("border-red-400", "focus:ring-red-300", "focus:border-red-400");
+            els.fenInput.classList.add("border-slate-300");
+          }
+        }
+
+        // ---- URL state ----
+        function readUrlState() {
+          const params = new URLSearchParams(window.location.search);
+          const fen = params.get("fen");
+          const flip = params.get("flip");
+          return {
+            fen: fen ? fen : STARTPOS,
+            flipped: flip === "1" || flip === "true",
+          };
+        }
+
+        let urlWriteTimer = null;
+        function writeUrlState() {
+          if (urlWriteTimer) clearTimeout(urlWriteTimer);
+          urlWriteTimer = setTimeout(() => {
+            const params = new URLSearchParams();
+            if (state.fen && state.fen !== STARTPOS) params.set("fen", state.fen);
+            if (state.flipped) params.set("flip", "1");
+            const qs = params.toString();
+            const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+            window.history.replaceState(null, "", url);
+          }, 200);
+        }
+
+        function shareLink() {
+          const params = new URLSearchParams();
+          params.set("fen", state.fen || STARTPOS);
+          if (state.flipped) params.set("flip", "1");
+          return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        }
+
+        // ---- Apply state ----
+        function applyFen(fen, { fromInput = false } = {}) {
+          state.fen = fen;
+          if (!fromInput) els.fenInput.value = fen;
+
+          const parsed = parseFen(fen);
+          if (parsed.ok) {
+            state.lastValidBoard = parsed.board;
+            setError(null);
+            buildBoard(parsed.board, state.flipped);
+            renderParsed(parsed);
+          } else {
+            setError(parsed.error);
+            // Keep last valid board rendered if we have one; otherwise blank.
+            if (state.lastValidBoard) {
+              buildBoard(state.lastValidBoard, state.flipped);
+            }
+            renderParsed(parsed);
+          }
+          writeUrlState();
+        }
+
+        // ---- Clipboard helper ----
+        async function copyText(text, btn) {
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = btn.textContent;
+            btn.textContent = "Copied";
+            setTimeout(() => { btn.textContent = original; }, 1200);
+          } catch (e) {
+            // Fallback
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (_) {}
+            document.body.removeChild(ta);
+          }
+        }
+
+        // ---- Wire up UI ----
+        function renderPresetButtons() {
+          els.presetButtons.innerHTML = "";
+          for (const p of PRESETS) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = p.name;
+            btn.className = "inline-flex items-center rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50";
+            btn.addEventListener("click", () => applyFen(p.fen));
+            els.presetButtons.appendChild(btn);
+          }
+        }
+
+        els.fenInput.addEventListener("input", (e) => {
+          applyFen(e.target.value, { fromInput: true });
+        });
+        els.flipBtn.addEventListener("click", () => {
+          state.flipped = !state.flipped;
+          const parsed = parseFen(state.fen);
+          if (parsed.ok) buildBoard(parsed.board, state.flipped);
+          else if (state.lastValidBoard) buildBoard(state.lastValidBoard, state.flipped);
+          writeUrlState();
+        });
+        els.copyFenBtn.addEventListener("click", () => copyText(state.fen, els.copyFenBtn));
+        els.copyLinkBtn.addEventListener("click", () => copyText(shareLink(), els.copyLinkBtn));
+        els.resetBtn.addEventListener("click", () => {
+          state.flipped = false;
+          applyFen(STARTPOS);
+        });
+        els.savePngBtn.addEventListener("click", async () => {
+          const original = els.savePngBtn.textContent;
+          els.savePngBtn.disabled = true;
+          els.savePngBtn.textContent = "Saving…";
+          try {
+            const name = "fen_" + (state.fen || STARTPOS).split(" ")[0];
+            await window.GCT.saveSvgAsPng(els.board, name);
+          } catch (e) {
+            console.error(e);
+            alert("Could not save image: " + (e && e.message ? e.message : e));
+          } finally {
+            els.savePngBtn.disabled = false;
+            els.savePngBtn.textContent = original;
+          }
+        });
+
+        // ---- Init ----
+        renderPresetButtons();
+        const initial = readUrlState();
+        state.flipped = initial.flipped;
+        applyFen(initial.fen);
+      })();
+    </script>
+  </body>
+</html>

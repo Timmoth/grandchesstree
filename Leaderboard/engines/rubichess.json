@@ -1,0 +1,29 @@
+{
+  "name": "rubichess",
+  "version": "20260308",
+  "owner": "Matthies",
+  "repo": "https://github.com/Matthies/RubiChess",
+  "language": "C++",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/rubichess/src/RubiChess",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\nperft {depth}",
+      "end_re": "^Total nodes: \\d+$",
+      "quit": "quit"
+    },
+    "multi-no-cache": {
+      "launch": "bin/rubichess/src/RubiChess",
+      "setup": [
+        "setoption name Threads value {threads}",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\nperft {depth}",
+      "end_re": "^Total nodes: \\d+$",
+      "quit": "quit"
+    }
+  }
+}

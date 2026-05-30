@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bitboard inspector &mdash; The Grand Chess Tree</title>
+    <meta
+      name="description"
+      content="Visualize 64-bit chess bitboards: paste a hex value to see which squares are set, click squares to toggle bits, or derive piece bitboards from a FEN."
+    />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/bitboard-inspector.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="bitboard, chess, chess engine, move generation, LERF, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/bitboard-inspector.html" />
+    <meta property="og:title" content="Bitboard inspector &mdash; The Grand Chess Tree" />
+    <meta
+      property="og:description"
+      content="Visualize 64-bit chess bitboards on a board, or derive piece bitboards from a FEN."
+    />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Bitboard inspector &mdash; The Grand Chess Tree" />
+    <meta name="twitter:description" content="Visualize 64-bit chess bitboards on a board, or derive piece bitboards from a FEN." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; }
+      .square-hit { cursor: pointer; }
+      .square-hit:hover { filter: brightness(1.05); }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Bitboard inspector",
+      "description": "Visualise any 64-bit value as a chess board. Derive per-piece bitboards from a FEN, click squares to toggle bits.",
+      "url": "https://grandchesstree.com/bitboard-inspector.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Web",
+      "browserRequirements": "Requires JavaScript",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Results</a></li>
+          <li><a href="tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Bitboard inspector</li>
+            </ol>
+          </nav>
+
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Bitboard inspector</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">
+            Paste a 64-bit value and see which squares are set. Click squares
+            to toggle bits, load a preset mask, or derive piece bitboards from
+            a FEN. Uses <span class="mono">LERF</span> indexing &mdash;
+            <span class="mono">a1</span> is bit <span class="mono">0</span>,
+            <span class="mono">h8</span> is bit <span class="mono">63</span>.
+          </p>
+        </div>
+      </section>
+
+      <section class="py-10 md:py-14">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="grid gap-8 md:grid-cols-5">
+
+            <div class="md:col-span-3">
+              <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2 text-sm">
+                  <span class="text-slate-500">Set bits:</span>
+                  <span id="popcountBadge" class="inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-0.5 font-medium text-slate-900 mono">0</span>
+                </div>
+                <div class="flex gap-2">
+                  <button id="savePngBtn" type="button" title="Save board as PNG"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 3v10m0 0l-4-4m4 4l4-4M4 17h12"/></svg>
+                    Save PNG
+                  </button>
+                  <button id="flipBtn" type="button"
+                    class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    Flip
+                  </button>
+                  <button id="clearBtn" type="button"
+                    class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    Clear
+                  </button>
+                  <button id="invertBtn" type="button"
+                    class="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                    Invert
+                  </button>
+                </div>
+              </div>
+
+              <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-3 md:p-4">
+                <svg id="board" viewBox="0 0 428 428" xmlns="http://www.w3.org/2000/svg"
+                  class="w-full h-auto select-none" role="img" aria-label="Bitboard">
+                </svg>
+              </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-6">
+              <div>
+                <label for="bbInput" class="block text-sm font-medium text-slate-700">Bitboard value</label>
+                <input id="bbInput" type="text" spellcheck="false" autocomplete="off"
+                  placeholder="0x… / decimal / 0b…"
+                  class="mono mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <p id="bbError" class="mt-1 hidden text-xs text-red-600"></p>
+                <div class="mt-2 flex flex-wrap gap-2">
+                  <button id="copyHexBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Copy hex
+                  </button>
+                  <button id="copyDecBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Copy decimal
+                  </button>
+                  <button id="copyLinkBtn" type="button"
+                    class="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">
+                    Copy link
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h2 class="text-sm font-medium text-slate-700">Representations</h2>
+                <dl class="mt-2 grid grid-cols-[auto,1fr] gap-x-3 gap-y-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-xs">
+                  <dt class="text-slate-500">Hex</dt>
+                  <dd id="reprHex" class="mono break-all text-slate-900">0x0</dd>
+                  <dt class="text-slate-500">Decimal</dt>
+                  <dd id="reprDec" class="mono break-all text-slate-900">0</dd>
+                  <dt class="text-slate-500">Binary</dt>
+                  <dd id="reprBin" class="mono whitespace-pre text-[10px] leading-tight text-slate-900">—</dd>
+                </dl>
+              </div>
+
+              <div>
+                <h2 class="text-sm font-medium text-slate-700">Preset masks</h2>
+                <div class="mt-2 flex flex-wrap gap-1.5" id="presetButtons"></div>
+              </div>
+
+              <div>
+                <h2 class="text-sm font-medium text-slate-700">From FEN</h2>
+                <p class="mt-1 text-xs text-slate-500">Paste a FEN; click a row to load that bitboard.</p>
+                <input id="fenInput" type="text" spellcheck="false" autocomplete="off"
+                  placeholder="rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+                  class="mono mt-2 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-1 focus:ring-slate-400" />
+                <p id="fenError" class="mt-1 hidden text-xs text-red-600"></p>
+                <div id="fenBitboards" class="mt-2 overflow-hidden rounded-md border border-slate-200 bg-white text-xs"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <script src="assets/js/board-export.js"></script>
+    <script>
+      (function () {
+        // ----- Constants -----
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        const SQUARE = 48;
+        const MARGIN = 22;
+        const BOARD_PX = SQUARE * 8;
+        const TOTAL = BOARD_PX + MARGIN * 2;
+        const MASK64 = (1n << 64n) - 1n;
+
+        // Common file/rank masks (LERF: a1=bit 0, h1=bit 7, a8=bit 56, h8=bit 63)
+        const FILE_A = 0x0101010101010101n;
+        const RANK_1 = 0x00000000000000ffn;
+        const fileMask = (f) => FILE_A << BigInt(f);
+        const rankMask = (r) => RANK_1 << BigInt(r * 8);
+
+        const PRESETS = [
+          { name: "File a", value: fileMask(0) },
+          { name: "File b", value: fileMask(1) },
+          { name: "File c", value: fileMask(2) },
+          { name: "File d", value: fileMask(3) },
+          { name: "File e", value: fileMask(4) },
+          { name: "File f", value: fileMask(5) },
+          { name: "File g", value: fileMask(6) },
+          { name: "File h", value: fileMask(7) },
+          { name: "Rank 1", value: rankMask(0) },
+          { name: "Rank 2", value: rankMask(1) },
+          { name: "Rank 3", value: rankMask(2) },
+          { name: "Rank 4", value: rankMask(3) },
+          { name: "Rank 5", value: rankMask(4) },
+          { name: "Rank 6", value: rankMask(5) },
+          { name: "Rank 7", value: rankMask(6) },
+          { name: "Rank 8", value: rankMask(7) },
+          { name: "Light squares", value: 0x55aa55aa55aa55aan },
+          { name: "Dark squares",  value: 0xaa55aa55aa55aa55n },
+          { name: "Edges", value: FILE_A | (FILE_A << 7n) | RANK_1 | (RANK_1 << 56n) },
+          { name: "Center 2×2",  value: (rankMask(3) | rankMask(4)) & (fileMask(3) | fileMask(4)) },
+          { name: "Center 4×4",  value: (rankMask(2) | rankMask(3) | rankMask(4) | rankMask(5)) & (fileMask(2) | fileMask(3) | fileMask(4) | fileMask(5)) },
+        ];
+
+        // ----- State -----
+        const state = {
+          bb: 0n,
+          flipped: false,
+          fen: "",
+        };
+
+        const els = {
+          board: document.getElementById("board"),
+          bbInput: document.getElementById("bbInput"),
+          bbError: document.getElementById("bbError"),
+          flipBtn: document.getElementById("flipBtn"),
+          clearBtn: document.getElementById("clearBtn"),
+          invertBtn: document.getElementById("invertBtn"),
+          savePngBtn: document.getElementById("savePngBtn"),
+          copyHexBtn: document.getElementById("copyHexBtn"),
+          copyDecBtn: document.getElementById("copyDecBtn"),
+          copyLinkBtn: document.getElementById("copyLinkBtn"),
+          popcountBadge: document.getElementById("popcountBadge"),
+          reprHex: document.getElementById("reprHex"),
+          reprDec: document.getElementById("reprDec"),
+          reprBin: document.getElementById("reprBin"),
+          presetButtons: document.getElementById("presetButtons"),
+          fenInput: document.getElementById("fenInput"),
+          fenError: document.getElementById("fenError"),
+          fenBitboards: document.getElementById("fenBitboards"),
+        };
+
+        els.board.setAttribute("viewBox", `0 0 ${TOTAL} ${TOTAL}`);
+
+        // ----- Value parsing -----
+        function parseBitboard(raw) {
+          if (typeof raw !== "string") return { ok: false, error: "Expected a string" };
+          let s = raw.trim().replace(/[_,\s]/g, "");
+          if (!s) return { ok: true, value: 0n };
+
+          let negative = false;
+          if (s.startsWith("-")) { negative = true; s = s.slice(1); }
+
+          let value;
+          try {
+            if (/^0x[0-9a-fA-F]+$/.test(s)) {
+              value = BigInt(s);
+            } else if (/^0b[01]+$/.test(s)) {
+              value = BigInt(s);
+            } else if (/^0o[0-7]+$/.test(s)) {
+              value = BigInt(s);
+            } else if (/^[0-9]+$/.test(s)) {
+              value = BigInt(s);
+            } else if (/^[0-9a-fA-F]+$/.test(s)) {
+              // bare hex (no prefix) — accept if it looks hex-y; otherwise treated as decimal above
+              value = BigInt("0x" + s);
+            } else {
+              return { ok: false, error: "Couldn't parse value. Use 0x…, 0b…, or decimal." };
+            }
+          } catch (e) {
+            return { ok: false, error: "Couldn't parse value." };
+          }
+
+          if (negative) {
+            // Two's-complement interpretation: -1 → all bits set
+            value = (MASK64 - (value - 1n)) & MASK64;
+          }
+
+          if (value < 0n) return { ok: false, error: "Negative values aren't supported (use the two's-complement form)." };
+          if (value > MASK64) return { ok: false, error: "Value exceeds 64 bits." };
+          return { ok: true, value };
+        }
+
+        // ----- Square ↔ bit index (LERF) -----
+        // bit = rank * 8 + file, where rank 0 = rank 1 (white's back rank), file 0 = a.
+        function bitOf(rank, file) { return BigInt(rank * 8 + file); }
+        function isSet(bb, rank, file) { return ((bb >> bitOf(rank, file)) & 1n) === 1n; }
+
+        function popcount(bb) {
+          let v = bb;
+          let n = 0;
+          while (v) { v &= v - 1n; n++; }
+          return n;
+        }
+
+        // ----- Rendering -----
+        function buildBoard() {
+          const svg = els.board;
+          while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+          // Dark frame
+          const bg = document.createElementNS(SVG_NS, "rect");
+          bg.setAttribute("x", "0"); bg.setAttribute("y", "0");
+          bg.setAttribute("width", String(TOTAL));
+          bg.setAttribute("height", String(TOTAL));
+          bg.setAttribute("rx", "6");
+          bg.setAttribute("fill", "#1f2937");
+          svg.appendChild(bg);
+
+          for (let displayRank = 0; displayRank < 8; displayRank++) {
+            for (let displayFile = 0; displayFile < 8; displayFile++) {
+              // displayRank 0 = top of viewport. Without flip, that's rank 8 (real rank 7).
+              const rank = state.flipped ? displayRank : 7 - displayRank;
+              const file = state.flipped ? 7 - displayFile : displayFile;
+
+              const x = MARGIN + displayFile * SQUARE;
+              const y = MARGIN + displayRank * SQUARE;
+
+              const isLight = (rank + file) % 2 === 1;
+              const rect = document.createElementNS(SVG_NS, "rect");
+              rect.setAttribute("x", String(x));
+              rect.setAttribute("y", String(y));
+              rect.setAttribute("width", String(SQUARE));
+              rect.setAttribute("height", String(SQUARE));
+              rect.setAttribute("fill", isLight ? "#f0d9b5" : "#b58863");
+              rect.setAttribute("class", "square-hit");
+              rect.dataset.rank = String(rank);
+              rect.dataset.file = String(file);
+              svg.appendChild(rect);
+
+              if (isSet(state.bb, rank, file)) {
+                // Translucent green overlay
+                const overlay = document.createElementNS(SVG_NS, "rect");
+                overlay.setAttribute("x", String(x));
+                overlay.setAttribute("y", String(y));
+                overlay.setAttribute("width", String(SQUARE));
+                overlay.setAttribute("height", String(SQUARE));
+                overlay.setAttribute("fill", "#22c55e");
+                overlay.setAttribute("fill-opacity", "0.55");
+                overlay.setAttribute("pointer-events", "none");
+                svg.appendChild(overlay);
+
+                // Bit index in the center
+                const t = document.createElementNS(SVG_NS, "text");
+                t.setAttribute("x", String(x + SQUARE / 2));
+                t.setAttribute("y", String(y + SQUARE / 2));
+                t.setAttribute("text-anchor", "middle");
+                t.setAttribute("dominant-baseline", "middle");
+                t.setAttribute("font-size", "13");
+                t.setAttribute("font-weight", "600");
+                t.setAttribute("font-family", "ui-monospace, monospace");
+                t.setAttribute("fill", "#064e3b");
+                t.setAttribute("pointer-events", "none");
+                t.textContent = String(rank * 8 + file);
+                svg.appendChild(t);
+              }
+            }
+          }
+
+          // File labels in bottom margin
+          for (let displayFile = 0; displayFile < 8; displayFile++) {
+            const file = state.flipped ? 7 - displayFile : displayFile;
+            const cx = MARGIN + displayFile * SQUARE + SQUARE / 2;
+            const cy = MARGIN + BOARD_PX + MARGIN / 2;
+            const t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", String(cx));
+            t.setAttribute("y", String(cy));
+            t.setAttribute("text-anchor", "middle");
+            t.setAttribute("dominant-baseline", "middle");
+            t.setAttribute("font-size", "12");
+            t.setAttribute("font-weight", "600");
+            t.setAttribute("font-family", "ui-monospace, monospace");
+            t.setAttribute("fill", "#e2e8f0");
+            t.textContent = "abcdefgh"[file];
+            svg.appendChild(t);
+          }
+
+          // Rank labels in left margin
+          for (let displayRank = 0; displayRank < 8; displayRank++) {
+            const rank = state.flipped ? displayRank : 7 - displayRank;
+            const cx = MARGIN / 2;
+            const cy = MARGIN + displayRank * SQUARE + SQUARE / 2;
+            const t = document.createElementNS(SVG_NS, "text");
+            t.setAttribute("x", String(cx));
+            t.setAttribute("y", String(cy));
+            t.setAttribute("text-anchor", "middle");
+            t.setAttribute("dominant-baseline", "middle");
+            t.setAttribute("font-size", "12");
+            t.setAttribute("font-weight", "600");
+            t.setAttribute("font-family", "ui-monospace, monospace");
+            t.setAttribute("fill", "#e2e8f0");
+            t.textContent = String(rank + 1);
+            svg.appendChild(t);
+          }
+        }
+
+        function formatBin(bb) {
+          // 8 groups of 8 bits, rank 8 on top → rank 1 on bottom.
+          const lines = [];
+          for (let rank = 7; rank >= 0; rank--) {
+            let row = "";
+            for (let file = 0; file < 8; file++) {
+              row += isSet(bb, rank, file) ? "1" : ".";
+              if (file === 7) row += `  ${rank + 1}`;
+              else row += " ";
+            }
+            lines.push(row);
+          }
+          lines.push("");
+          lines.push("a b c d e f g h");
+          return lines.join("\n");
+        }
+
+        function renderRepr() {
+          els.reprHex.textContent = "0x" + state.bb.toString(16).padStart(16, "0");
+          els.reprDec.textContent = state.bb.toString(10);
+          els.reprBin.textContent = formatBin(state.bb);
+          els.popcountBadge.textContent = String(popcount(state.bb));
+        }
+
+        function setError(el, msg) {
+          if (msg) {
+            el.textContent = msg;
+            el.classList.remove("hidden");
+          } else {
+            el.textContent = "";
+            el.classList.add("hidden");
+          }
+        }
+
+        // ----- URL state -----
+        function readUrlState() {
+          const params = new URLSearchParams(window.location.search);
+          const bbStr = params.get("bb");
+          const flip = params.get("flip");
+          const fen = params.get("fen");
+          let bb = 0n;
+          if (bbStr) {
+            const parsed = parseBitboard(bbStr);
+            if (parsed.ok) bb = parsed.value;
+          }
+          return {
+            bb,
+            flipped: flip === "1" || flip === "true",
+            fen: fen || "",
+          };
+        }
+
+        let urlTimer = null;
+        function writeUrlState() {
+          if (urlTimer) clearTimeout(urlTimer);
+          urlTimer = setTimeout(() => {
+            const params = new URLSearchParams();
+            if (state.bb !== 0n) params.set("bb", "0x" + state.bb.toString(16));
+            if (state.flipped) params.set("flip", "1");
+            if (state.fen) params.set("fen", state.fen);
+            const qs = params.toString();
+            const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+            window.history.replaceState(null, "", url);
+          }, 200);
+        }
+
+        function shareLink() {
+          const params = new URLSearchParams();
+          params.set("bb", "0x" + state.bb.toString(16));
+          if (state.flipped) params.set("flip", "1");
+          if (state.fen) params.set("fen", state.fen);
+          return `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+        }
+
+        // ----- Apply state -----
+        function setBitboard(bb, { fromInput = false } = {}) {
+          state.bb = bb & MASK64;
+          if (!fromInput) {
+            els.bbInput.value = "0x" + state.bb.toString(16);
+            setError(els.bbError, null);
+          }
+          buildBoard();
+          renderRepr();
+          writeUrlState();
+        }
+
+        function toggleSquare(rank, file) {
+          state.bb = state.bb ^ (1n << bitOf(rank, file));
+          els.bbInput.value = "0x" + state.bb.toString(16);
+          setError(els.bbError, null);
+          buildBoard();
+          renderRepr();
+          writeUrlState();
+        }
+
+        // ----- FEN → bitboards -----
+        // Returns the parsed board (rank-major, [0]=rank1) and the 15 bitboards, or null on error.
+        function fenToBitboards(fen) {
+          const placement = fen.trim().split(/\s+/)[0];
+          if (!placement) return { ok: false, error: "FEN is empty" };
+          const ranks = placement.split("/");
+          if (ranks.length !== 8) return { ok: false, error: `Expected 8 ranks, got ${ranks.length}` };
+
+          const bbs = {
+            P: 0n, N: 0n, B: 0n, R: 0n, Q: 0n, K: 0n,
+            p: 0n, n: 0n, b: 0n, r: 0n, q: 0n, k: 0n,
+          };
+          // FEN ranks go from rank 8 → rank 1, so index 0 is rank 8.
+          for (let i = 0; i < 8; i++) {
+            const realRank = 7 - i;
+            let file = 0;
+            for (const ch of ranks[i]) {
+              if (/[1-8]/.test(ch)) {
+                file += parseInt(ch, 10);
+              } else if (ch in bbs) {
+                if (file > 7) return { ok: false, error: `Rank ${realRank + 1}: too many squares` };
+                bbs[ch] |= 1n << bitOf(realRank, file);
+                file += 1;
+              } else {
+                return { ok: false, error: `Rank ${realRank + 1}: invalid character '${ch}'` };
+              }
+            }
+            if (file !== 8) return { ok: false, error: `Rank ${realRank + 1}: squares sum to ${file}, expected 8` };
+          }
+
+          const white = bbs.P | bbs.N | bbs.B | bbs.R | bbs.Q | bbs.K;
+          const black = bbs.p | bbs.n | bbs.b | bbs.r | bbs.q | bbs.k;
+          const occupied = white | black;
+
+          return {
+            ok: true,
+            rows: [
+              { name: "White pawns",   value: bbs.P },
+              { name: "White knights", value: bbs.N },
+              { name: "White bishops", value: bbs.B },
+              { name: "White rooks",   value: bbs.R },
+              { name: "White queens",  value: bbs.Q },
+              { name: "White king",    value: bbs.K },
+              { name: "Black pawns",   value: bbs.p },
+              { name: "Black knights", value: bbs.n },
+              { name: "Black bishops", value: bbs.b },
+              { name: "Black rooks",   value: bbs.r },
+              { name: "Black queens",  value: bbs.q },
+              { name: "Black king",    value: bbs.k },
+              { name: "White pieces",  value: white },
+              { name: "Black pieces",  value: black },
+              { name: "Occupied",      value: occupied },
+            ],
+          };
+        }
+
+        function renderFenBitboards() {
+          const container = els.fenBitboards;
+          container.innerHTML = "";
+          if (!state.fen.trim()) return;
+          const result = fenToBitboards(state.fen);
+          if (!result.ok) { setError(els.fenError, result.error); return; }
+          setError(els.fenError, null);
+
+          for (const row of result.rows) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "flex w-full items-center justify-between gap-3 border-b border-slate-200 px-3 py-1.5 text-left last:border-b-0 hover:bg-slate-50";
+            const left = document.createElement("span");
+            left.className = "text-slate-700";
+            left.textContent = row.name;
+            const right = document.createElement("span");
+            right.className = "mono text-slate-500 tabular";
+            const pc = popcount(row.value);
+            right.textContent = `0x${row.value.toString(16).padStart(16, "0")} · ${pc}`;
+            btn.appendChild(left);
+            btn.appendChild(right);
+            btn.addEventListener("click", () => setBitboard(row.value));
+            container.appendChild(btn);
+          }
+        }
+
+        // ----- Clipboard -----
+        async function copyText(text, btn) {
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = btn.textContent;
+            btn.textContent = "Copied";
+            setTimeout(() => { btn.textContent = original; }, 1200);
+          } catch (e) {
+            const ta = document.createElement("textarea");
+            ta.value = text;
+            ta.style.position = "fixed";
+            ta.style.opacity = "0";
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand("copy"); } catch (_) {}
+            document.body.removeChild(ta);
+          }
+        }
+
+        // ----- UI wiring -----
+        function renderPresetButtons() {
+          els.presetButtons.innerHTML = "";
+          for (const p of PRESETS) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = p.name;
+            btn.className = "inline-flex items-center rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-700 hover:bg-slate-50";
+            btn.addEventListener("click", () => setBitboard(p.value));
+            els.presetButtons.appendChild(btn);
+          }
+        }
+
+        els.bbInput.addEventListener("input", (e) => {
+          const parsed = parseBitboard(e.target.value);
+          if (parsed.ok) {
+            setError(els.bbError, null);
+            state.bb = parsed.value;
+            buildBoard();
+            renderRepr();
+            writeUrlState();
+          } else {
+            setError(els.bbError, parsed.error);
+          }
+        });
+
+        els.board.addEventListener("click", (e) => {
+          const target = e.target.closest(".square-hit");
+          if (!target) return;
+          const rank = parseInt(target.dataset.rank, 10);
+          const file = parseInt(target.dataset.file, 10);
+          toggleSquare(rank, file);
+        });
+
+        els.flipBtn.addEventListener("click", () => { state.flipped = !state.flipped; buildBoard(); writeUrlState(); });
+        els.clearBtn.addEventListener("click", () => setBitboard(0n));
+        els.invertBtn.addEventListener("click", () => setBitboard((~state.bb) & MASK64));
+        els.savePngBtn.addEventListener("click", async () => {
+          const original = els.savePngBtn.textContent;
+          els.savePngBtn.disabled = true;
+          els.savePngBtn.textContent = "Saving…";
+          try {
+            const name = "bitboard_0x" + state.bb.toString(16).padStart(16, "0");
+            await window.GCT.saveSvgAsPng(els.board, name);
+          } catch (e) {
+            console.error(e);
+            alert("Could not save image: " + (e && e.message ? e.message : e));
+          } finally {
+            els.savePngBtn.disabled = false;
+            els.savePngBtn.textContent = original;
+          }
+        });
+        els.copyHexBtn.addEventListener("click", () => copyText("0x" + state.bb.toString(16).padStart(16, "0"), els.copyHexBtn));
+        els.copyDecBtn.addEventListener("click", () => copyText(state.bb.toString(10), els.copyDecBtn));
+        els.copyLinkBtn.addEventListener("click", () => copyText(shareLink(), els.copyLinkBtn));
+
+        els.fenInput.addEventListener("input", (e) => {
+          state.fen = e.target.value;
+          renderFenBitboards();
+          writeUrlState();
+        });
+
+        // ----- Init -----
+        renderPresetButtons();
+        const initial = readUrlState();
+        state.flipped = initial.flipped;
+        state.fen = initial.fen;
+        if (state.fen) els.fenInput.value = state.fen;
+        renderFenBitboards();
+        setBitboard(initial.bb);
+      })();
+    </script>
+  </body>
+</html>

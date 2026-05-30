@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Legal Move Generation &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/07-legal-moves.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/07-legal-moves.html" />
+    <meta property="og:title" content="Legal Move Generation — Let&#39;s build a move generator" />
+    <meta property="og:description" content="Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Legal Move Generation — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Legal Move Generation",
+      "description": "Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front.",
+      "url": "https://grandchesstree.com/move-generator/07-legal-moves.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 7</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 7 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Legal Move Generation</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front.</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">Our generator from Part 4 emits pseudo-legal moves, and the perft loop in Part 5 filters out the ones that leave our king in check by making each one, asking &quot;is our king attacked?&quot;, and rolling it back. That gets us correct perft numbers, but it does a lot of pointless work — every search node tries moves that we could have known were illegal up front.</p>
+<p class="mt-4 leading-relaxed text-slate-700">This article fixes that. We&#39;ll compute three bitboards once per node and use them to emit <strong>only legal moves</strong>. By the end we should be able to drop the post-hoc filter from the perft loop, get the same numbers back, and run faster.</p>
+<h2 id="the-three-bitboards" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-three-bitboards" class="no-underline">The three bitboards</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">At every position we compute:</p>
+<ol class="mt-4 list-decimal space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><strong><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">checkers</code></strong> — enemy pieces currently attacking our king.</li><li class="mt-1.5"><strong><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pinned</code></strong> — our pieces that can&#39;t move freely because doing so would expose the king to a slider. Per-pinned-piece we also need its <strong>pin line</strong> — the squares it&#39;s still allowed to move to (which include capturing the pinner).</li><li class="mt-1.5"><strong><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">kingDanger</code></strong> — squares the enemy attacks <em>if we pretend our king isn&#39;t on the board</em>. The &quot;pretend&quot; matters because a slider attacking the king extends past it — the square immediately behind the king is also unsafe, even though normal attack-generation wouldn&#39;t show it.</li></ol>
+<p class="mt-4 leading-relaxed text-slate-700">With those three in hand the rules write themselves:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><strong>Two or more checkers:</strong> only king moves to non-<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">kingDanger</code> squares are legal. By geometry there&#39;s never more than two simultaneous checkers (one direct, one discovered).</li><li class="mt-1.5"><strong>One checker:</strong> king moves as above, <em>plus</em> moves that capture the checker or interpose on the check line — but only by <strong>unpinned</strong> friendly pieces.</li><li class="mt-1.5"><strong>No checkers:</strong> every pseudo-legal move is fine <em>except</em> a pinned piece moving off its pin line. King moves still avoid <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">kingDanger</code>.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">Plus a couple of stragglers — en-passant has its weird horizontal-pin case, and castling has its transit-square test.</p>
+<h2 id="computing-the-trinity" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#computing-the-trinity" class="no-underline">Computing the trinity</a></h2>
+<h3 id="king-danger-squares" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#king-danger-squares" class="no-underline">King-danger squares</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">Recompute the enemy&#39;s attack bitboard with our king&#39;s bit removed from occupancy. Anything they hit is somewhere the king cannot land:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Numerics;
+
+public static class Legality
+{
+    public static ulong ComputeKingDanger(Position pos, int kingSq, int enemyColor)
+    {
+        ulong occWithoutKing = pos.AllOccupied ^ (1UL &lt;&lt; kingSq);
+
+        ulong danger = 0;
+
+        // Pawns
+        ulong epawns = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhitePawn : Piece.BlackPawn)];
+        while (epawns != 0)
+        {
+            int sq = BitOperations.TrailingZeroCount(epawns);
+            danger |= Attacks.Pawn[enemyColor, sq];
+            epawns &amp;= epawns - 1;
+        }
+
+        // Knights
+        ulong knights = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteKnight : Piece.BlackKnight)];
+        while (knights != 0)
+        {
+            int sq = BitOperations.TrailingZeroCount(knights);
+            danger |= Attacks.Knight[sq];
+            knights &amp;= knights - 1;
+        }
+
+        // Bishops + queens (diagonal)
+        ulong bq = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteBishop : Piece.BlackBishop)]
+                 | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen  : Piece.BlackQueen)];
+        while (bq != 0)
+        {
+            int sq = BitOperations.TrailingZeroCount(bq);
+            danger |= Magic.BishopAttacks(sq, occWithoutKing);
+            bq &amp;= bq - 1;
+        }
+
+        // Rooks + queens (orthogonal)
+        ulong rq = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteRook  : Piece.BlackRook)]
+                 | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen : Piece.BlackQueen)];
+        while (rq != 0)
+        {
+            int sq = BitOperations.TrailingZeroCount(rq);
+            danger |= Magic.RookAttacks(sq, occWithoutKing);
+            rq &amp;= rq - 1;
+        }
+
+        // Enemy king
+        int eksq = BitOperations.TrailingZeroCount(
+            pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteKing : Piece.BlackKing)]);
+        danger |= Attacks.King[eksq];
+
+        return danger;
+    }
+}</code></pre></div>
+<h3 id="checkers" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#checkers" class="no-underline">Checkers</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">The same <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">IsAttackedBy</code> idea from Part 4, but this time we want the set of <em>attackers</em> not just a boolean. We compose it from each piece type&#39;s attack pattern shot back from the king square:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static ulong ComputeCheckers(Position pos, int kingSq, int enemyColor)
+{
+    ulong occ = pos.AllOccupied;
+
+    ulong attackerPawns   = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhitePawn   : Piece.BlackPawn)];
+    ulong attackerKnights = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteKnight : Piece.BlackKnight)];
+    ulong attackerBQ      = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteBishop : Piece.BlackBishop)]
+                          | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen  : Piece.BlackQueen)];
+    ulong attackerRQ      = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteRook   : Piece.BlackRook)]
+                          | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen  : Piece.BlackQueen)];
+
+    return  (Attacks.Pawn[1 - enemyColor, kingSq] &amp; attackerPawns)
+          | (Attacks.Knight[kingSq]               &amp; attackerKnights)
+          | (Magic.BishopAttacks(kingSq, occ)     &amp; attackerBQ)
+          | (Magic.RookAttacks  (kingSq, occ)     &amp; attackerRQ);
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">We use <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Attacks.Pawn[1 - enemyColor, ...]</code> because a square is attacked by an enemy pawn at sq X if <em>our</em>-colour pawn at the king&#39;s square would attack X.</p>
+<h3 id="pinned-pieces-and-pin-lines" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#pinned-pieces-and-pin-lines" class="no-underline">Pinned pieces and pin lines</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">For each enemy slider that would attack the king <em>if we removed exactly one of our pieces in between</em>, that piece is pinned. The pin line is the ray from the king through (and including) the pinner.</p>
+<p class="mt-4 leading-relaxed text-slate-700">We use an x-ray attack — shoot from the king square through one of our own pieces and see if an enemy slider sits on the far side. The pin-line array is sized 64 (one entry per square); we use a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Span&lt;ulong&gt;</code> and the caller stack-allocates the buffer, so the computation is allocation-free:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static void ComputePins(Position pos, int kingSq, int enemyColor,
+                               out ulong pinned, Span&lt;ulong&gt; pinLines)
+{
+    for (int i = 0; i &lt; 64; i++) pinLines[i] = ulong.MaxValue;
+    pinned = 0;
+
+    ulong us = pos.WhiteToMove ? pos.WhiteOccupied : pos.BlackOccupied;
+    ulong occ = pos.AllOccupied;
+
+    ulong enemyRQ = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteRook  : Piece.BlackRook)]
+                  | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen : Piece.BlackQueen)];
+    ulong enemyBQ = pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteBishop : Piece.BlackBishop)]
+                  | pos.Pieces[(int)(enemyColor == 0 ? Piece.WhiteQueen  : Piece.BlackQueen)];
+
+    pinned |= ScanPinners(kingSq, us, occ, enemyRQ, isBishop: false, pinLines);
+    pinned |= ScanPinners(kingSq, us, occ, enemyBQ, isBishop: true,  pinLines);
+}
+
+static ulong ScanPinners(int kingSq, ulong us, ulong occ, ulong enemySliders,
+                         bool isBishop, Span&lt;ulong&gt; pinLines)
+{
+    ulong directAttacks = isBishop
+        ? Magic.BishopAttacks(kingSq, occ)
+        : Magic.RookAttacks  (kingSq, occ);
+
+    ulong blockers = directAttacks &amp; us;         // our blockers on the slider&#39;s rays
+    ulong throughOccupancy = occ ^ blockers;     // remove them
+
+    ulong xrayAttacks = isBishop
+        ? Magic.BishopAttacks(kingSq, throughOccupancy)
+        : Magic.RookAttacks  (kingSq, throughOccupancy);
+
+    ulong xrayPinners = xrayAttacks &amp; enemySliders &amp; ~directAttacks;
+
+    ulong pinned = 0;
+    while (xrayPinners != 0)
+    {
+        int pinnerSq = BitOperations.TrailingZeroCount(xrayPinners);
+        ulong between = SquaresBetween[kingSq, pinnerSq];
+        ulong ourBlocker = between &amp; us;
+        // X-rays were constructed so exactly one of our pieces sits between king &amp; pinner.
+        if (ourBlocker != 0 &amp;&amp; BitOperations.PopCount(ourBlocker) == 1)
+        {
+            int pinnedSq = BitOperations.TrailingZeroCount(ourBlocker);
+            pinned |= ourBlocker;
+            pinLines[pinnedSq] = between | (1UL &lt;&lt; pinnerSq);
+        }
+        xrayPinners &amp;= xrayPinners - 1;
+    }
+    return pinned;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pinLines</code> span is full-board (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">ulong.MaxValue</code>) for unpinned pieces, so masking attacks by <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pinLines[from]</code> is a no-op for non-pinned pieces and an effective restriction for pinned ones.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The caller (the legal generator&#39;s <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Generate</code> method) supplies the buffer with <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">stackalloc</code>:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">Span&lt;ulong&gt; pinLines = stackalloc ulong[64];
+Legality.ComputePins(pos, kingSq, them, out ulong pinned, pinLines);</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">SquaresBetween[a, b]</code> is the bitboard of squares strictly between <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">a</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">b</code> when they&#39;re on the same rank, file, or diagonal — and zero otherwise. We pre-compute it at startup:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Legality
+{
+    public static readonly ulong[,] SquaresBetween = BuildSquaresBetween();
+
+    static ulong[,] BuildSquaresBetween()
+    {
+        var tbl = new ulong[64, 64];
+        for (int a = 0; a &lt; 64; a++)
+            for (int b = 0; b &lt; 64; b++)
+            {
+                if (a == b) continue;
+                int ra = a &gt;&gt; 3, fa = a &amp; 7;
+                int rb = b &gt;&gt; 3, fb = b &amp; 7;
+                int dr = System.Math.Sign(rb - ra);
+                int df = System.Math.Sign(fb - fa);
+                bool aligned = ra == rb || fa == fb
+                            || System.Math.Abs(ra - rb) == System.Math.Abs(fa - fb);
+                if (!aligned) continue;
+
+                ulong bb = 0;
+                int r = ra + dr, f = fa + df;
+                while (r != rb || f != fb)
+                {
+                    bb |= 1UL &lt;&lt; (r * 8 + f);
+                    r += dr; f += df;
+                }
+                tbl[a, b] = bb;
+            }
+        return tbl;
+    }
+}</code></pre></div>
+<h2 id="the-legal-generator" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-legal-generator" class="no-underline">The legal generator</a></h2>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class LegalMoveGenerator
+{
+    public static int Generate(Position pos, System.Span&lt;Move&gt; dest)
+    {
+        int us       = pos.WhiteToMove ? 0 : 1;
+        int them     = 1 - us;
+        int kingSq   = BitOperations.TrailingZeroCount(
+            pos.Pieces[(int)(us == 0 ? Piece.WhiteKing : Piece.BlackKing)]);
+
+        ulong kingDanger = Legality.ComputeKingDanger(pos, kingSq, them);
+        ulong checkers   = Legality.ComputeCheckers  (pos, kingSq, them);
+
+        Span&lt;ulong&gt; pinLines = stackalloc ulong[64];
+        Legality.ComputePins(pos, kingSq, them, out ulong pinned, pinLines);
+
+        int n = 0;
+
+        // King moves: always allowed, just avoid danger and own pieces.
+        n = GenKingMoves(pos, dest, n, kingSq, kingDanger);
+
+        int numCheckers = BitOperations.PopCount(checkers);
+        if (numCheckers &gt;= 2)
+            return n;   // double check — king moves only
+
+        // checkMask: squares a non-king piece is allowed to *land* on.
+        //   not in check       → everywhere
+        //   single check       → checker&#39;s square (for capture) ∪ squares between king and checker (for block)
+        ulong checkMask = ulong.MaxValue;
+        if (numCheckers == 1)
+        {
+            int checkerSq = BitOperations.TrailingZeroCount(checkers);
+            checkMask = checkers | Legality.SquaresBetween[kingSq, checkerSq];
+        }
+
+        n = GenPawnsLegal  (pos, dest, n, us, checkMask, pinned, pinLines);
+        n = GenKnightsLegal(pos, dest, n, us, checkMask, pinned);
+        n = GenSlidersLegal(pos, dest, n, us, checkMask, pinned, pinLines);
+
+        if (numCheckers == 0)
+            n = GenCastlingLegal(pos, dest, n, kingSq, kingDanger);
+
+        return n;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The mainline is short — most of the work is in those three pre-computations. The piece generators are minor twists on the Part-4 versions.</p>
+<h3 id="knights" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#knights" class="no-underline">Knights</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">A pinned knight can never move legally — no straight line covers a knight jump. Otherwise: pseudo-legal attacks restricted to the <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">checkMask</code>:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static int GenKnightsLegal(Position pos, System.Span&lt;Move&gt; dest, int n,
+                           int us, ulong checkMask, ulong pinned)
+{
+    ulong ourPieces = us == 0 ? pos.WhiteOccupied : pos.BlackOccupied;
+    ulong enemy     = us == 0 ? pos.BlackOccupied : pos.WhiteOccupied;
+
+    ulong knights = pos.Pieces[(int)(us == 0 ? Piece.WhiteKnight : Piece.BlackKnight)] &amp; ~pinned;
+    while (knights != 0)
+    {
+        int from = BitOperations.TrailingZeroCount(knights);
+        ulong attacks = Attacks.Knight[from] &amp; ~ourPieces &amp; checkMask;
+        n = EmitTargets(dest, n, from, attacks, enemy);
+        knights &amp;= knights - 1;
+    }
+    return n;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">EmitTargets</code> is the same helper from Part 4 — emits captures and quiets based on whether the target is in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">enemy</code>.</p>
+<h3 id="sliders" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#sliders" class="no-underline">Sliders</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">A pinned slider may still move along its pin line — that&#39;s what the per-piece pin-line mask is for:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static int GenSlidersLegal(Position pos, System.Span&lt;Move&gt; dest, int n,
+                           int us, ulong checkMask, ulong pinned, ulong[] pinLines)
+{
+    ulong ourPieces = us == 0 ? pos.WhiteOccupied : pos.BlackOccupied;
+    ulong enemy     = us == 0 ? pos.BlackOccupied : pos.WhiteOccupied;
+    ulong occ = pos.AllOccupied;
+
+    Piece bishop = us == 0 ? Piece.WhiteBishop : Piece.BlackBishop;
+    Piece rook   = us == 0 ? Piece.WhiteRook   : Piece.BlackRook;
+    Piece queen  = us == 0 ? Piece.WhiteQueen  : Piece.BlackQueen;
+
+    n = EmitSlider(dest, n, pos.Pieces[(int)bishop], Magic.BishopAttacks,
+                   ourPieces, enemy, occ, checkMask, pinned, pinLines);
+    n = EmitSlider(dest, n, pos.Pieces[(int)rook],   Magic.RookAttacks,
+                   ourPieces, enemy, occ, checkMask, pinned, pinLines);
+    n = EmitSlider(dest, n, pos.Pieces[(int)queen],  Magic.QueenAttacks,
+                   ourPieces, enemy, occ, checkMask, pinned, pinLines);
+    return n;
+}
+
+delegate ulong AttackFn(int sq, ulong occ);
+
+static int EmitSlider(System.Span&lt;Move&gt; dest, int n, ulong pieces, AttackFn attackFn,
+                      ulong ourPieces, ulong enemy, ulong occ,
+                      ulong checkMask, ulong pinned, Span&lt;ulong&gt; pinLines)
+{
+    while (pieces != 0)
+    {
+        int from = BitOperations.TrailingZeroCount(pieces);
+        ulong attacks = attackFn(from, occ) &amp; ~ourPieces &amp; checkMask;
+        if (((1UL &lt;&lt; from) &amp; pinned) != 0)
+            attacks &amp;= pinLines[from];      // pinned: restrict to pin line
+        n = EmitTargets(dest, n, from, attacks, enemy);
+        pieces &amp;= pieces - 1;
+    }
+    return n;
+}</code></pre></div>
+<h3 id="pawns" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#pawns" class="no-underline">Pawns</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">Pawns are the busy ones. A pinned pawn can push only if the pin is along its file, capture only if the pin is along its capture diagonal. The <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pinLines[from]</code> mask handles all of that uniformly — restrict the targets to the pin line.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The one piece that doesn&#39;t quite fit the mask-everything pattern is <strong>en-passant</strong> with its horizontal pin. We can&#39;t express the &quot;and your king isn&#39;t suddenly attacked along the rank because both pawns vacated&quot; check as a target-mask. The cheap solution: when we generate an ep candidate, simulate the capture (just XOR the two pawns out of the occupancy), and re-check whether the king is attacked along its rank.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static int GenPawnsLegal(Position pos, System.Span&lt;Move&gt; dest, int n,
+                         int us, ulong checkMask, ulong pinned, ulong[] pinLines)
+{
+    bool white = us == 0;
+    ulong pawns = pos.Pieces[(int)(white ? Piece.WhitePawn : Piece.BlackPawn)];
+    ulong empty = ~pos.AllOccupied;
+    ulong enemy = white ? pos.BlackOccupied : pos.WhiteOccupied;
+
+    int dPush = white ? -8 : +8;
+    int dCapE = white ? -9 : +7;
+    int dCapW = white ? -7 : +9;
+    ulong promoRank = white ? Bitboards.Rank8 : Bitboards.Rank1;
+    ulong startRank3 = white ? Bitboards.Rank3 : Bitboards.Rank6;
+
+    ulong singles = (white ? Bitboards.ShiftN(pawns) : Bitboards.ShiftS(pawns)) &amp; empty;
+    ulong doubles = (white ? Bitboards.ShiftN(singles &amp; startRank3) : Bitboards.ShiftS(singles &amp; startRank3)) &amp; empty;
+    ulong capE    = (white ? Bitboards.ShiftNE(pawns) : Bitboards.ShiftSE(pawns)) &amp; enemy;
+    ulong capW    = (white ? Bitboards.ShiftNW(pawns) : Bitboards.ShiftSW(pawns)) &amp; enemy;
+
+    // Apply check mask: if in check, pushes must land on a blocking square and
+    // captures must take the checker (which the same mask expresses).
+    singles &amp;= checkMask;
+    doubles &amp;= checkMask;
+    capE    &amp;= checkMask;
+    capW    &amp;= checkMask;
+
+    n = EmitPawnLegal(dest, n, singles &amp; ~promoRank, dPush, MoveFlag.Quiet,           pinned, pinLines);
+    n = EmitPromos   (dest, n, singles &amp;  promoRank, dPush, capture: false,           pinned, pinLines);
+    n = EmitPawnLegal(dest, n, doubles,              2 * dPush, MoveFlag.DoublePawnPush, pinned, pinLines);
+    n = EmitPawnLegal(dest, n, capE &amp; ~promoRank,    dCapE, MoveFlag.Capture,         pinned, pinLines);
+    n = EmitPawnLegal(dest, n, capW &amp; ~promoRank,    dCapW, MoveFlag.Capture,         pinned, pinLines);
+    n = EmitPromos   (dest, n, capE &amp;  promoRank,    dCapE, capture: true,            pinned, pinLines);
+    n = EmitPromos   (dest, n, capW &amp;  promoRank,    dCapW, capture: true,            pinned, pinLines);
+
+    // En passant — special legality check
+    if (pos.EpSquare &gt;= 0)
+    {
+        n = GenEnPassant(pos, dest, n, us);
+    }
+
+    return n;
+}
+
+static int EmitPawnLegal(System.Span&lt;Move&gt; dest, int n, ulong targets, int deltaFrom,
+                         MoveFlag flag, ulong pinned, ulong[] pinLines)
+{
+    while (targets != 0)
+    {
+        int to = BitOperations.TrailingZeroCount(targets);
+        int from = to + deltaFrom;
+        if (((1UL &lt;&lt; from) &amp; pinned) == 0 || ((1UL &lt;&lt; to) &amp; pinLines[from]) != 0)
+            dest[n++] = new Move(from, to, flag);
+        targets &amp;= targets - 1;
+    }
+    return n;
+}
+
+static int EmitPromos(System.Span&lt;Move&gt; dest, int n, ulong targets, int deltaFrom,
+                      bool capture, ulong pinned, ulong[] pinLines)
+{
+    int baseFlag = capture ? (int)MoveFlag.PromoCaptureKnight : (int)MoveFlag.PromoteKnight;
+    while (targets != 0)
+    {
+        int to = BitOperations.TrailingZeroCount(targets);
+        int from = to + deltaFrom;
+        if (((1UL &lt;&lt; from) &amp; pinned) == 0 || ((1UL &lt;&lt; to) &amp; pinLines[from]) != 0)
+            for (int i = 0; i &lt; 4; i++)
+                dest[n++] = new Move(from, to, (MoveFlag)(baseFlag + i));
+        targets &amp;= targets - 1;
+    }
+    return n;
+}</code></pre></div>
+<h3 id="en-passant-the-horizontal-pin-check-and-in-check-filter" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#en-passant-the-horizontal-pin-check-and-in-check-filter" class="no-underline">En-passant: the horizontal-pin check (and in-check filter)</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">We brute-force this — simulate the capture, see if our king is suddenly attacked along the rank. We also handle the rare case of an en-passant capture that resolves a check: it&#39;s only legal in single check if the captured pawn IS the lone checker. If we&#39;re in check from anything else (a knight, a slider that&#39;s not the just-pushed pawn), removing the pawn doesn&#39;t help and we must suppress the ep move.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static int GenEnPassant(Position pos, System.Span&lt;Move&gt; dest, int n,
+                        int us, int kingSq, ulong checkers)
+{
+    bool white = us == 0;
+    int ep = pos.EpSquare;
+    ulong epBB = 1UL &lt;&lt; ep;
+
+    ulong pawns = pos.Pieces[(int)(white ? Piece.WhitePawn : Piece.BlackPawn)];
+    ulong capE = (white ? Bitboards.ShiftNE(pawns) : Bitboards.ShiftSE(pawns)) &amp; epBB;
+    ulong capW = (white ? Bitboards.ShiftNW(pawns) : Bitboards.ShiftSW(pawns)) &amp; epBB;
+
+    int dCapE = white ? -9 : +7;
+    int dCapW = white ? -7 : +9;
+
+    if (capE != 0) n = TryEpMove(pos, dest, n, ep + dCapE, ep, us, kingSq, checkers);
+    if (capW != 0) n = TryEpMove(pos, dest, n, ep + dCapW, ep, us, kingSq, checkers);
+    return n;
+}
+
+static int TryEpMove(Position pos, System.Span&lt;Move&gt; dest, int n,
+                     int from, int to, int us, int kingSq, ulong checkers)
+{
+    bool white = us == 0;
+    int capturedPawnSq = white ? to - 8 : to + 8;
+
+    // If we&#39;re in single check, the ep capture is only legal when it removes
+    // the lone checker.  Double check was filtered out before we got here.
+    int numCheckers = BitOperations.PopCount(checkers);
+    if (numCheckers == 1 &amp;&amp; (checkers &amp; (1UL &lt;&lt; capturedPawnSq)) == 0)
+        return n;
+
+    ulong simOcc = pos.AllOccupied
+                 ^ (1UL &lt;&lt; from)
+                 ^ (1UL &lt;&lt; to)
+                 ^ (1UL &lt;&lt; capturedPawnSq);
+
+    int them = 1 - us;
+    ulong enemyRQ = pos.Pieces[(int)(them == 0 ? Piece.WhiteRook  : Piece.BlackRook)]
+                  | pos.Pieces[(int)(them == 0 ? Piece.WhiteQueen : Piece.BlackQueen)];
+    ulong enemyBQ = pos.Pieces[(int)(them == 0 ? Piece.WhiteBishop : Piece.BlackBishop)]
+                  | pos.Pieces[(int)(them == 0 ? Piece.WhiteQueen  : Piece.BlackQueen)];
+
+    bool kingAttacked =
+           (Magic.RookAttacks  (kingSq, simOcc) &amp; enemyRQ) != 0
+        || (Magic.BishopAttacks(kingSq, simOcc) &amp; enemyBQ) != 0;
+
+    if (!kingAttacked)
+        dest[n++] = new Move(from, to, MoveFlag.EnPassant);
+    return n;
+}</code></pre></div>
+<h3 id="king-moves-and-castling" class="mt-10 text-xl font-semibold tracking-tight text-slate-900 md:text-2xl"><a href="#king-moves-and-castling" class="no-underline">King moves and castling</a></h3>
+<p class="mt-4 leading-relaxed text-slate-700">King moves just avoid king-danger; castling needs the full transit-square check:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static int GenKingMoves(Position pos, System.Span&lt;Move&gt; dest, int n,
+                        int kingSq, ulong kingDanger)
+{
+    bool white = pos.WhiteToMove;
+    ulong ourPieces = white ? pos.WhiteOccupied : pos.BlackOccupied;
+    ulong enemy     = white ? pos.BlackOccupied : pos.WhiteOccupied;
+    ulong targets = Attacks.King[kingSq] &amp; ~ourPieces &amp; ~kingDanger;
+    return EmitTargets(dest, n, kingSq, targets, enemy);
+}
+
+static int GenCastlingLegal(Position pos, System.Span&lt;Move&gt; dest, int n,
+                            int kingSq, ulong kingDanger)
+{
+    bool white = pos.WhiteToMove;
+    ulong occ = pos.AllOccupied;
+
+    if (white)
+    {
+        if ((pos.Castling &amp; CastlingRights.WhiteKingside) != 0
+            &amp;&amp; (occ &amp; 0x60UL) == 0
+            &amp;&amp; (kingDanger &amp; 0x70UL) == 0)       // e1, f1, g1 unattacked
+            dest[n++] = new Move(4, 6, MoveFlag.KingsideCastle);
+        if ((pos.Castling &amp; CastlingRights.WhiteQueenside) != 0
+            &amp;&amp; (occ &amp; 0x0EUL) == 0
+            &amp;&amp; (kingDanger &amp; 0x1CUL) == 0)       // e1, d1, c1 unattacked
+            dest[n++] = new Move(4, 2, MoveFlag.QueensideCastle);
+    }
+    else
+    {
+        if ((pos.Castling &amp; CastlingRights.BlackKingside) != 0
+            &amp;&amp; (occ &amp; 0x6000000000000000UL) == 0
+            &amp;&amp; (kingDanger &amp; 0x7000000000000000UL) == 0)
+            dest[n++] = new Move(60, 62, MoveFlag.KingsideCastle);
+        if ((pos.Castling &amp; CastlingRights.BlackQueenside) != 0
+            &amp;&amp; (occ &amp; 0x0E00000000000000UL) == 0
+            &amp;&amp; (kingDanger &amp; 0x1C00000000000000UL) == 0)
+            dest[n++] = new Move(60, 58, MoveFlag.QueensideCastle);
+    }
+    return n;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">For occupancy we test the squares <em>between</em> king and rook (excluding king square), but for the attack test we test the king&#39;s start, transit, and destination — three squares. The 0x70 / 0x1C / etc. constants pack those tests neatly.</p>
+<h2 id="updating-perft" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#updating-perft" class="no-underline">Updating perft</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The whole make-then-test filter goes. Perft becomes the simple loop again:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Perft
+{
+    public static ulong Run(Position pos, int depth)
+    {
+        if (depth == 0) return 1UL;
+        Span&lt;Move&gt; buf = stackalloc Move[256];
+        int n = LegalMoveGenerator.Generate(pos, buf);
+        ulong nodes = 0;
+        for (int i = 0; i &lt; n; i++)
+        {
+            pos.MakeMove(buf[i]);
+            nodes += Run(pos, depth - 1);
+            pos.UnmakeMove(buf[i]);
+        }
+        return nodes;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Bulk-counting trick — at <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">depth == 1</code> we can return <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">n</code> directly without ever calling MakeMove, which roughly doubles speed:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static ulong Run(Position pos, int depth)
+{
+    if (depth == 0) return 1UL;
+    Span&lt;Move&gt; buf = stackalloc Move[256];
+    int n = LegalMoveGenerator.Generate(pos, buf);
+    if (depth == 1) return (ulong)n;
+    ulong nodes = 0;
+    for (int i = 0; i &lt; n; i++)
+    {
+        pos.MakeMove(buf[i]);
+        nodes += Run(pos, depth - 1);
+        pos.UnmakeMove(buf[i]);
+    }
+    return nodes;
+}</code></pre></div>
+<h2 id="running-it" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#running-it" class="no-underline">Running it</a></h2>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    static void Main()
+    {
+        Magic.Init();
+
+        var pos = Fen.Parse(Fen.Initial);
+        for (int d = 1; d &lt;= 6; d++)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            ulong nodes = Perft.Run(pos, d);
+            sw.Stop();
+            System.Console.WriteLine($&quot;perft({d}) = {nodes,12}   {sw.Elapsed.TotalSeconds,7:F2}s&quot;);
+        }
+
+        System.Console.WriteLine();
+
+        var kp = Fen.Parse(Fen.Kiwipete);
+        for (int d = 1; d &lt;= 5; d++)
+        {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            ulong nodes = Perft.Run(kp, d);
+            sw.Stop();
+            System.Console.WriteLine($&quot;kiwipete({d}) = {nodes,12}   {sw.Elapsed.TotalSeconds,7:F2}s&quot;);
+        }
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Expected:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">perft(1) =           20
+perft(2) =          400
+perft(3) =         8902
+perft(4) =       197281
+perft(5) =      4865609
+perft(6) =    119060324
+
+kiwipete(1) =          48
+kiwipete(2) =        2039
+kiwipete(3) =       97862
+kiwipete(4) =     4085603
+kiwipete(5) =   193690690</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">All matching the reference values from Part 1.</p>
+<h2 id="series-recap" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#series-recap" class="no-underline">Series recap</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">What we built across seven articles:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><strong>Part 1</strong> — a perft skeleton and an ASCII FEN renderer.</li><li class="mt-1.5"><strong>Part 2</strong> — a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code> with 12 piece bitboards plus an 8×8 mailbox, full FEN parse and round-trip.</li><li class="mt-1.5"><strong>Part 3</strong> — a 16-bit <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> struct with UCI conversion.</li><li class="mt-1.5"><strong>Part 4</strong> — a pseudo-legal generator with classical ray-scan sliders.</li><li class="mt-1.5"><strong>Part 5</strong> — <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> / <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code> with a stack of irreversible state, plugged into perft via a make-then-check filter.</li><li class="mt-1.5"><strong>Part 6</strong> — magic bitboards replacing the slider attack functions.</li><li class="mt-1.5"><strong>Part 7</strong> — proper legal generation via the checkers / pinned / king-danger trinity.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">The result is a cross-platform .NET move generator that passes perft on the standard test positions. From here you could turn it into a real engine by adding alpha-beta search, quiescence, an evaluation function, and a UCI interface. None of that needs the move generator to change. The hardest part of any chess engine — getting move generation right — is done.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a href="06-magic-bitboards.html" class="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">← Previous</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 6: Magic Bitboards</p>
+          </a>
+          <span></span>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

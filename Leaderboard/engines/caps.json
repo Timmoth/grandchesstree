@@ -1,0 +1,31 @@
+{
+  "name": "caps",
+  "version": "bd3a8e0",
+  "owner": "toanth",
+  "repo": "https://github.com/toanth/motors",
+  "language": "Rust",
+  "_note": "CAPS (Chess Alpha-beta Pruning Search) is part of the `motors` workspace by ToTheAnd. Build via `make` in the repo root → runs `cargo rustc --release ... -- --emit link=caps`, producing the `caps` binary at the repo root. CAPS speaks UCI/UGI; on first launch it's in interactive mode, so the descriptor's setup sends `uci` to switch to non-interactive UCI mode before perft cases run. By default `go perft N` is multi-threaded (rayon-parallelised via gears/perft.rs); `go perft N threads 1` forces single-threaded. Note: the engine rejects `threads K` for K>1 in perft mode — only 0 (default, parallel) or 1 are accepted. So multi-no-cache uses no inline threads override, single-no-cache appends `threads 1`. Perft output ends with `Nodes searched: <N>`.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/caps/caps",
+      "setup": [
+        "uci",
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth} threads 1",
+      "end_re": "^Nodes searched: \\d+",
+      "quit":   "quit"
+    },
+    "multi-no-cache": {
+      "launch": "bin/caps/caps",
+      "setup": [
+        "uci",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^Nodes searched: \\d+",
+      "quit":   "quit"
+    }
+  }
+}

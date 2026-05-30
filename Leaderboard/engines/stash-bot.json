@@ -1,0 +1,20 @@
+{
+  "name": "stash-bot",
+  "version": "master",
+  "owner": "mhouppin",
+  "repo": "https://github.com/mhouppin/stash-bot",
+  "language": "C",
+  "_note": "Stash is a UCI engine; perft is routed through `go perft N` and uses movelist_size as a depth-1 bulk count. Build with NATIVE=yes for movegen speed (per upstream guidance — the default Makefile may pick a sub-optimal arch flag set otherwise). The launch is prefixed with `stdbuf -oL` because Stash doesn't fflush stdout after the perft `info nodes …` line; without line-buffering the runner times out waiting for output.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "stdbuf -oL bin/stash-bot/src/stash",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^info nodes \\d+",
+      "quit":   "quit"
+    }
+  }
+}

@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SJE's Symmetric Alternative &mdash; Perft Results &middot; The Grand Chess Tree</title>
+    <meta name="description" content="Perft results for the SJE's Symmetric Alternative chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/sje.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="creator" content="Tim Jones" />
+    <meta name="publisher" content="The Grand Chess Tree" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="perft, chess, performance test, distributed computing, chess engine, move generation, Grand Chess Tree, Tim Jones, Timmoth" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+        <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/sje.html" />
+    <meta property="og:title" content="SJE's Symmetric Alternative &mdash; Perft Results" />
+    <meta property="og:description" content="Perft results for the SJE's Symmetric Alternative chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SJE's Symmetric Alternative &mdash; Perft Results" />
+    <meta name="twitter:description" content="Perft results for the SJE's Symmetric Alternative chess position: depth-by-depth move counts, computation timeline, and contributors." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; scroll-behavior: smooth; }
+      .tabular { font-variant-numeric: tabular-nums; }
+    </style>
+
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "Dataset",
+  "name": "Perft results for SJE's Symmetric Alternative",
+  "description": "In 2013, Steven James Edwards identified this position, noting that it offers a greater variety of moves while maintaining color symmetry.",
+  "url": "https://grandchesstree.com/sje.html",
+  "creator": {
+    "@type": "Organization",
+    "name": "The Grand Chess Tree",
+    "url": "https://grandchesstree.com/"
+  },
+  "author": {
+    "@type": "Person",
+    "name": "Tim Jones",
+    "alternateName": "Timmoth",
+    "url": "https://timmoth.com/"
+  },
+  "publisher": {
+    "@type": "Person",
+    "name": "Tim Jones",
+    "url": "https://timmoth.com/"
+  },
+  "keywords": [
+    "chess",
+    "perft",
+    "sje's symmetric alternative"
+  ],
+  "variableMeasured": [
+    "nodes",
+    "captures",
+    "enpassants",
+    "castles",
+    "promotions",
+    "checks",
+    "mates"
+  ],
+  "isAccessibleForFree": true,
+  "license": "https://github.com/Timmoth/grandchesstree",
+  "spatialCoverage": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+  "temporalCoverage": "depths 0\u20139"
+}</script>
+    <script type="application/ld+json">{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://grandchesstree.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Positions",
+      "item": "https://grandchesstree.com/#positions"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "SJE's Symmetric Alternative",
+      "item": "https://grandchesstree.com/sje.html"
+    }
+  ]
+}</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "Tim Jones",
+      "alternateName": "Timmoth",
+      "url": "https://timmoth.com/",
+      "jobTitle": "Software engineer",
+      "sameAs": [
+        "https://timmoth.com/",
+        "https://github.com/Timmoth"
+      ],
+      "worksFor": {
+        "@type": "ResearchProject",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      }
+    }
+    </script>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4" aria-label="Primary">
+        <a href="index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="distributed-perft.html" class="text-slate-900">Distributed Perft</a></li>
+          <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6 py-14 md:py-20">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="distributed-perft.html#positions" class="hover:text-slate-900">Studied positions</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">SJE's Symmetric Alternative</li>
+            </ol>
+          </nav>
+
+          <h1 class="text-3xl font-bold tracking-tight text-slate-900 md:text-5xl">SJE's Symmetric Alternative</h1>
+          <p class="mt-4 max-w-3xl text-base text-slate-600 md:text-lg">In 2013, Steven James Edwards identified this position, noting that it offers a greater variety of moves while maintaining color symmetry.</p>
+
+          <div class="mt-8 grid gap-4 md:grid-cols-[auto_1fr] md:items-start">
+            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white p-3 md:p-4">
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 348 348" class="block h-auto w-full max-w-[22rem]" role="img" aria-label="Chess board diagram. White to move. Black rook on a8, Black rook on f8, Black king on g8, Black pawn on b7, Black pawn on c7, Black queen on e7, Black pawn on f7, Black pawn on g7, Black pawn on h7, Black pawn on a6, Black knight on c6, Black pawn on d6, Black knight on f6, Black bishop on c5, Black pawn on e5, White bishop on g5, White bishop on c4, White pawn on e4, Black bishop on g4, White pawn on a3, White knight on c3, White pawn on d3, White knight on f3, White pawn on b2, White pawn on c2, White queen on e2, White pawn on f2, White pawn on g2, White pawn on h2, White rook on a1, White rook on f1, White king on g1."><rect x="0" y="0" width="348" height="348" rx="6" fill="#1f2937"/><rect x="14" y="14" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_rook.png" xlink:href="assets/img/pieces/black_rook.png" x="15.200000000000003" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="14" width="40" height="40" fill="#b58863"/><rect x="94" y="14" width="40" height="40" fill="#f0d9b5"/><rect x="134" y="14" width="40" height="40" fill="#b58863"/><rect x="174" y="14" width="40" height="40" fill="#f0d9b5"/><rect x="214" y="14" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_rook.png" xlink:href="assets/img/pieces/black_rook.png" x="215.2" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="14" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_king.png" xlink:href="assets/img/pieces/black_king.png" x="255.2" y="15.200000000000003" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="14" width="40" height="40" fill="#b58863"/><rect x="14" y="54" width="40" height="40" fill="#b58863"/><rect x="54" y="54" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="55.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="94" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="95.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="54" width="40" height="40" fill="#f0d9b5"/><rect x="174" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_queen.png" xlink:href="assets/img/pieces/black_queen.png" x="175.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="54" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="215.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="54" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="255.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="54" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="295.2" y="55.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="14" y="94" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="15.200000000000003" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="94" width="40" height="40" fill="#b58863"/><rect x="94" y="94" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_knight.png" xlink:href="assets/img/pieces/black_knight.png" x="95.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="94" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="135.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="174" y="94" width="40" height="40" fill="#f0d9b5"/><rect x="214" y="94" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_knight.png" xlink:href="assets/img/pieces/black_knight.png" x="215.2" y="95.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="94" width="40" height="40" fill="#f0d9b5"/><rect x="294" y="94" width="40" height="40" fill="#b58863"/><rect x="14" y="134" width="40" height="40" fill="#b58863"/><rect x="54" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="134" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_bishop.png" xlink:href="assets/img/pieces/black_bishop.png" x="95.2" y="135.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="174" y="134" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/black_pawn.png" xlink:href="assets/img/pieces/black_pawn.png" x="175.2" y="135.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="254" y="134" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_bishop.png" xlink:href="assets/img/pieces/white_bishop.png" x="255.2" y="135.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="134" width="40" height="40" fill="#f0d9b5"/><rect x="14" y="174" width="40" height="40" fill="#f0d9b5"/><rect x="54" y="174" width="40" height="40" fill="#b58863"/><rect x="94" y="174" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_bishop.png" xlink:href="assets/img/pieces/white_bishop.png" x="95.2" y="175.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="174" width="40" height="40" fill="#b58863"/><rect x="174" y="174" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="175.2" y="175.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="174" width="40" height="40" fill="#b58863"/><rect x="254" y="174" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/black_bishop.png" xlink:href="assets/img/pieces/black_bishop.png" x="255.2" y="175.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="174" width="40" height="40" fill="#b58863"/><rect x="14" y="214" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="15.200000000000003" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="214" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="214" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_knight.png" xlink:href="assets/img/pieces/white_knight.png" x="95.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="214" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="135.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="174" y="214" width="40" height="40" fill="#b58863"/><rect x="214" y="214" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_knight.png" xlink:href="assets/img/pieces/white_knight.png" x="215.2" y="215.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="214" width="40" height="40" fill="#b58863"/><rect x="294" y="214" width="40" height="40" fill="#f0d9b5"/><rect x="14" y="254" width="40" height="40" fill="#f0d9b5"/><rect x="54" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="55.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="94" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="95.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="134" y="254" width="40" height="40" fill="#b58863"/><rect x="174" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_queen.png" xlink:href="assets/img/pieces/white_queen.png" x="175.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="214" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="215.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="254" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="255.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="254" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_pawn.png" xlink:href="assets/img/pieces/white_pawn.png" x="295.2" y="255.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="14" y="294" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_rook.png" xlink:href="assets/img/pieces/white_rook.png" x="15.200000000000003" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="54" y="294" width="40" height="40" fill="#f0d9b5"/><rect x="94" y="294" width="40" height="40" fill="#b58863"/><rect x="134" y="294" width="40" height="40" fill="#f0d9b5"/><rect x="174" y="294" width="40" height="40" fill="#b58863"/><rect x="214" y="294" width="40" height="40" fill="#f0d9b5"/><image href="assets/img/pieces/white_rook.png" xlink:href="assets/img/pieces/white_rook.png" x="215.2" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="254" y="294" width="40" height="40" fill="#b58863"/><image href="assets/img/pieces/white_king.png" xlink:href="assets/img/pieces/white_king.png" x="255.2" y="295.2" width="37.599999999999994" height="37.599999999999994" preserveAspectRatio="xMidYMid meet"/><rect x="294" y="294" width="40" height="40" fill="#f0d9b5"/><text x="34" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">a</text><text x="74" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">b</text><text x="114" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">c</text><text x="154" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">d</text><text x="194" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">e</text><text x="234" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">f</text><text x="274" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">g</text><text x="314" y="341" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">h</text><text x="7" y="34" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">8</text><text x="7" y="74" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">7</text><text x="7" y="114" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">6</text><text x="7" y="154" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">5</text><text x="7" y="194" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">4</text><text x="7" y="234" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">3</text><text x="7" y="274" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">2</text><text x="7" y="314" text-anchor="middle" dominant-baseline="middle" font-size="9" font-family="ui-monospace, monospace" font-weight="600" fill="#e2e8f0">1</text></svg>
+            </div>
+            <div class="overflow-hidden rounded-lg border border-slate-200 bg-white">
+              <div class="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium uppercase tracking-wider text-slate-500">
+                <span>FEN</span>
+              </div>
+              <code class="block overflow-x-auto px-4 py-3 font-mono text-xs text-slate-700 md:text-sm">r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10</code>
+            </div>
+          </div>
+
+          <dl class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Depth range</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">0–9</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Total nodes</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">502.4t</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Wall-clock compute</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">8h 26m</dd>
+            </div>
+            <div class="rounded-xl border border-slate-200 bg-white p-4">
+              <dt class="text-xs font-medium uppercase tracking-wider text-slate-500">Contributors</dt>
+              <dd class="mt-2 text-2xl font-semibold tabular text-slate-900">2</dd>
+            </div>
+          </dl>
+
+          <nav aria-label="Sections" class="mt-10 flex flex-wrap gap-2">
+            <a href="#results" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Move breakdown</a>
+            <a href="#work" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Computation work</a>
+            <a href="#unique" class="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50">Distinct positions</a>
+          </nav>
+        </div>
+      </section>
+
+      <section id="results" class="scroll-mt-20 border-b border-slate-200 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Move breakdown by depth</h2>
+          <p class="mt-4 max-w-2xl text-slate-600">Counts of each move type &mdash; captures, en passants, castles, promotions, checks, and mates &mdash; for every completed depth.</p>
+
+          <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600"><tr><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Depth</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Nodes</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Captures</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">En passants</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Castles</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Promotions</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Single disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Double disc. checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Total checks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Single disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Direct disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Double disc. mates</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Total mates</th></tr></thead>
+                <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">0</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">1</span></td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">1</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">46</span></td><td class="whitespace-nowrap px-4 py-3 tabular">4</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">2</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">2,079</span></td><td class="whitespace-nowrap px-4 py-3 tabular">203</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">40</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">40</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">3</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">89,890</span></td><td class="whitespace-nowrap px-4 py-3 tabular">9,470</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1,783</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1,783</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">4</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">3,894,594</span></td><td class="whitespace-nowrap px-4 py-3 tabular">440,388</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">68,903</td><td class="whitespace-nowrap px-4 py-3 tabular">62</td><td class="whitespace-nowrap px-4 py-3 tabular">20</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">68,985</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">5</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">164,075,551</span></td><td class="whitespace-nowrap px-4 py-3 tabular">19,528,068</td><td class="whitespace-nowrap px-4 py-3 tabular">122</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">2,984,733</td><td class="whitespace-nowrap px-4 py-3 tabular">10,687</td><td class="whitespace-nowrap px-4 py-3 tabular">2,960</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">2,998,380</td><td class="whitespace-nowrap px-4 py-3 tabular">228</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">228</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">6</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">6,923,051,137</span></td><td class="whitespace-nowrap px-4 py-3 tabular">868,499,408</td><td class="whitespace-nowrap px-4 py-3 tabular">5,167</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">114,668,946</td><td class="whitespace-nowrap px-4 py-3 tabular">658,704</td><td class="whitespace-nowrap px-4 py-3 tabular">192,415</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">115,520,065</td><td class="whitespace-nowrap px-4 py-3 tabular">10,050</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">20</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">10,070</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">7</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">287,188,994,746</span></td><td class="whitespace-nowrap px-4 py-3 tabular">37,337,665,196</td><td class="whitespace-nowrap px-4 py-3 tabular">653,902</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">4,921,419,642</td><td class="whitespace-nowrap px-4 py-3 tabular">55,454,971</td><td class="whitespace-nowrap px-4 py-3 tabular">14,510,646</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">4,991,385,259</td><td class="whitespace-nowrap px-4 py-3 tabular">3,479,648</td><td class="whitespace-nowrap px-4 py-3 tabular">3,531</td><td class="whitespace-nowrap px-4 py-3 tabular">31,568</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">3,514,747</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">8</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">11,923,589,843,526</span></td><td class="whitespace-nowrap px-4 py-3 tabular">1,615,552,099,219</td><td class="whitespace-nowrap px-4 py-3 tabular">29,144,239</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">1,972,668</td><td class="whitespace-nowrap px-4 py-3 tabular">191,158,825,449</td><td class="whitespace-nowrap px-4 py-3 tabular">2,692,451,333</td><td class="whitespace-nowrap px-4 py-3 tabular">733,157,520</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">194,584,434,302</td><td class="whitespace-nowrap px-4 py-3 tabular">144,453,426</td><td class="whitespace-nowrap px-4 py-3 tabular">104,377</td><td class="whitespace-nowrap px-4 py-3 tabular">1,605,074</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">146,162,877</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-semibold text-slate-900">9</span></td><td class="whitespace-nowrap px-4 py-3 tabular"><span class="font-medium text-slate-900">490,154,852,788,714</span></td><td class="whitespace-nowrap px-4 py-3 tabular">68,145,537,029,941</td><td class="whitespace-nowrap px-4 py-3 tabular">2,297,994,855</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">274,526,296</td><td class="whitespace-nowrap px-4 py-3 tabular">8,194,180,873,137</td><td class="whitespace-nowrap px-4 py-3 tabular">175,281,762,097</td><td class="whitespace-nowrap px-4 py-3 tabular">43,601,148,904</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">8,413,063,784,138</td><td class="whitespace-nowrap px-4 py-3 tabular">16,235,815,835</td><td class="whitespace-nowrap px-4 py-3 tabular">59,310,808</td><td class="whitespace-nowrap px-4 py-3 tabular">205,711,379</td><td class="whitespace-nowrap px-4 py-3 tabular">0</td><td class="whitespace-nowrap px-4 py-3 tabular">16,500,838,022</td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="work" class="scroll-mt-20 border-b border-slate-200 bg-slate-50 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Computation work by depth</h2>
+          <p class="mt-4 max-w-2xl text-slate-600">Per-depth wall-clock duration, task count, and the contributors whose workers performed the search.</p>
+
+          <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600"><tr><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Depth</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Nodes</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Duration</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Tasks</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Contributors</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Started</th><th scope="col" class="whitespace-nowrap px-4 py-3 text-left font-semibold text-slate-700">Finished</th></tr></thead>
+                <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">0</span></td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:56</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:56</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">1</span></td><td class="px-4 py-3 align-top tabular">46</td><td class="px-4 py-3 align-top tabular">0m 1s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:56</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:56</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">2</span></td><td class="px-4 py-3 align-top tabular">2.1k</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">3</span></td><td class="px-4 py-3 align-top tabular">89.9k</td><td class="px-4 py-3 align-top tabular">0m 0s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">4</span></td><td class="px-4 py-3 align-top tabular">3.9m</td><td class="px-4 py-3 align-top tabular">0m 1s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">5</span></td><td class="px-4 py-3 align-top tabular">164.1m</td><td class="px-4 py-3 align-top tabular">0m 1s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">6</span></td><td class="px-4 py-3 align-top tabular">6.9b</td><td class="px-4 py-3 align-top tabular">0m 31s</td><td class="px-4 py-3 align-top tabular">1</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-slate-400">1</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 11:58</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">7</span></td><td class="px-4 py-3 align-top tabular">287.2b</td><td class="px-4 py-3 align-top tabular">1m 19s</td><td class="px-4 py-3 align-top tabular">2,079</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-indigo-500">1.8k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Chester-alt</span><span class="text-sky-600">279</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 12:38</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 12:40</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">8</span></td><td class="px-4 py-3 align-top tabular">11.9t</td><td class="px-4 py-3 align-top tabular">17m 46s</td><td class="px-4 py-3 align-top tabular">52,831</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-violet-500">27.2k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Chester-alt</span><span class="text-violet-500">25.6k</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 12:40</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 12:57</span></td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 align-top tabular"><span class="font-semibold text-slate-900">9</span></td><td class="px-4 py-3 align-top tabular">490.2t</td><td class="px-4 py-3 align-top tabular">8h 6m</td><td class="px-4 py-3 align-top tabular">52,831</td><td class="px-4 py-3 align-top tabular"><div class="flex flex-wrap"><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Chester-alt</span><span class="text-violet-500">26.5k</span></span><span class="mr-1.5 mb-1.5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-xs"><span class="font-medium text-slate-700">Timmoth</span><span class="text-violet-500">26.4k</span></span></div></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 12:57</span></td><td class="px-4 py-3 align-top tabular"><span class="font-mono text-xs">2025-02-14 21:04</span></td></tr></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="unique" class="py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Distinct positions by depth</h2>
+            <p class="mt-4 max-w-2xl text-slate-600">Counts of unique board states reachable at each depth, ignoring transpositions.</p>
+
+            <div class="mt-10 overflow-hidden rounded-xl border border-slate-200 bg-white">
+            <table class="min-w-full text-sm">
+              <thead class="bg-slate-50 text-xs uppercase tracking-wider text-slate-600">
+                <tr>
+                  <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-700">Depth</th>
+                  <th scope="col" class="px-4 py-3 text-left font-semibold text-slate-700">Distinct positions</th>
+                </tr>
+              </thead>
+              <tbody class="text-slate-600"><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">0</span></td><td class="px-4 py-3 tabular">1</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">1</span></td><td class="px-4 py-3 tabular">46</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">2</span></td><td class="px-4 py-3 tabular">2,079</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">3</span></td><td class="px-4 py-3 tabular">49,377</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">4</span></td><td class="px-4 py-3 tabular">1,164,752</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">5</span></td><td class="px-4 py-3 tabular">19,106,668</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">6</span></td><td class="px-4 py-3 tabular">315,668,837</td></tr><tr class="border-t border-slate-200 hover:bg-slate-50/60"><td class="px-4 py-3 tabular"><span class="font-semibold text-slate-900">7</span></td><td class="px-4 py-3 tabular">4,117,328,153</td></tr></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="border-t border-slate-200 bg-slate-50 py-16 md:py-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+          <div class="max-w-3xl">
+            <h2 class="text-2xl font-bold tracking-tight text-slate-900 md:text-3xl">Other studied positions</h2>
+            <p class="mt-3 text-slate-600">Continue browsing the catalogue.</p>
+          </div>
+          <div class="mt-8 grid gap-4 md:grid-cols-2">
+            <article class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 class="text-base font-semibold tracking-tight text-slate-900">Startpos</h3>
+              <a href="startpos.html" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">
+                View results
+                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
+              </a>
+            </article>
+            <article class="rounded-2xl border border-slate-200 bg-white p-5">
+              <h3 class="text-base font-semibold tracking-tight text-slate-900">Kiwipete</h3>
+              <a href="kiwipete.html" class="mt-3 inline-flex items-center gap-1 text-sm font-medium text-slate-900 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">
+                View results
+                <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 4l6 6-6 6"/></svg>
+              </a>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="distributed-perft.html" class="hover:text-slate-900">Distributed Perft</a></li>
+            <li><a href="tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="move-generator/" class="hover:text-slate-900">Move generator</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+  </body>
+</html>

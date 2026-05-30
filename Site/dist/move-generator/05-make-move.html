@@ -1,0 +1,669 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Making a Move &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to **apply** each move and then **reverse** it so the next sibling move starts from the same position." />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/05-make-move.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/05-make-move.html" />
+    <meta property="og:title" content="Making a Move — Let&#39;s build a move generator" />
+    <meta property="og:description" content="We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to **apply** each move and then **reverse** it so the next sibling move starts from the same position." />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Making a Move — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to **apply** each move and then **reverse** it so the next sibling move starts from the same position." />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Making a Move",
+      "description": "We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to **apply** each move and then **reverse** it so the next sibling move starts from the same position.",
+      "url": "https://grandchesstree.com/move-generator/05-make-move.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 5</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 5 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Making a Move</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to **apply** each move and then **reverse** it so the next sibling move starts from the same position.</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">We&#39;ve got a generator that produces every pseudo-legal move. To use it — for perft, for search, for anything — we need to <strong>apply</strong> each move and then <strong>reverse</strong> it so the next sibling move starts from the same position.</p>
+<p class="mt-4 leading-relaxed text-slate-700">Two operations: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code>. Plus a small undo record, because some of the state we mutate can&#39;t be reconstructed from the move alone.</p>
+<p class="mt-4 leading-relaxed text-slate-700">By the end of this article we&#39;ll wire the generator and make/unmake into the perft skeleton from Part 1, filter out moves that leave our king in check, and get <strong>correct</strong> perft counts matching the reference values from the initial position and from Kiwipete.</p>
+<h2 id="what-needs-to-be-saved-before-make" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-needs-to-be-saved-before-make" class="no-underline">What needs to be saved before make</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The position has two kinds of state:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><strong>Reversible</strong> — piece bitboards, the mailbox, aggregate occupancy. These are pure functions of &quot;which pieces are on which squares&quot;, and XOR-ing the same bits twice in a row gets us back where we started. Make and unmake do mirror operations.</li><li class="mt-1.5"><strong>Irreversible</strong> — castling rights, en-passant square, halfmove clock, captured piece, side to move. These can&#39;t be derived from the new position. If we don&#39;t save them before mutating, we can&#39;t restore them.</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">So make-move needs an <strong>undo record</strong> holding the irreversible state from <em>before</em> the move:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public struct UndoInfo
+{
+    public CastlingRights Castling;
+    public int            EpSquare;
+    public int            HalfmoveClock;
+    public Piece          Captured;     // Piece.None for non-captures
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">We&#39;ll keep a stack of these inside <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code> so the search can nest as deeply as it likes. Position is now big enough that splitting it across two files is tidier — make <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position.cs</code> a partial class and add a new <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">PositionMake.cs</code> file for the make/unmake methods:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">// Position.cs — add the partial keyword, the undo-stack fields, and the static
+// castling-rights mask we&#39;ll use to update rights on every move.
+public sealed partial class Position
+{
+    // ... (existing fields from Part 2) ...
+
+    internal readonly UndoInfo[] _undoStack = new UndoInfo[1024];
+    internal int _undoTop;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">1024</code> is fine — we&#39;ll never search a tree that deep in any realistic position. (If you do, you&#39;ve got bigger problems.)</p>
+<h2 id="make-the-basic-shape" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#make-the-basic-shape" class="no-underline">Make: the basic shape</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">For most moves the steps are:</p>
+<ol class="mt-4 list-decimal space-y-1 pl-6 text-slate-700"><li class="mt-1.5">Save the irreversible state into the undo stack.</li><li class="mt-1.5">Update castling rights (lose the right if king or relevant rook moved).</li><li class="mt-1.5">Update the half-move clock (reset on pawn moves or captures; increment otherwise).</li><li class="mt-1.5">Move the piece: XOR the from-square and to-square on the moving piece&#39;s bitboard. Update the mailbox.</li><li class="mt-1.5">If capturing: remove the captured piece from its bitboard. Update the mailbox.</li><li class="mt-1.5">Update the en-passant square (set on double pawn push, clear otherwise).</li><li class="mt-1.5">Flip side to move; if black just moved, increment fullmove number.</li></ol>
+<p class="mt-4 leading-relaxed text-slate-700">Then there are four special cases — castling, en-passant, promotion, double push — that tweak the basic pattern.</p>
+<p class="mt-4 leading-relaxed text-slate-700">One rule we&#39;ll stick to: <strong>all the piece-bitboard mutation happens before we flip <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteToMove</code>.</strong> Capture the current side-to-move into a local <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">whiteMoving</code> at the top of the function and use that consistently. The mental model is simple — <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">whiteMoving</code> is the side that&#39;s <em>making</em> the move, and once we&#39;re done mutating, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteToMove</code> flips to the opponent at the very end.</p>
+<p class="mt-4 leading-relaxed text-slate-700">Set up the skeleton in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">PositionMake.cs</code>:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Numerics;
+
+public sealed partial class Position
+{
+    public void MakeMove(Move move)
+    {
+        int from = move.From;
+        int to   = move.To;
+        Piece moving = Squares[from];
+
+        bool whiteMoving = WhiteToMove;     // the side doing the move
+
+        Piece captured = move.IsEnPassant
+            ? (whiteMoving ? Piece.BlackPawn : Piece.WhitePawn)
+            : Squares[to];
+
+        // 1. Save irreversible state
+        _undoStack[_undoTop++] = new UndoInfo
+        {
+            Castling      = Castling,
+            EpSquare      = EpSquare,
+            HalfmoveClock = HalfmoveClock,
+            Captured      = captured,
+        };
+
+        // 2. Update castling rights based on from/to squares
+        Castling &amp;= CastlingRightsMask[from] &amp; CastlingRightsMask[to];
+
+        // 3. Halfmove clock
+        if (moving == Piece.WhitePawn || moving == Piece.BlackPawn || move.IsCapture)
+            HalfmoveClock = 0;
+        else
+            HalfmoveClock++;
+
+        // 4. Move the piece
+        ulong fromTo = (1UL &lt;&lt; from) | (1UL &lt;&lt; to);
+        Pieces[(int)moving] ^= fromTo;
+        Squares[from] = Piece.None;
+        Squares[to]   = moving;
+
+        // 5. Capture (default case — special-cased below for ep / promo-capture)
+        if (move.IsCapture &amp;&amp; !move.IsEnPassant)
+        {
+            Pieces[(int)captured] ^= 1UL &lt;&lt; to;
+            // Squares[to] is already overwritten with the moving piece.
+        }
+
+        ApplySpecialMoves(move, to, captured, whiteMoving);
+
+        // 6. EP square — set on double push only
+        EpSquare = move.Flag == MoveFlag.DoublePawnPush
+            ? (whiteMoving ? to - 8 : to + 8)
+            : -1;
+
+        // 7. Side / fullmove — the flip is the last thing we touch
+        if (!whiteMoving) FullmoveNumber++;
+        WhiteToMove = !whiteMoving;
+
+        RebuildOccupancy();
+    }
+
+    void RebuildOccupancy()
+    {
+        ulong w = 0, b = 0;
+        for (int p = (int)Piece.WhitePawn; p &lt;= (int)Piece.WhiteKing; p++) w |= Pieces[p];
+        for (int p = (int)Piece.BlackPawn; p &lt;= (int)Piece.BlackKing; p++) b |= Pieces[p];
+        WhiteOccupied = w;
+        BlackOccupied = b;
+        AllOccupied   = w | b;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">CastlingRightsMask</code> is a 64-entry table whose value at each square tells us which rights to <em>preserve</em> when a piece moves to or from that square. Almost every entry is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">~0</code> (no change); only the king&#39;s and rooks&#39; starting squares clear their own rights. Put it in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position.cs</code> alongside the other fields:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public sealed partial class Position
+{
+    static readonly CastlingRights[] CastlingRightsMask = BuildCastlingMask();
+
+    static CastlingRights[] BuildCastlingMask()
+    {
+        var m = new CastlingRights[64];
+        for (int i = 0; i &lt; 64; i++)
+            m[i] = (CastlingRights)0xF;   // all bits set = no change
+
+        // White rooks
+        m[0]  &amp;= ~CastlingRights.WhiteQueenside;   // a1
+        m[7]  &amp;= ~CastlingRights.WhiteKingside;    // h1
+        // White king
+        m[4]  &amp;= ~(CastlingRights.WhiteKingside | CastlingRights.WhiteQueenside);
+        // Black rooks
+        m[56] &amp;= ~CastlingRights.BlackQueenside;   // a8
+        m[63] &amp;= ~CastlingRights.BlackKingside;    // h8
+        // Black king
+        m[60] &amp;= ~(CastlingRights.BlackKingside | CastlingRights.BlackQueenside);
+
+        return m;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">We AND with the mask for both the from-square <em>and</em> the to-square. The to-square check is the bit people miss — if our rook captures the enemy&#39;s rook on its home corner, the enemy lost that castling right too.</p>
+<h2 id="special-move-handling" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#special-move-handling" class="no-underline">Special-move handling</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Because special-moves run <em>before</em> the side flip, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">whiteMoving</code> is straightforwardly the side doing the move. No mental gymnastics — if <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">whiteMoving == true</code>, we&#39;re moving white pieces.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">void ApplySpecialMoves(Move move, int to, Piece captured, bool whiteMoving)
+{
+    switch (move.Flag)
+    {
+        case MoveFlag.EnPassant:
+        {
+            // Captured pawn is one rank behind the to-square (from the mover&#39;s POV).
+            int capSq = whiteMoving ? to - 8 : to + 8;
+            Pieces[(int)captured] ^= 1UL &lt;&lt; capSq;
+            Squares[capSq] = Piece.None;
+            break;
+        }
+        case MoveFlag.KingsideCastle:
+            if (whiteMoving) MoveRookForCastle(7, 5);     // white  h1 → f1
+            else             MoveRookForCastle(63, 61);   // black  h8 → f8
+            break;
+
+        case MoveFlag.QueensideCastle:
+            if (whiteMoving) MoveRookForCastle(0, 3);     // white  a1 → d1
+            else             MoveRookForCastle(56, 59);   // black  a8 → d8
+            break;
+
+        default:
+            if (move.IsPromotion)
+            {
+                // The pawn was placed on `to` in step 4. Replace it with the promo piece.
+                Piece pawn  = whiteMoving ? Piece.WhitePawn : Piece.BlackPawn;
+                int colorOffset = whiteMoving ? 0 : 6;       // 0 = white pieces, 6 = black
+                Piece promo = (Piece)(colorOffset + 1 + move.PromotionPieceIndex);
+                Pieces[(int)pawn]  ^= 1UL &lt;&lt; to;
+                Pieces[(int)promo] ^= 1UL &lt;&lt; to;
+                Squares[to] = promo;
+            }
+            break;
+    }
+}
+
+void MoveRookForCastle(int rookFrom, int rookTo)
+{
+    Piece rook = Squares[rookFrom];
+    ulong fromTo = (1UL &lt;&lt; rookFrom) | (1UL &lt;&lt; rookTo);
+    Pieces[(int)rook] ^= fromTo;
+    Squares[rookFrom] = Piece.None;
+    Squares[rookTo]   = rook;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Promotion piece arithmetic: piece codes are laid out <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhitePawn=0, WhiteKnight=1, ..., WhiteKing=5, BlackPawn=6, BlackKnight=7, ..., BlackKing=11</code>, so <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">(colorOffset + 1 + PromotionPieceIndex)</code> produces the right code for both colours when <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">PromotionPieceIndex</code> is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">0=N, 1=B, 2=R, 3=Q</code>.</p>
+<h2 id="unmake" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#unmake" class="no-underline">Unmake</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Unmake is the mirror. We flip the side back <em>first</em> so <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">whiteMoving</code> again represents the side that originally made this move, then walk back through what MakeMove did:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public void UnmakeMove(Move move)
+{
+    int from = move.From;
+    int to   = move.To;
+
+    // Flip side back first — symmetric to make&#39;s &quot;flip last&quot;.
+    WhiteToMove = !WhiteToMove;
+    if (!WhiteToMove) FullmoveNumber--;
+    bool whiteMoving = WhiteToMove;
+
+    UndoInfo u = _undoStack[--_undoTop];
+    Castling      = u.Castling;
+    EpSquare      = u.EpSquare;
+    HalfmoveClock = u.HalfmoveClock;
+
+    // If we promoted, swap the promoted piece back to a pawn so we can move
+    // it back as a pawn.
+    Piece nowOnTo = Squares[to];
+    if (move.IsPromotion)
+    {
+        Piece pawn = whiteMoving ? Piece.WhitePawn : Piece.BlackPawn;
+        Pieces[(int)nowOnTo] ^= 1UL &lt;&lt; to;
+        Pieces[(int)pawn]    ^= 1UL &lt;&lt; to;
+        nowOnTo = pawn;
+    }
+
+    // Move the piece back.
+    ulong fromTo = (1UL &lt;&lt; from) | (1UL &lt;&lt; to);
+    Pieces[(int)nowOnTo] ^= fromTo;
+    Squares[to]   = Piece.None;
+    Squares[from] = nowOnTo;
+
+    // Restore captured piece.
+    if (u.Captured != Piece.None)
+    {
+        int capSq = move.IsEnPassant
+            ? (whiteMoving ? to - 8 : to + 8)
+            : to;
+        Pieces[(int)u.Captured] ^= 1UL &lt;&lt; capSq;
+        Squares[capSq] = u.Captured;
+    }
+
+    // Undo the castling rook move.
+    if (move.Flag == MoveFlag.KingsideCastle)
+    {
+        if (whiteMoving) MoveRookForCastle(5, 7);
+        else             MoveRookForCastle(61, 63);
+    }
+    else if (move.Flag == MoveFlag.QueensideCastle)
+    {
+        if (whiteMoving) MoveRookForCastle(3, 0);
+        else             MoveRookForCastle(59, 56);
+    }
+
+    RebuildOccupancy();
+}</code></pre></div>
+<h2 id="the-make-unmake-invariant-table" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-make-unmake-invariant-table" class="no-underline">The make / unmake invariant table</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Every mutation MakeMove performs must have a matching mutation that UnmakeMove undoes. Easy to lose track of as the function grows — here&#39;s the checklist:</p>
+<div class="mt-4 overflow-x-auto"><table class="w-full border-collapse"><thead><tr><th class="border-b border-slate-300 px-3 py-2 text-left text-sm font-semibold text-slate-700">Field</th><th class="border-b border-slate-300 px-3 py-2 text-left text-sm font-semibold text-slate-700">Make does</th><th class="border-b border-slate-300 px-3 py-2 text-left text-sm font-semibold text-slate-700">Unmake does</th></tr></thead><tbody><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">_undoStack</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Push <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UndoInfo</code> (castling, ep, clock, captured)</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Pop</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Castling</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">AND with <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Mask[from] &amp; Mask[to]</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Restore from undo</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">EpSquare</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Set on double push, else clear</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Restore from undo</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">HalfmoveClock</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Reset on pawn-move / capture, else ++</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Restore from undo</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">FullmoveNumber</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">++</code> if black moved</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">--</code> if black moved</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteToMove</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR (flip)</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR (flip back) — first thing</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Pieces[moving]</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">fromTo</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">fromTo</code></td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Squares[from]</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Set to <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">None</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Set back to mover</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Squares[to]</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Set to mover</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Set to <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">None</code> (or captured / promoted-piece)</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Capture</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR captured bit off enemy&#39;s bitboard</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">XOR it back on</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Castling rook</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Move (XOR + mailbox)</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Move back (XOR + mailbox)</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">EP captured pawn</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Remove from rank behind</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Restore</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Promotion</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Swap pawn → promoted piece on <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">to</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700">Swap promoted piece → pawn</td></tr><tr><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteOccupied</code>, etc.</td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">RebuildOccupancy</code></td><td class="border-b border-slate-100 px-3 py-2 text-left align-middle text-sm text-slate-700"><code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">RebuildOccupancy</code></td></tr></tbody></table></div>
+<p class="mt-4 leading-relaxed text-slate-700">Every row must be a true match — if one side adds a mutation and the other doesn&#39;t undo it, perft will diverge from the reference. The validator we&#39;re about to introduce makes mismatches show up at the first faulty move rather than as a wrong total at the end.</p>
+<h2 id="a-validator" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#a-validator" class="no-underline">A validator</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Part 2 mentioned this as a future addition — here&#39;s the moment to deliver. After every <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> (and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code>) the position should be <strong>internally consistent</strong>: every set bit in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Pieces[p]</code> matches <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Squares[sq] == p</code>; piece bitboards don&#39;t overlap; <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteOccupied / BlackOccupied / AllOccupied</code> are the recomputed unions. A short helper that asserts all three is cheap enough to call in test mode after every move:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public sealed partial class Position
+{
+    public void Validate()
+    {
+        ulong w = 0, b = 0;
+        for (int p = 0; p &lt; 12; p++)
+        {
+            ulong pieces = Pieces[p];
+
+            // No square is claimed by two piece bitboards at once.
+            for (int q = p + 1; q &lt; 12; q++)
+                if ((pieces &amp; Pieces[q]) != 0)
+                    throw new InvalidOperationException(
+                        $&quot;Bitboards {(Piece)p} and {(Piece)q} overlap&quot;);
+
+            // Every set bit must match the mailbox.
+            ulong bb = pieces;
+            while (bb != 0)
+            {
+                int sq = BitOperations.TrailingZeroCount(bb);
+                if ((int)Squares[sq] != p)
+                    throw new InvalidOperationException(
+                        $&quot;Bitboard says {(Piece)p} on {sq} but mailbox says {Squares[sq]}&quot;);
+                bb &amp;= bb - 1;
+            }
+
+            if (p &lt; 6) w |= pieces; else b |= pieces;
+        }
+
+        // Mailbox → bitboards.
+        for (int sq = 0; sq &lt; 64; sq++)
+        {
+            Piece m = Squares[sq];
+            if (m == Piece.None)
+            {
+                if (((w | b) &amp; (1UL &lt;&lt; sq)) != 0)
+                    throw new InvalidOperationException($&quot;Mailbox says empty on {sq} but bitboards say occupied&quot;);
+            }
+            else if ((Pieces[(int)m] &amp; (1UL &lt;&lt; sq)) == 0)
+            {
+                throw new InvalidOperationException($&quot;Mailbox has {m} on {sq} but its bitboard doesn&#39;t&quot;);
+            }
+        }
+
+        if (WhiteOccupied != w) throw new InvalidOperationException(&quot;WhiteOccupied out of sync&quot;);
+        if (BlackOccupied != b) throw new InvalidOperationException(&quot;BlackOccupied out of sync&quot;);
+        if (AllOccupied != (w | b)) throw new InvalidOperationException(&quot;AllOccupied out of sync&quot;);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Wrap a perft run in calls to it — <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pos.Validate()</code> before and after every <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code>/<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code> pair — and any state-sync bug will throw at the move that introduces it, not 20 plies later when the totals diverge.</p>
+<h2 id="plugging-into-perft" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#plugging-into-perft" class="no-underline">Plugging into perft</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Now we have everything. The perft skeleton from Part 1 needs only one change — filter out pseudo-legal moves that leave our king in check:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Numerics;
+
+public static class Perft
+{
+    public static ulong Run(Position pos, int depth)
+    {
+        if (depth == 0) return 1UL;
+
+        Span&lt;Move&gt; buf = stackalloc Move[256];
+        int n = MoveGenerator.GeneratePseudoLegal(pos, buf);
+
+        ulong nodes = 0;
+        for (int i = 0; i &lt; n; i++)
+        {
+            Move m = buf[i];
+            pos.MakeMove(m);
+
+            // Was our king (the side that just moved) left in check? If so, illegal.
+            int ourKingSq = BitOperations.TrailingZeroCount(
+                pos.WhiteToMove
+                    ? pos.Pieces[(int)Piece.BlackKing]   // we = black if it&#39;s now white&#39;s turn
+                    : pos.Pieces[(int)Piece.WhiteKing]);
+
+            int opponent = pos.WhiteToMove ? 0 : 1;       // colour to move = who would attack us
+            bool stillLegal = !Attacks.IsAttackedBy(pos, ourKingSq, opponent);
+
+            if (stillLegal)
+                nodes += Run(pos, depth - 1);
+
+            pos.UnmakeMove(m);
+        }
+
+        return nodes;
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The &quot;our king&quot; lookup is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">pos.WhiteToMove ? BlackKing : WhiteKing</code> — because the side to move <em>after</em> <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> is the opponent of the side that just moved.</p>
+<p class="mt-4 leading-relaxed text-slate-700">There&#39;s a second consideration for castling: we let pseudo-legal castling through without checking whether the king passes through an attacked square or whether the king was in check to start with. The &quot;still legal&quot; test after <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> catches &quot;left king in check&quot; but not &quot;king passed through an attacked square&quot;. For now we&#39;ll add an explicit guard:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">// Inside the perft loop, before MakeMove:
+if (m.IsCastle &amp;&amp; !IsCastleLegal(pos, m))
+    continue;</code></pre></div>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">static bool IsCastleLegal(Position pos, Move m)
+{
+    int kingFrom = m.From;
+    int kingTo   = m.To;
+    int transit  = (kingFrom + kingTo) / 2;
+    int opponent = pos.WhiteToMove ? 1 : 0;
+
+    return !Attacks.IsAttackedBy(pos, kingFrom, opponent)
+        &amp;&amp; !Attacks.IsAttackedBy(pos, transit,  opponent)
+        &amp;&amp; !Attacks.IsAttackedBy(pos, kingTo,   opponent);
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Part 7 will fold this back into the move generator itself, but for now it&#39;s an honest belt-and-braces filter that keeps perft correct.</p>
+<h2 id="running-it" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#running-it" class="no-underline">Running it</a></h2>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    static void Main()
+    {
+        var pos = Fen.Parse(Fen.Initial);
+        for (int d = 1; d &lt;= 5; d++)
+            System.Console.WriteLine($&quot;perft({d}) = {Perft.Run(pos, d)}&quot;);
+
+        System.Console.WriteLine();
+
+        var kp = Fen.Parse(Fen.Kiwipete);
+        for (int d = 1; d &lt;= 4; d++)
+            System.Console.WriteLine($&quot;kiwipete perft({d}) = {Perft.Run(kp, d)}&quot;);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Expected output:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">perft(1) = 20
+perft(2) = 400
+perft(3) = 8902
+perft(4) = 197281
+perft(5) = 4865609
+
+kiwipete perft(1) = 48
+kiwipete perft(2) = 2039
+kiwipete perft(3) = 97862
+kiwipete perft(4) = 4085603</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">If those match — congratulations, our move generator is <em>correct</em>. Slow, but correct. Depth 5 on the initial position will take a few seconds; Kiwipete depth 4 will take longer still. The sliders and the make-then-test filter are doing far more work than necessary, and that&#39;s what Parts 6 and 7 will fix.</p>
+<p class="mt-4 leading-relaxed text-slate-700">If they <em>don&#39;t</em> match: divide-and-conquer. Drop in a &quot;divide&quot; routine that prints node counts per root move and compare against any open reference engine (Stockfish has a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">go perft N</code> command). The first root move whose subtotal disagrees is the one to drill into.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static void Divide(Position pos, int depth)
+{
+    Span&lt;Move&gt; buf = stackalloc Move[256];
+    int n = MoveGenerator.GeneratePseudoLegal(pos, buf);
+    ulong total = 0;
+    for (int i = 0; i &lt; n; i++)
+    {
+        Move m = buf[i];
+        if (m.IsCastle &amp;&amp; !IsCastleLegal(pos, m)) continue;
+        pos.MakeMove(m);
+
+        int ksq = BitOperations.TrailingZeroCount(
+            pos.WhiteToMove ? pos.Pieces[(int)Piece.BlackKing] : pos.Pieces[(int)Piece.WhiteKing]);
+        int opp = pos.WhiteToMove ? 0 : 1;
+        if (!Attacks.IsAttackedBy(pos, ksq, opp))
+        {
+            ulong sub = depth == 1 ? 1 : Run(pos, depth - 1);
+            total += sub;
+            System.Console.WriteLine($&quot;{m.ToUci()}: {sub}&quot;);
+        }
+        pos.UnmakeMove(m);
+    }
+    System.Console.WriteLine($&quot;Total: {total}&quot;);
+}</code></pre></div>
+<h2 id="what-s-next" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-s-next" class="no-underline">What&#39;s next</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Part 6: <strong>magic bitboards</strong>. The classical ray-scan is the slowest part of our generator — four bitscans and four conditional XORs per slider per square. Magic bitboards replace that with a single <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">mul + shift + lookup</code>, in exchange for ~840 KiB of attack tables and a one-time startup cost to find the magic constants. Perft numbers stay the same; runtime gets several times shorter.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a href="04-pseudo-legal-moves.html" class="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">← Previous</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 4: Generating Pseudo-Legal Moves</p>
+          </a>
+          <a href="06-magic-bitboards.html" class="group rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Next →</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 6: Magic Bitboards</p>
+          </a>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

@@ -1,0 +1,20 @@
+{
+  "name": "horsie",
+  "version": "1.1.7",
+  "owner": "liamt19",
+  "repo": "https://github.com/liamt19/Horsie",
+  "language": "C++",
+  "min_depth": 2,
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/horsie/horsie",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case": "position fen {fen}\nperft {depth}",
+      "end_re": "^Total: \\d+",
+      "quit": "quit"
+    }
+  }
+}

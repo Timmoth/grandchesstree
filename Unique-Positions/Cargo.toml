@@ -1,0 +1,41 @@
+[package]
+name = "unique-positions"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "compress-bench"
+path = "src/main.rs"
+# Legacy benchmarking CLI from the early compress-bench experiments. Kept
+# (and kept under its old binary name) so existing notes still resolve, but
+# not on the d11/d12 critical path — that's `wave_merge`, `wave_global_merge`,
+# `global_to_buckets`, and `merge`.
+
+[[bin]]
+name = "merge"
+path = "src/merge.rs"
+
+[[bin]]
+name = "wave_merge"
+path = "src/wave_merge.rs"
+
+[[bin]]
+name = "wave_global_merge"
+path = "src/bin/wave_global_merge.rs"
+
+[[bin]]
+name = "global_to_buckets"
+path = "src/bin/global_to_buckets.rs"
+
+[dependencies]
+memmap2 = "0.9"
+sucds = "0.8"
+roaring = "0.10"
+cuckoofilter = "0.5"
+rayon = "1.10"
+voracious_radix_sort = "1.2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1
+opt-level = 3

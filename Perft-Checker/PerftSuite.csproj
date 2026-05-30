@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>perftcheck</AssemblyName>
+    <RootNamespace>PerftChecker</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Spectre.Console.Cli" Version="0.55.0" />
+  </ItemGroup>
+
+  <!--
+    Embed the packed corpus produced by fen_corpus/scripts/09_pack.py.
+    Single file, ~46 MB gzipped, so total binary size lands around 84 MB.
+    By default perftcheck reads from the embedded resource; pass
+    `static-analysis path` to override with a different corpus file.
+
+    The resource is read by CorpusBinaryReader via the logical name
+    `PerftChecker.fen_corpus.corpus.gctc.gz`.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="fen_corpus\corpus.gctc.gz">
+      <LogicalName>PerftChecker.fen_corpus.corpus.gctc.gz</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

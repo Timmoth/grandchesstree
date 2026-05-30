@@ -412,29 +412,43 @@ gct_config.json
 .claude/
 **/.claude/
 
-# Single-file dotnet publish output under MoveGen/dist (regenerable via dotnet publish)
-MoveGen/dist/
-
 # Single-file dotnet publish output for the perftcheck CLI (ships via
 # GitHub Releases — see .github/workflows/publish-perftcheck.yml). Local
 # builds land here and shouldn't be committed.
-PerftSuite/dist/
+Perft-Checker/dist/
 
-# MoveGen.Wasm intermediate publish output (the deployed copy lives under site/dist/wasm/movegen/)
-MoveGen/MoveGen.Wasm/bin/Release/publish/
+# Single-file dotnet publish output for the TGCT engine (ships via
+# GitHub Releases — see .github/workflows/publish-engine.yml).
+Engine/**/dist/
+
+# .NET build intermediates — never check these in.
+Engine/**/bin/
+Engine/**/obj/
+Perft-Checker/bin/
+Perft-Checker/obj/
+Site/src/articles/MoveGen/**/bin/
+Site/src/articles/MoveGen/**/obj/
 
 # render-board.js intermediate SVG files (the .png output is kept, the temp .svg is not)
 **/*.tmp.svg
 
-# Local perft-check reports (written by PerftSuite; one-off per run)
-site/src/perft-report.json
-site/dist/perft-report.json
+# Local perft-check reports (written by perftcheck; one-off per run).
+perft-report.json
+**/perft-report.json
 
 # Perft EPD corpora derived from copyleft-licensed upstreams (GPL-3.0 /
-# CC-BY-SA). Kept out of the repo but auto-picked-up by the `data/*.epd`
-# glob in PerftSuite.csproj for local builds, so engine validation still
-# uses them on machines where they exist.
-PerftSuite/data/perft-ethereal.epd
-PerftSuite/data/perft-jchess-extra.epd
-PerftSuite/data/perft-canonical-deep.epd
-PerftSuite/data/ferdy_perft_double_checks_v2.epd
+# CC-BY-SA). Kept out of the repo but auto-picked-up locally for engine
+# validation on machines where they exist.
+Perft-Checker/data/perft-ethereal.epd
+Perft-Checker/data/perft-jchess-extra.epd
+Perft-Checker/data/perft-canonical-deep.epd
+Perft-Checker/data/ferdy_perft_double_checks_v2.epd
+# Internal planning / roadmap docs (kept locally, not published)
+Unique-Positions/plans/
+
+# Article drafts (kept locally until ready)
+Site/src/articles/*-draft.md
+
+# MoveGen.App / .pdb are local platform-specific build artifacts;
+# the site serves the WASM bundle, not the desktop app.
+Site/src/articles/MoveGen/dist/

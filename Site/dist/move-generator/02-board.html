@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Representing the Board &mdash; Let&#39;s build a move generator &middot; The Grand Chess Tree</title>
+    <meta name="description" content="A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://grandchesstree.com/move-generator/02-board.html" />
+    <link rel="author" href="https://timmoth.com/" />
+    <meta name="author" content="Tim Jones" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="keywords" content="chess engine, move generation, bitboards, perft, C#, Grand Chess Tree" />
+    <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%99%9E%3C/text%3E%3C/svg%3E"
+    />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://grandchesstree.com/move-generator/02-board.html" />
+    <meta property="og:title" content="Representing the Board — Let&#39;s build a move generator" />
+    <meta property="og:description" content="A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:" />
+    <meta property="og:site_name" content="The Grand Chess Tree" />
+    <meta property="og:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="The Grand Chess Tree" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Representing the Board — Let&#39;s build a move generator" />
+    <meta name="twitter:description" content="A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:" />
+    <meta name="twitter:image" content="https://grandchesstree.com/assets/img/og-card.png" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TechArticle",
+      "headline": "Representing the Board",
+      "description": "A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:",
+      "url": "https://grandchesstree.com/move-generator/02-board.html",
+      "datePublished": "2026-05-23",
+      "dateModified": "2026-05-23",
+      "author": {
+        "@type": "Person",
+        "name": "Tim Jones",
+        "url": "https://timmoth.com/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "The Grand Chess Tree",
+        "url": "https://grandchesstree.com/"
+      },
+      "isPartOf": {
+        "@type": "CreativeWorkSeries",
+        "name": "Let&#39;s build a move generator",
+        "url": "https://grandchesstree.com/move-generator/"
+      },
+      "articleSection": "Move generation",
+      "inLanguage": "en"
+    }
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Prism.js syntax highlighting for code blocks (CDN, no install). -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" />
+    <style>
+      html { font-feature-settings: "cv11", "ss01"; }
+      .tabular { font-variant-numeric: tabular-nums; }
+      /* Keep our slate-50 container; just let Prism colour the tokens. */
+      pre[class*="language-"], code[class*="language-"] { background: transparent !important; text-shadow: none; }
+      pre[class*="language-"] { padding: 0; margin: 0; }
+    </style>
+  </head>
+  <body class="bg-white text-slate-700 antialiased selection:bg-slate-200 selection:text-slate-900">
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-md focus:bg-slate-900 focus:px-4 focus:py-2 focus:text-white">
+      Skip to content
+    </a>
+
+    <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur">
+      <nav class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6" aria-label="Primary">
+        <a href="../index.html" class="flex items-center gap-2 text-slate-900">
+          <span aria-hidden="true" class="text-xl">♞</span>
+          <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+        </a>
+        <ul class="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
+          <li><a href="../perft-results.html" class="{{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="text-slate-900">Posts</a></li>
+          <li class="relative">
+            <button
+              id="leaderboards-dropdown-toggle"
+              type="button"
+              class="inline-flex items-center gap-1 hover:text-slate-900"
+              aria-expanded="false"
+              aria-haspopup="true"
+              aria-controls="leaderboards-dropdown-menu"
+            >
+              Leaderboards
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 20 20" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 8l5 5 5-5" />
+              </svg>
+            </button>
+            <ul
+              id="leaderboards-dropdown-menu"
+              class="absolute right-0 mt-2 hidden w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg"
+              role="menu"
+            >
+              <li role="none"><a role="menuitem" href="../leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">CPU</a></li>
+              <li role="none"><a role="menuitem" href="../gpu-leaderboard.html" class="block px-4 py-2 text-slate-700 hover:bg-slate-50 hover:text-slate-900 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 rounded-md border border-slate-200 px-3 py-1.5 text-slate-700 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+        <button
+          id="mobile-nav-toggle"
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-md text-slate-700 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-400 md:hidden"
+          aria-expanded="false"
+          aria-controls="mobile-nav-menu"
+          aria-label="Toggle navigation menu"
+        >
+          <svg id="mobile-nav-open-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+          <svg id="mobile-nav-close-icon" class="hidden h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </nav>
+      <div id="mobile-nav-menu" class="hidden border-t border-slate-200 bg-white md:hidden">
+        <ul class="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3 text-sm font-medium text-slate-700 sm:px-6">
+          <li><a href="../perft-results.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 {{NAV_PERFT_RESULTS}}">Results</a></li>
+          <li><a href="../tools.html" class="block rounded-md px-3 py-2 hover:bg-slate-50 hover:text-slate-900">Tools</a></li>
+          <li><a href="../move-generator/" class="block rounded-md px-3 py-2 hover:bg-slate-50 text-slate-900">Posts</a></li>
+          <li>
+            <span class="block px-3 pt-3 pb-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Leaderboards</span>
+            <ul class="mb-1 flex flex-col gap-1">
+              <li><a href="../leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">CPU</a></li>
+              <li><a href="../gpu-leaderboard.html" class="block rounded-md pl-6 pr-3 py-2 hover:bg-slate-50 hover:text-slate-900">GPU</a></li>
+            </ul>
+          </li>
+          <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="block rounded-md px-3 py-2 hover:bg-slate-50">Discord</a></li>
+          <li>
+            <a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-slate-50">
+              <img src="../assets/img/github-mark.svg" alt="" width="16" height="16" />
+              GitHub
+            </a>
+          </li>
+        </ul>
+      </div>
+      <script>
+        (function () {
+          // Mobile menu toggle (unchanged behaviour, kept here so the header
+          // is self-contained).
+          var toggle = document.getElementById("mobile-nav-toggle");
+          var menu = document.getElementById("mobile-nav-menu");
+          var openIcon = document.getElementById("mobile-nav-open-icon");
+          var closeIcon = document.getElementById("mobile-nav-close-icon");
+          if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+              var nowOpen = menu.classList.toggle("hidden") === false;
+              openIcon.classList.toggle("hidden", nowOpen);
+              closeIcon.classList.toggle("hidden", !nowOpen);
+              toggle.setAttribute("aria-expanded", nowOpen ? "true" : "false");
+            });
+          }
+
+          // Leaderboards dropdown — click to open, click-outside or Escape
+          // to close. Pure JS, no library; mobile uses an always-expanded
+          // sub-list instead so this only runs on >= md screens.
+          var ddToggle = document.getElementById("leaderboards-dropdown-toggle");
+          var ddMenu = document.getElementById("leaderboards-dropdown-menu");
+          if (ddToggle && ddMenu) {
+            function setOpen(open) {
+              ddMenu.classList.toggle("hidden", !open);
+              ddToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+            ddToggle.addEventListener("click", function (e) {
+              e.stopPropagation();
+              setOpen(ddMenu.classList.contains("hidden"));
+            });
+            document.addEventListener("click", function (e) {
+              if (ddMenu.classList.contains("hidden")) return;
+              if (!ddMenu.contains(e.target) && !ddToggle.contains(e.target)) {
+                setOpen(false);
+              }
+            });
+            document.addEventListener("keydown", function (e) {
+              if (e.key === "Escape" && !ddMenu.classList.contains("hidden")) {
+                setOpen(false);
+                ddToggle.focus();
+              }
+            });
+          }
+        })();
+      </script>
+    </header>
+
+    <main id="main">
+      <section class="border-b border-slate-200 bg-gradient-to-b from-slate-50 to-white">
+        <div class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+          <nav aria-label="Breadcrumb" class="mb-6 text-sm text-slate-500">
+            <ol class="flex flex-wrap items-center gap-2">
+              <li><a href="../index.html" class="hover:text-slate-900">Home</a></li>
+              <li aria-hidden="true">/</li>
+              <li><a href="index.html" class="hover:text-slate-900">Move generator</a></li>
+              <li aria-hidden="true">/</li>
+              <li class="text-slate-700">Part 2</li>
+            </ol>
+          </nav>
+          <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Part 2 of 7</p>
+          <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">Representing the Board</h1>
+          <p class="mt-3 max-w-2xl text-slate-600">A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:</p>
+        </div>
+      </section>
+
+      <article class="mx-auto max-w-3xl px-6 py-10 md:py-14">
+        <p class="mt-4 leading-relaxed text-slate-700">A position is more than pieces on squares. To play chess we need to track who&#39;s to move, whether either side can still castle, where en-passant captures are available, and a couple of counters for the draw rules. We need a representation that holds all of that and lets us answer two questions fast:</p>
+<ul class="mt-4 list-disc space-y-1 pl-6 text-slate-700"><li class="mt-1.5"><em>What pieces of type X does each side have, and where?</em> — for move generation.</li><li class="mt-1.5"><em>What&#39;s on square N?</em> — for everything else (make/unmake, captures, evaluation, debugging).</li></ul>
+<p class="mt-4 leading-relaxed text-slate-700">We&#39;ll use <strong>bitboards</strong> for the first and an <strong>8×8 mailbox</strong> for the second.</p>
+<h2 id="why-bitboards-briefly" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#why-bitboards-briefly" class="no-underline">Why bitboards (briefly)</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">A bitboard is a 64-bit integer where each bit corresponds to one of the 64 squares. We keep one bitboard per piece type per colour: <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhitePawns</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteKnights</code>, ..., <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">BlackKing</code>. Twelve bitboards in total, 96 bytes.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The win: most chess questions become bitwise operations on 64 bits in parallel. <em>&quot;Which empty squares can a white pawn push to?&quot;</em> is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">(whitePawns &lt;&lt; 8) &amp; ~allOccupied</code>. <em>&quot;How many of our knights attack the king?&quot;</em> is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">popcount(knightAttacks[kingSq] &amp; ourKnights)</code>. <em>&quot;Is this piece pinned?&quot;</em> is an XOR and a couple of slider lookups. We&#39;ll see these patterns again and again.</p>
+<p class="mt-4 leading-relaxed text-slate-700">The cost: bitboards are bad at <em>&quot;what&#39;s on square N?&quot;</em> — answering it strictly from bitboards means AND-ing <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">1UL &lt;&lt; N</code> against all twelve. So we keep a parallel <strong>8×8 mailbox</strong> — a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Piece[64]</code> indexed by square — that answers in one read. Stockfish, Crafty, and most modern bitboard engines do exactly this.</p>
+<p class="mt-4 leading-relaxed text-slate-700">Mailbox-only and other piece-centric representations exist (10×12, 0x88, piece-lists), and they all work. But the rest of this series uses bitboards-plus-mailbox throughout.</p>
+<h2 id="square-mapping-lerf" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#square-mapping-lerf" class="no-underline">Square mapping: LERF</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We need to agree which bit represents which square. We&#39;ll use <strong>Little-Endian Rank-File</strong> (LERF) — the convention in Stockfish and most teaching code:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">56 57 58 59 60 61 62 63    8th rank
+48 49 50 51 52 53 54 55    7th
+40 41 42 43 44 45 46 47    6th
+32 33 34 35 36 37 38 39    5th
+24 25 26 27 28 29 30 31    4th
+16 17 18 19 20 21 22 23    3rd
+ 8  9 10 11 12 13 14 15    2nd
+ 0  1  2  3  4  5  6  7    1st rank
+ a  b  c  d  e  f  g  h</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">So <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">a1 = 0</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">h1 = 7</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">a8 = 56</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">h8 = 63</code>, and:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">int Square(int file, int rank) =&gt; rank * 8 + file;
+int FileOf(int sq)             =&gt; sq &amp; 7;
+int RankOf(int sq)             =&gt; sq &gt;&gt; 3;</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">With LERF the direction shifts work out as: north <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&lt;&lt; 8</code>, south <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&gt;&gt; 8</code>, east <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&lt;&lt; 1</code>, west <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&gt;&gt; 1</code>, NE <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&lt;&lt; 9</code>, NW <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&lt;&lt; 7</code>, SE <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&gt;&gt; 7</code>, SW <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">&gt;&gt; 9</code>. We&#39;ll need those constantly in later articles.</p>
+<h2 id="the-types" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#the-types" class="no-underline">The types</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">A flat <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Piece</code> enum that doubles as a bitboard array index:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public enum Piece : byte
+{
+    WhitePawn, WhiteKnight, WhiteBishop, WhiteRook, WhiteQueen, WhiteKing,
+    BlackPawn, BlackKnight, BlackBishop, BlackRook, BlackQueen, BlackKing,
+    None,
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Castling rights pack neatly into four bits:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System;
+
+[Flags]
+public enum CastlingRights : byte
+{
+    None           = 0,
+    WhiteKingside  = 1,
+    WhiteQueenside = 2,
+    BlackKingside  = 4,
+    BlackQueenside = 8,
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">And the <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Position</code> itself:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public sealed class Position
+{
+    // 12 bitboards, indexed by (int)Piece (0..11)
+    public ulong[] Pieces = new ulong[12];
+
+    // 8×8 mailbox — Piece.None on empty squares
+    public Piece[] Squares = new Piece[64];
+
+    // Aggregate occupancy, kept in sync with Pieces
+    public ulong WhiteOccupied;
+    public ulong BlackOccupied;
+    public ulong AllOccupied;
+
+    // Irreversible state
+    public bool           WhiteToMove;
+    public CastlingRights Castling;
+    public int            EpSquare;        // -1 if none
+    public int            HalfmoveClock;
+    public int            FullmoveNumber;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The bitboards are the source of truth; the mailbox is a cache. Same for <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteOccupied</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">BlackOccupied</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">AllOccupied</code> — we maintain them so we don&#39;t OR six bitboards together on every query. Everywhere we mutate <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Pieces[..]</code> from now on, the mailbox and the occupancy bitboards must move in lockstep.</p>
+<h2 id="parsing-fen" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#parsing-fen" class="no-underline">Parsing FEN</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">FEN is six space-separated fields:</p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">&lt;placement&gt; &lt;side&gt; &lt;castling&gt; &lt;ep&gt; &lt;halfmove&gt; &lt;fullmove&gt;</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The placement lists ranks 8 down to 1, separated by <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">/</code>, with digits for runs of empty squares. Side is <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">w</code> or <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">b</code>. Castling is some subset of <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">KQkq</code> or <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">-</code>. EP is a square name (<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e3</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">c6</code>, ...) or <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">-</code>. The last two are integers; some FENs (like the Kiwipete string we used in Part 1) drop them, and we default to <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">0</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">1</code>.</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System;
+using System.Text;
+
+public static class Fen
+{
+    public const string Initial  = &quot;rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&quot;;
+    public const string Kiwipete = &quot;r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -&quot;;
+
+    public static Position Parse(string fen)
+    {
+        var pos = new Position();
+        Array.Fill(pos.Squares, Piece.None);
+
+        string[] f = fen.Split(&#39; &#39;);
+        if (f.Length &lt; 4) throw new FormatException(&quot;FEN needs at least 4 fields&quot;);
+
+        // 1. Placement — rank 8 first
+        string[] ranks = f[0].Split(&#39;/&#39;);
+        if (ranks.Length != 8) throw new FormatException(&quot;FEN needs 8 ranks&quot;);
+
+        for (int i = 0; i &lt; 8; i++)
+        {
+            int rank = 7 - i;
+            int file = 0;
+            foreach (char c in ranks[i])
+            {
+                if (char.IsDigit(c)) { file += c - &#39;0&#39;; continue; }
+                int sq = rank * 8 + file++;
+                Piece p = PieceFromChar(c);
+                pos.Squares[sq] = p;
+                pos.Pieces[(int)p] |= 1UL &lt;&lt; sq;
+            }
+        }
+
+        // 2. Side to move
+        pos.WhiteToMove = f[1] == &quot;w&quot;;
+
+        // 3. Castling
+        pos.Castling = CastlingRights.None;
+        if (f[2] != &quot;-&quot;)
+            foreach (char c in f[2])
+                pos.Castling |= c switch
+                {
+                    &#39;K&#39; =&gt; CastlingRights.WhiteKingside,
+                    &#39;Q&#39; =&gt; CastlingRights.WhiteQueenside,
+                    &#39;k&#39; =&gt; CastlingRights.BlackKingside,
+                    &#39;q&#39; =&gt; CastlingRights.BlackQueenside,
+                    _   =&gt; CastlingRights.None,
+                };
+
+        // 4. EP
+        pos.EpSquare = f[3] == &quot;-&quot; ? -1 : SquareFromName(f[3]);
+
+        // 5 &amp; 6 — optional in some FENs
+        pos.HalfmoveClock  = f.Length &gt; 4 ? int.Parse(f[4]) : 0;
+        pos.FullmoveNumber = f.Length &gt; 5 ? int.Parse(f[5]) : 1;
+
+        // Aggregate occupancy
+        for (int p = (int)Piece.WhitePawn; p &lt;= (int)Piece.WhiteKing; p++)
+            pos.WhiteOccupied |= pos.Pieces[p];
+        for (int p = (int)Piece.BlackPawn; p &lt;= (int)Piece.BlackKing; p++)
+            pos.BlackOccupied |= pos.Pieces[p];
+        pos.AllOccupied = pos.WhiteOccupied | pos.BlackOccupied;
+
+        return pos;
+    }
+
+    static Piece PieceFromChar(char c) =&gt; c switch
+    {
+        &#39;P&#39; =&gt; Piece.WhitePawn,  &#39;N&#39; =&gt; Piece.WhiteKnight, &#39;B&#39; =&gt; Piece.WhiteBishop,
+        &#39;R&#39; =&gt; Piece.WhiteRook,  &#39;Q&#39; =&gt; Piece.WhiteQueen,  &#39;K&#39; =&gt; Piece.WhiteKing,
+        &#39;p&#39; =&gt; Piece.BlackPawn,  &#39;n&#39; =&gt; Piece.BlackKnight, &#39;b&#39; =&gt; Piece.BlackBishop,
+        &#39;r&#39; =&gt; Piece.BlackRook,  &#39;q&#39; =&gt; Piece.BlackQueen,  &#39;k&#39; =&gt; Piece.BlackKing,
+        _   =&gt; throw new FormatException($&quot;Unexpected piece char &#39;{c}&#39;&quot;),
+    };
+
+    static int SquareFromName(string s) =&gt; (s[1] - &#39;1&#39;) * 8 + (s[0] - &#39;a&#39;);
+}</code></pre></div>
+<h2 id="serialising-back-to-fen" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#serialising-back-to-fen" class="no-underline">Serialising back to FEN</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">We need the reverse direction to prove the parser works — and we&#39;ll use it in Part 6 for debugging make/unmake. Same logic, mirrored:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">public static class Fen
+{
+    public static string Write(Position pos)
+    {
+        var sb = new StringBuilder();
+
+        // 1. Placement
+        for (int rank = 7; rank &gt;= 0; rank--)
+        {
+            int empties = 0;
+            for (int file = 0; file &lt; 8; file++)
+            {
+                Piece p = pos.Squares[rank * 8 + file];
+                if (p == Piece.None) { empties++; continue; }
+                if (empties &gt; 0) { sb.Append(empties); empties = 0; }
+                sb.Append(CharOf(p));
+            }
+            if (empties &gt; 0) sb.Append(empties);
+            if (rank &gt; 0) sb.Append(&#39;/&#39;);
+        }
+
+        // 2. Side to move
+        sb.Append(&#39; &#39;).Append(pos.WhiteToMove ? &#39;w&#39; : &#39;b&#39;);
+
+        // 3. Castling
+        sb.Append(&#39; &#39;).Append(CastlingString(pos.Castling));
+
+        // 4. EP
+        sb.Append(&#39; &#39;).Append(pos.EpSquare &lt; 0 ? &quot;-&quot; : SquareName(pos.EpSquare));
+
+        // 5 &amp; 6
+        sb.Append(&#39; &#39;).Append(pos.HalfmoveClock);
+        sb.Append(&#39; &#39;).Append(pos.FullmoveNumber);
+
+        return sb.ToString();
+    }
+
+    static char CharOf(Piece p) =&gt; &quot;PNBRQKpnbrqk.&quot;[(int)p];
+
+    static string SquareName(int sq) =&gt;
+        $&quot;{(char)(&#39;a&#39; + (sq &amp; 7))}{(char)(&#39;1&#39; + (sq &gt;&gt; 3))}&quot;;
+
+    static string CastlingString(CastlingRights c)
+    {
+        if (c == CastlingRights.None) return &quot;-&quot;;
+        var s = new StringBuilder(4);
+        if ((c &amp; CastlingRights.WhiteKingside)  != 0) s.Append(&#39;K&#39;);
+        if ((c &amp; CastlingRights.WhiteQueenside) != 0) s.Append(&#39;Q&#39;);
+        if ((c &amp; CastlingRights.BlackKingside)  != 0) s.Append(&#39;k&#39;);
+        if ((c &amp; CastlingRights.BlackQueenside) != 0) s.Append(&#39;q&#39;);
+        return s.ToString();
+    }
+}</code></pre></div>
+<h2 id="a-board-printer-that-shows-everything" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#a-board-printer-that-shows-everything" class="no-underline">A board printer that shows everything</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">The Part 1 printer only handled pieces. Now we&#39;ll print the full state:</p>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">using System.Text;
+
+public static class PositionPrinter
+{
+    public static string Render(Position pos)
+    {
+        var sb = new StringBuilder();
+
+        for (int rank = 7; rank &gt;= 0; rank--)
+        {
+            sb.Append(rank + 1).Append(&#39; &#39;);
+            for (int file = 0; file &lt; 8; file++)
+            {
+                Piece p = pos.Squares[rank * 8 + file];
+                sb.Append(p == Piece.None ? &#39;.&#39; : &quot;PNBRQKpnbrqk&quot;[(int)p]);
+                sb.Append(&#39; &#39;);
+            }
+            sb.AppendLine();
+        }
+        sb.AppendLine(&quot;  a b c d e f g h&quot;);
+
+        sb.Append(&quot;Side to move:   &quot;).AppendLine(pos.WhiteToMove ? &quot;white&quot; : &quot;black&quot;);
+        sb.Append(&quot;Castling:       &quot;).AppendLine(Fen.Write(pos).Split(&#39; &#39;)[2]);
+        sb.Append(&quot;En passant:     &quot;).AppendLine(pos.EpSquare &lt; 0 ? &quot;-&quot; : SquareName(pos.EpSquare));
+        sb.Append(&quot;Halfmove clock: &quot;).AppendLine(pos.HalfmoveClock.ToString());
+        sb.Append(&quot;Fullmove:       &quot;).AppendLine(pos.FullmoveNumber.ToString());
+
+        return sb.ToString();
+    }
+
+    static string SquareName(int sq) =&gt;
+        $&quot;{(char)(&#39;a&#39; + (sq &amp; 7))}{(char)(&#39;1&#39; + (sq &gt;&gt; 3))}&quot;;
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">(We&#39;re cheekily borrowing the castling string from <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Fen.Write</code> so we don&#39;t reimplement it. Refactor it to its own method if you&#39;d rather.)</p>
+<h2 id="putting-it-together" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#putting-it-together" class="no-underline">Putting it together</a></h2>
+<div class="relative mt-4"><div class="absolute right-2 top-2 z-10 rounded bg-slate-200 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-slate-600">csharp</div><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-csharp !bg-transparent">internal class Program
+{
+    static void Main()
+    {
+        var pos = Fen.Parse(Fen.Kiwipete);
+        System.Console.WriteLine(PositionPrinter.Render(pos));
+
+        string roundTripped = Fen.Write(pos);
+        System.Console.WriteLine(&quot;Round-trip: &quot; + roundTripped);
+    }
+}</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">Output:</p>
+<p class="mt-4 leading-relaxed text-slate-700"><img src="img/kiwipete.png" alt="Kiwipete" loading="lazy" class="mx-auto block rounded-md border border-slate-200 shadow-sm" /></p>
+<div class="relative mt-4"><pre class="overflow-x-auto rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-800 !bg-slate-50"><code class="language-none !bg-transparent">Side to move:   white
+Castling:       KQkq
+En passant:     -
+Halfmove clock: 0
+Fullmove:       1
+Round-trip: r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1</code></pre></div>
+<p class="mt-4 leading-relaxed text-slate-700">The round-trip matches our input (modulo the <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">0 1</code> we filled in for the missing trailing fields).</p>
+<p class="mt-4 leading-relaxed text-slate-700">The bitboards are populated and consistent: every set bit in <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Pieces[(int)p]</code> corresponds to <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Squares[sq] == p</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">AllOccupied</code> has exactly 32 bits set, and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">WhiteOccupied &amp; BlackOccupied == 0</code>. Part 5 introduces a <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Validate()</code> method that asserts all this — invaluable once we start mutating state via <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">MakeMove</code> and <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">UnmakeMove</code>.</p>
+<h2 id="what-s-next" class="mt-12 border-b border-slate-200 pb-2 text-2xl font-semibold tracking-tight text-slate-900 md:text-3xl"><a href="#what-s-next" class="no-underline">What&#39;s next</a></h2>
+<p class="mt-4 leading-relaxed text-slate-700">Part 3 introduces the <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">Move</code> type — a 16-bit packed value carrying from-square, to-square, and a flag distinguishing the seven kinds of move chess needs to represent (quiet, double push, castle, capture, en-passant capture, promotion, promotion-capture). We&#39;ll also write a UCI-string helper so we can print and round-trip moves like <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e2e4</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e7e8q</code>, <code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.92em] text-slate-800">e1g1</code>.</p>
+      </article>
+
+      <nav class="mx-auto max-w-3xl px-6 pb-16">
+        <div class="grid gap-4 sm:grid-cols-2">
+          <a href="01-introduction.html" class="group rounded-2xl border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">← Previous</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 1: The Pipeline and Perft</p>
+          </a>
+          <a href="03-move-encoding.html" class="group rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:-translate-y-0.5 hover:shadow-md">
+            <p class="text-xs font-medium uppercase tracking-wider text-slate-500">Next →</p>
+            <p class="mt-1 font-semibold text-slate-900">Part 3: Encoding a Move</p>
+          </a>
+        </div>
+      </nav>
+    </main>
+
+    <footer class="border-t border-slate-200 bg-slate-50">
+      <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10">
+        <div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
+          <div class="flex items-center gap-2 text-slate-700">
+            <span aria-hidden="true" class="text-xl">♞</span>
+            <span class="font-semibold tracking-tight">The Grand Chess Tree</span>
+          </div>
+          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-sm text-slate-600">
+            <li><a href="../perft-results.html" class="hover:text-slate-900">Results</a></li>
+            <li><a href="../distributed-perft.html" class="hover:text-slate-900">Distributed</a></li>
+            <li><a href="../tools.html" class="hover:text-slate-900">Tools</a></li>
+            <li><a href="../move-generator/" class="hover:text-slate-900">Posts</a></li>
+            <li><a href="../leaderboard.html" class="hover:text-slate-900">CPU Leaderboard</a></li>
+            <li><a href="../gpu-leaderboard.html" class="hover:text-slate-900">GPU Leaderboard</a></li>
+            <li><a href="https://discord.com/invite/cTu3aeCZVe" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">Discord</a></li>
+            <li><a href="https://github.com/Timmoth/grandchesstree" target="_blank" rel="noopener noreferrer" class="hover:text-slate-900">GitHub</a></li>
+          </ul>
+        </div>
+        <p class="mt-8 border-t border-slate-200 pt-6 text-xs text-slate-500">
+          Made by <a href="https://timmoth.com/" target="_blank" rel="author me noopener noreferrer" class="font-medium text-slate-700 underline decoration-slate-300 underline-offset-2 hover:decoration-slate-700">Tim Jones</a>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Prism core + autoloader: language defs are fetched lazily from the same CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script>Prism.plugins.autoloader.languages_path = "https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/";</script>
+  </body>
+</html>

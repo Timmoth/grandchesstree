@@ -1,0 +1,23 @@
+{
+  "position": 1,
+  "depth": 3,
+  "nodes": 97862,
+  "captures": 17102,
+  "enpassants": 45,
+  "castles": 3162,
+  "promotions": 0,
+  "direct_checks": 992,
+  "single_discovered_check": 0,
+  "direct_discovered_check": 0,
+  "double_discovered_check": 0,
+  "total_checks": 992,
+  "direct_checkmate": 1,
+  "single_discovered_checkmate": 0,
+  "direct_discoverd_checkmate": 0,
+  "double_discoverd_checkmate": 0,
+  "total_mates": 1,
+  "total_tasks": 1,
+  "started_at": 1739522760,
+  "finished_at": 1739522760,
+  "contributors": []
+}

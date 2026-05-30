@@ -1,0 +1,732 @@
+{
+  "engine": "potential",
+  "version": "3.40.88",
+  "language": "C",
+  "mode_used": "single-no-cache",
+  "ran_at": "2026-05-25T15:51:00Z",
+  "duration_sec": 45.211,
+  "options": {
+    "depth_cap": 4,
+    "epd_files": [
+      "ferdy_perft_double_checks.epd",
+      "ferdy_perft_enpassant_1.epd",
+      "ferdy_perft_single_check_1.epd",
+      "ferdy_perft_single_check_10.epd",
+      "ferdy_perft_single_check_11.epd",
+      "ferdy_perft_single_check_12.epd",
+      "ferdy_perft_single_check_13.epd",
+      "ferdy_perft_single_check_14.epd",
+      "ferdy_perft_single_check_15.epd",
+      "ferdy_perft_single_check_16.epd",
+      "ferdy_perft_single_check_17.epd",
+      "ferdy_perft_single_check_18.epd",
+      "ferdy_perft_single_check_19.epd",
+      "ferdy_perft_single_check_2.epd",
+      "ferdy_perft_single_check_3.epd",
+      "ferdy_perft_single_check_4.epd",
+      "ferdy_perft_single_check_5.epd",
+      "ferdy_perft_single_check_6.epd",
+      "ferdy_perft_single_check_7.epd",
+      "ferdy_perft_single_check_8.epd",
+      "ferdy_perft_single_check_9.epd",
+      "perft-marcel.epd",
+      "perft.epd"
+    ],
+    "per_case_timeout_sec": 5.0,
+    "fail_fast": false
+  },
+  "totals": {
+    "cases": 125625,
+    "passed": 125549,
+    "failed": 76,
+    "timeout": 0,
+    "error": 0,
+    "skipped_min_depth": 0
+  },
+  "failures": [
+    {
+      "fen": "3q1r2/1r3kb1/3pbpn1/1p2p2p/p1pPP1pP/P1P1P1P1/BPNNQR2/5RK1 b - h3  0 1",
+      "depth": 4,
+      "expected": 1438513,
+      "got": "479471333",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d8a5: 43316\nf7e8: 43927\nf7g8: 42515\nf7e7: 41548\nf6f5: 44341\n\ntotal: 1438414\nnps: 479471333"
+    },
+    {
+      "fen": "2rr4/5p2/p3k1p1/4p3/1Pp5/P6P/B5P1/2N2R1K b - b3  0 1",
+      "depth": 4,
+      "expected": 311677,
+      "got": "300391000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d8d1: 8086\ne6d7: 10078\ne6e7: 13166\ne6d6: 10542\ne6d5: 9841\n\ntotal: 300391\nnps: 300391000"
+    },
+    {
+      "fen": "r4rk1/p1p1npb1/b1p3pp/3pP3/2P4P/3BBN2/PP1K1PP1/R6R w - d6  0 1",
+      "depth": 4,
+      "expected": 1597880,
+      "got": "532618000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2c2: 34131\nd2e2: 32771\nd2c1: 28784\nd2d1: 30165\nd2e1: 28783\n\ntotal: 1597854\nnps: 532618000"
+    },
+    {
+      "fen": "1n1r1r1k/bpp2qp1/4b1np/p2p4/P2PpPN1/1PP3PP/1R4BN/2BQR1K1 b - f3  0 1",
+      "depth": 4,
+      "expected": 1587680,
+      "got": "529226333",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f7f6: 47486\nf7f5: 43774\nf7f4: 51016\nh8g8: 39767\nh8h7: 44404\n\ntotal: 1587679\nnps: 529226333"
+    },
+    {
+      "fen": "r3r1k1/pbp2q1p/1p1pN1p1/3Pp1Pn/1PP1pP2/P6P/1BQ1P3/R4RK1 b - f3  0 1",
+      "depth": 4,
+      "expected": 1915617,
+      "got": "638538333",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f7f6: 59974\nf7f5: 52727\nf7e6: 45201\nf7f4: 50271\ng8h8: 56411\n\ntotal: 1915615\nnps: 638538333"
+    },
+    {
+      "fen": "r3k2r/2bp2p1/pp2p3/4Pp1p/P3K3/N1P1P1P1/1P5P/R3R3 w kq f6  0 1",
+      "depth": 4,
+      "expected": 85623,
+      "got": "85600000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e5f6: 19060\ne4d4: 15974\ne4f4: 14066\ne4d3: 18589\ne4f3: 17911\n\ntotal: 85600\nnps: 85600000"
+    },
+    {
+      "fen": "r1b2rk1/q4ppp/p2B4/1pPP4/N6n/3B4/PP3KPP/R2Q4 w - b6  0 1",
+      "depth": 4,
+      "expected": 1806256,
+      "got": "589484333",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f2g3: 36972\nf2e2: 33500\nf2e1: 33424\nf2f1: 37704\nf2g1: 35561\n\ntotal: 1768453\nnps: 589484333"
+    },
+    {
+      "fen": "r3k2r/1bqp1ppp/n4n2/p7/2N1P3/P7/1P3PPK/RBBQ1R2 w kq -  0 1",
+      "depth": 4,
+      "expected": 557400,
+      "got": "557359000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c1f4: 63631\nd1d6: 37460\nh2h3: 65448\nh2g1: 63150\nh2h1: 64978\n\ntotal: 557359\nnps: 557359000"
+    },
+    {
+      "fen": "5r2/1p3rkp/2pp2p1/P3p3/3P2q1/1Q2R1P1/P1P1nPP1/B4RK1 w - -  0 1",
+      "depth": 4,
+      "expected": 207305,
+      "got": "207302000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\ne3e2: 63066\ng1h2: 73295\ng1h1: 70941\n\ntotal: 207302\nnps: 207302000"
+    },
+    {
+      "fen": "8/7p/8/1Q4nk/4b1p1/4N1P1/q3BP2/7K w - -  0 1",
+      "depth": 4,
+      "expected": 156713,
+      "got": "156632000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f2f3: 30366\ne3g2: 24883\ne2f3: 32042\nh1h2: 35092\nh1g1: 34249\n\ntotal: 156632\nnps: 156632000"
+    },
+    {
+      "fen": "8/7p/8/1Q4nk/4b1p1/4N1P1/4BP2/q5K1 w - -  0 1",
+      "depth": 4,
+      "expected": 191380,
+      "got": "191239000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e3f1: 28542\ne2d1: 33241\ne2f1: 33915\nb5b1: 30844\ng1h2: 37479\n\ntotal: 191239\nnps: 191239000"
+    },
+    {
+      "fen": "4Q3/7p/5q2/6nk/4b1p1/6P1/4BP2/5NK1 b - -  0 1",
+      "depth": 4,
+      "expected": 129767,
+      "got": "129648000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g5f7: 30078\ne4g6: 28374\nf6f7: 22187\nf6g6: 19054\nh5h6: 29955\n\ntotal: 129648\nnps: 129648000"
+    },
+    {
+      "fen": "2q1k2R/4bp2/1prp2p1/p2Q2P1/P2B1P2/2P3K1/1P6/8 b - -  0 1",
+      "depth": 4,
+      "expected": 69147,
+      "got": "69146000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\n    Full moves counter: 1\n\ne7f8: 29233\ne8d7: 39913\n\ntotal: 69146\nnps: 69146000"
+    },
+    {
+      "fen": "q4rk1/2p2ppp/pr1bpn2/1p6/3P4/1P2P1P1/1B3PKP/R1RQN3 w - -  0 1",
+      "depth": 4,
+      "expected": 468307,
+      "got": "468270000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c1c6: 42582\nd1f3: 49948\ng2h3: 53346\ng2f1: 56723\ng2g1: 55462\n\ntotal: 468270\nnps: 468270000"
+    },
+    {
+      "fen": "4k3/3bp3/5p2/5Ppn/3N4/BB4K1/8/8 w - -  0 1",
+      "depth": 4,
+      "expected": 27641,
+      "got": "27620000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g3f3: 4561\ng3h3: 3792\ng3f2: 5586\ng3g2: 4904\ng3h2: 4966\n\ntotal: 27620\nnps: 27620000"
+    },
+    {
+      "fen": "rn3r2/pbp2p2/1p3kpp/3P4/2B2PN1/6P1/P1P2K2/3RR3 b - -  0 1",
+      "depth": 4,
+      "expected": 60160,
+      "got": "60156000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\n    Full moves counter: 1\n\nf6g7: 34465\nf6f5: 25691\n\ntotal: 60156\nnps: 60156000"
+    },
+    {
+      "fen": "rr6/2qk4/2P3n1/5p2/2P1p1b1/BQ4P1/P2N1PB1/4R1K1 b - -  0 1",
+      "depth": 4,
+      "expected": 447794,
+      "got": "447748000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d7c8: 67917\nd7d8: 69104\nd7e8: 75239\nd7e6: 82936\nd7c6: 71623\n\ntotal: 447748\nnps: 447748000"
+    },
+    {
+      "fen": "8/p7/5p2/3Bqn1k/P5p1/7p/5P1K/3Q4 w - -  0 1",
+      "depth": 4,
+      "expected": 77382,
+      "got": "77240000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\nf2f4: 22995\nh2g1: 27750\nh2h1: 26495\n\ntotal: 77240\nnps: 77240000"
+    },
+    {
+      "fen": "3r2k1/5pbp/p5p1/1b2P3/4PN2/1p6/2K2NPP/3R4 w - -  0 1",
+      "depth": 4,
+      "expected": 149334,
+      "got": "149271000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c2c3: 29908\nc2b2: 31224\nc2b1: 29752\nc2c1: 26605\nc2b3: 31782\n\ntotal: 149271\nnps: 149271000"
+    },
+    {
+      "fen": "r1r5/pb1pb1pp/4kp2/2P5/1pP2B2/P1K5/6PP/R2RN3 w - -  0 1",
+      "depth": 4,
+      "expected": 266542,
+      "got": "266512000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c3d3: 31399\nc3b2: 36651\nc3c2: 35683\nc3d2: 29995\nc3b4: 29581\n\ntotal: 266512\nnps: 266512000"
+    },
+    {
+      "fen": "8/8/1R6/4rpk1/2P3p1/6P1/5PK1/3Bn3 w - -  0 1",
+      "depth": 4,
+      "expected": 25879,
+      "got": "25875000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\ng2h2: 6248\ng2f1: 6464\ng2g1: 6552\ng2h1: 6611\n\ntotal: 25875\nnps: 25875000"
+    },
+    {
+      "fen": "3r3r/pp1bkppp/1qB5/n7/3pQ3/1P4P1/PBP2P1P/3R2K1 b - -  0 1",
+      "depth": 4,
+      "expected": 289761,
+      "got": "289708000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nd7e6: 77405\ne7f8: 73447\ne7d6: 73596\ne7f6: 65260\n\ntotal: 289708\nnps: 289708000"
+    },
+    {
+      "fen": "8/1b6/pq6/1p3ppk/1P2p3/P3K1P1/4NP2/3Q4 w - -  0 1",
+      "depth": 4,
+      "expected": 18247,
+      "got": "18246000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\ne2d4: 1339\nd1d4: 7657\ne3d2: 9250\n\ntotal: 18246\nnps: 18246000"
+    },
+    {
+      "fen": "8/1b6/pq6/1p3ppk/1P1Np3/P3K1P1/5P2/3Q4 b - -  0 1",
+      "depth": 4,
+      "expected": 26487,
+      "got": "26468000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\ng5g4: 7941\nh5g6: 9601\nh5h6: 8926\n\ntotal: 26468\nnps: 26468000"
+    },
+    {
+      "fen": "1r3b2/2qn2p1/n3k1Qp/ppp1P3/3p4/PP1P4/1BPN3P/R6K b - -  0 1",
+      "depth": 4,
+      "expected": 136593,
+      "got": "136553000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\nd7f6: 36542\ne6e7: 34173\ne6d5: 38110\ne6e5: 27728\n\ntotal: 136553\nnps: 136553000"
+    },
+    {
+      "fen": "8/8/4N3/5pk1/6pb/8/5PK1/3B4 b - -  0 1",
+      "depth": 4,
+      "expected": 16094,
+      "got": "16087000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\ng5f6: 3739\ng5g6: 4800\ng5h6: 4326\ng5h5: 3222\n\ntotal: 16087\nnps: 16087000"
+    },
+    {
+      "fen": "7k/1bp3p1/1b1p3p/p2P4/P1Q5/4N1B1/1P3P1P/1q3K2 w - -  0 1",
+      "depth": 4,
+      "expected": 93555,
+      "got": "93525000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\ne3d1: 23330\nc4c1: 16228\nf1e2: 25922\nf1g2: 28045\n\ntotal: 93525\nnps: 93525000"
+    },
+    {
+      "fen": "4Q2k/1bp3p1/3p3p/p2P4/P7/4b1B1/1q3PKP/8 b - -  0 1",
+      "depth": 4,
+      "expected": 23858,
+      "got": "23837000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Fifty move: 0\n\n    Full moves counter: 1\n\nh8h7: 23837\n\ntotal: 23837\nnps: 23837000"
+    },
+    {
+      "fen": "8/1bp3pk/3p3p/p2P4/P3Q3/4b1B1/1q3PKP/8 b - -  0 1",
+      "depth": 4,
+      "expected": 80587,
+      "got": "80544000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\ng7g6: 26755\nh7g8: 27152\nh7h8: 26637\n\ntotal: 80544\nnps: 80544000"
+    },
+    {
+      "fen": "3r4/1p5R/p1k2pr1/4p3/7P/8/PP3PBK/4R3 b - -  0 1",
+      "depth": 4,
+      "expected": 187020,
+      "got": "186985000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g6g2: 2445\nc6b6: 35492\nc6d6: 27902\nc6b5: 35576\nc6c5: 37639\n\ntotal: 186985\nnps: 186985000"
+    },
+    {
+      "fen": "rn4k1/pbqp1r1p/6p1/5pQ1/2p1P3/B1P2PKN/P5PP/1R5R w - -  0 1",
+      "depth": 4,
+      "expected": 250114,
+      "got": "250083000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h3f4: 34040\na3d6: 29130\ng5f4: 32003\ng3h4: 42043\ng3f2: 45470\n\ntotal: 250083\nnps: 250083000"
+    },
+    {
+      "fen": "8/6p1/5nk1/4p3/1pNnP1p1/1P5K/5P2/3B4 w - -  0 1",
+      "depth": 4,
+      "expected": 30938,
+      "got": "30935000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d1g4: 6961\nh3h4: 4630\nh3g3: 5204\nh3g2: 7493\nh3h2: 6647\n\ntotal: 30935\nnps: 30935000"
+    },
+    {
+      "fen": "r4rk1/1p2p1bp/1p3pp1/nR2P3/P1p1qP2/5N2/BPP2QPP/4K2R w K -  0 1",
+      "depth": 4,
+      "expected": 195615,
+      "got": "195490000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f2e3: 38734\nf2e2: 38096\ne1d2: 38205\ne1d1: 38636\ne1f1: 41819\n\ntotal: 195490\nnps: 195490000"
+    },
+    {
+      "fen": "rn3rk1/pqp1bppp/1p2pn2/8/2NP4/1P4P1/PB2PPKP/RN1Q1R2 w - -  0 1",
+      "depth": 4,
+      "expected": 203626,
+      "got": "203595000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d4d5: 43019\nf2f3: 40888\ne2e4: 41848\ng2h3: 39953\ng2g1: 37887\n\ntotal: 203595\nnps: 203595000"
+    },
+    {
+      "fen": "4k3/4qp1p/4p1p1/3pP2P/3N1QPK/5P2/8/8 w - -  0 1",
+      "depth": 4,
+      "expected": 39097,
+      "got": "39077000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g4g5: 7891\nf4f6: 5137\nf4g5: 6327\nh4g3: 9641\nh4h3: 10081\n\ntotal: 39077\nnps: 39077000"
+    },
+    {
+      "fen": "6k1/4qpp1/4p2p/8/5PPK/4q3/6P1/8 w - -  0 1",
+      "depth": 4,
+      "expected": 14941,
+      "got": "14899000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\n    Full moves counter: 1\n\ng4g5: 9602\nh4h5: 5297\n\ntotal: 14899\nnps: 14899000"
+    },
+    {
+      "fen": "8/3b4/5k1p/2qp2p1/1p3p1P/3B1P2/P1P3P1/Q4K2 b - -  0 1",
+      "depth": 4,
+      "expected": 114872,
+      "got": "114848000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c5d4: 12978\nc5c3: 12059\nf6e7: 22849\nf6f7: 24916\nf6e6: 19799\n\ntotal: 114848\nnps: 114848000"
+    },
+    {
+      "fen": "8/4r2p/1k1Rr1p1/6P1/p1p1p3/P3P3/2P2PBP/2KR4 b - -  0 1",
+      "depth": 4,
+      "expected": 90164,
+      "got": "90135000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b6b7: 14351\nb6c7: 12177\nb6a5: 12330\nb6b5: 13450\nb6c5: 12478\n\ntotal: 90135\nnps: 90135000"
+    },
+    {
+      "fen": "r1br2k1/1p3pb1/p3p2p/4P2P/8/3BBn2/P2K1PP1/2R4R w - -  0 1",
+      "depth": 4,
+      "expected": 135816,
+      "got": "135788000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g2f3: 15000\nd2c3: 31871\nd2c2: 30267\nd2e2: 33799\nd2d1: 24851\n\ntotal: 135788\nnps: 135788000"
+    },
+    {
+      "fen": "2r4k/1p3pb1/p3p2p/3rP2P/5P2/3RB3/P1K2P2/6R1 w - -  0 1",
+      "depth": 4,
+      "expected": 178806,
+      "got": "178773000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c2b3: 27293\nc2b2: 28850\nc2d2: 23492\nc2b1: 26367\nc2d1: 22520\n\ntotal: 178773\nnps: 178773000"
+    },
+    {
+      "fen": "7k/1p3pb1/p3p2p/3rP2P/5P2/4B3/P2K1P2/6R1 w - -  0 1",
+      "depth": 4,
+      "expected": 56034,
+      "got": "56012000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d2c3: 10168\nd2c2: 10863\nd2e2: 10519\nd2c1: 8508\nd2e1: 7949\n\ntotal: 56012\nnps: 56012000"
+    },
+    {
+      "fen": "rn3rk1/pqp1bppp/1p2pn2/4N3/2PP4/6P1/P1Q1PPKP/RNB2R2 w - -  0 1",
+      "depth": 4,
+      "expected": 352118,
+      "got": "352088000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e5c6: 34302\ne5f3: 42754\nc2e4: 40789\ng2h3: 49408\ng2g1: 47079\n\ntotal: 352088\nnps: 352088000"
+    },
+    {
+      "fen": "1r3k2/pbp5/7Q/3P1P2/1qP3N1/1Pb5/P5PP/3RR2K b - -  0 1",
+      "depth": 4,
+      "expected": 179066,
+      "got": "179063000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\nc3g7: 54618\nf8g8: 60847\nf8f7: 63598\n\ntotal: 179063\nnps: 179063000"
+    },
+    {
+      "fen": "1r6/pbp2k2/4Q3/3P1P2/1qP3N1/1Pb5/P5PP/3RR2K b - -  0 1",
+      "depth": 4,
+      "expected": 102956,
+      "got": "102954000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\n    Full moves counter: 1\n\nf7f8: 48935\nf7g7: 54019\n\ntotal: 102954\nnps: 102954000"
+    },
+    {
+      "fen": "1r6/pbp3k1/4QP2/3P4/1qP3N1/1Pb5/P5PP/3RR2K b - -  0 1",
+      "depth": 4,
+      "expected": 255484,
+      "got": "255479000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c3f6: 62720\ng7f8: 41984\ng7h8: 51045\ng7h7: 49754\ng7g6: 49976\n\ntotal: 255479\nnps: 255479000"
+    },
+    {
+      "fen": "1r6/pbp2Q1k/5P2/3P4/1qP3N1/1Pb5/P5PP/3RR2K b - -  0 1",
+      "depth": 4,
+      "expected": 40345,
+      "got": "40344000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Fifty move: 0\n\n    Full moves counter: 1\n\nh7h8: 40344\n\ntotal: 40344\nnps: 40344000"
+    },
+    {
+      "fen": "2k2r1r/qp1n2p1/p3p1np/B2pP3/3P2PP/PP3N2/2Q5/R4RK1 b - -  0 1",
+      "depth": 4,
+      "expected": 159468,
+      "got": "159467000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "    Full moves counter: 1\n\nd7c5: 47234\na7c5: 58257\nc8b8: 53976\n\ntotal: 159467\nnps: 159467000"
+    },
+    {
+      "fen": "8/1pp2r2/3p4/1PbPp1k1/2P3p1/3P2rp/R4P2/3B1RK1 w - -  0 1",
+      "depth": 4,
+      "expected": 47328,
+      "got": "47326000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "\n    Full moves counter: 1\n\ng1h2: 23290\ng1h1: 24036\n\ntotal: 47326\nnps: 47326000"
+    },
+    {
+      "fen": "1R6/3k1p2/4r3/p5rp/1b2p3/p1PN3B/1R2KP1P/8 w - - 0 1",
+      "depth": 4,
+      "expected": 870234,
+      "got": "435116500",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2e3: 24103\ne2d2: 25568\ne2d1: 28095\ne2e1: 24341\ne2f1: 24969\n\ntotal: 870233\nnps: 435116500"
+    },
+    {
+      "fen": "r3B1nr/ppp2p1p/4k1b1/2b4q/1n1pPpp1/1N1P1P2/P1P1Q1PP/R1B2K1R w - - 0 1",
+      "depth": 4,
+      "expected": 1529900,
+      "got": "509966000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2d1: 48231\ne2e1: 56500\nf1f2: 51386\nf1e1: 50116\nf1g1: 47393\n\ntotal: 1529898\nnps: 509966000"
+    },
+    {
+      "fen": "1R6/2k5/4r3/pr3p2/1b2p2p/pRP4B/4NP1P/4K3 w - - 0 1",
+      "depth": 4,
+      "expected": 600709,
+      "got": "600708000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b3a3: 22081\ne1d2: 20866\ne1d1: 22276\ne1f1: 22168\nc3b4: 20526\n\ntotal: 600708\nnps: 600708000"
+    },
+    {
+      "fen": "rB5r/pp4k1/5n2/q3p2p/Pb3pp1/1P1P3N/R2QPPP1/1N2KB1R w K - 0 1",
+      "depth": 4,
+      "expected": 1067873,
+      "got": "1067856000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h1h2: 41485\nh1g1: 39598\ne1d1: 59226\nd2c3: 44907\nd2b4: 38988\n\ntotal: 1067856\nnps: 1067856000"
+    },
+    {
+      "fen": "4r2r/4p3/b4P1k/2p2P2/7P/4b1Pp/R6K/1q5R b - - 0 1",
+      "depth": 4,
+      "expected": 879131,
+      "got": "439565000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1f5: 23284\nb1a2: 588\nb1h1: 502\nh6h7: 20700\nh6h5: 18863\n\ntotal: 879130\nnps: 439565000"
+    },
+    {
+      "fen": "2b1r2r/4p3/5P1k/2p2P2/5R1P/6Pp/4q2K/4R3 w - - 0 1",
+      "depth": 3,
+      "expected": 3488,
+      "got": "3487000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f4f2: 752\ne1e2: 468\nh2g1: 733\nh2h1: 748\nh2h3: 786\n\ntotal: 3487\nnps: 3487000"
+    },
+    {
+      "fen": "2b1r2r/4p3/5P1k/2p2P2/5R1P/6Pp/4q2K/4R3 w - - 0 1",
+      "depth": 4,
+      "expected": 116716,
+      "got": "116679000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "f4f2: 25826\ne1e2: 9062\nh2g1: 26779\nh2h1: 27171\nh2h3: 27841\n\ntotal: 116679\nnps: 116679000"
+    },
+    {
+      "fen": "4r2r/4p3/b4P1k/1qp2P2/5R1P/6Pp/7K/6R1 b - - 0 1",
+      "depth": 4,
+      "expected": 540242,
+      "got": "270120000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b5e2: 2914\nb5b1: 17836\nb5f1: 10033\nh6h7: 16110\nh6h5: 14740\n\ntotal: 540240\nnps: 270120000"
+    },
+    {
+      "fen": "6nr/3bp3/Br5k/2p1P3/6pP/q2B2P1/3b1P1K/3R2NR w - - 0 1",
+      "depth": 4,
+      "expected": 1588037,
+      "got": "794018000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d1c1: 58884\nd1e1: 57611\nd1f1: 49967\nd1d2: 35911\nh2g2: 58358\n\ntotal: 1588036\nnps: 794018000"
+    },
+    {
+      "fen": "6nr/2pbp2B/nr5k/1B2P3/1b4pP/6P1/q4P1K/1R4NR w - - 0 1",
+      "depth": 4,
+      "expected": 1536493,
+      "got": "768246000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1d1: 60491\nb1e1: 55957\nb1f1: 48395\nb1b4: 43632\nh2g2: 57316\n\ntotal: 1536492\nnps: 768246000"
+    },
+    {
+      "fen": "r6r/1bp1knpp/1N4P1/pP3p2/1b1p2nP/BP1P1pqR/1QP1P1B1/4RKN1 w - - 0 1",
+      "depth": 4,
+      "expected": 2263658,
+      "got": "565909250",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b2a2: 79029\nb2a1: 87724\nb2b1: 79084\nb2c1: 79942\nb2d4: 89944\n\ntotal: 2263637\nnps: 565909250"
+    },
+    {
+      "fen": "1R6/3k1p2/4r3/pr5p/1b2p3/p1P4B/5P1P/1RN2K2 w - - 0 1",
+      "depth": 4,
+      "expected": 471008,
+      "got": "471007000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1b4: 13269\nf1e2: 17257\nf1g2: 15204\nf1e1: 16087\nf1g1: 16101\n\ntotal: 471007\nnps: 471007000"
+    },
+    {
+      "fen": "r1bn3r/2p3pp/1N1k2Pn/pP3p2/1b1ppq1P/BP3P1R/Q1PPPK2/4RBN1 w - - 0 1",
+      "depth": 4,
+      "expected": 878297,
+      "got": "439147000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e1d1: 35488\na2b2: 34023\na2a1: 36752\na2b1: 33948\nf2g2: 36444\n\ntotal: 878294\nnps: 439147000"
+    },
+    {
+      "fen": "r1bqkb1r/1pp1p2p/p1n5/3p1PB1/2P4P/1N1P1K2/PP2BnP1/R2Q2N1 b kq - 0 1",
+      "depth": 4,
+      "expected": 1202592,
+      "got": "601293000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "h8g8: 41729\nd8d7: 37011\nd8d6: 46398\ne8d7: 32192\ne8f7: 40796\n\ntotal: 1202586\nnps: 601293000"
+    },
+    {
+      "fen": "1n2Bbnr/p1pr1p1p/1p4bq/4k3/3pPp2/2QP1pPP/P1P2K2/RNB3R1 w - - 0 1",
+      "depth": 4,
+      "expected": 905244,
+      "got": "452607000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c3c7: 4828\nc3d4: 2823\nf2e1: 32369\nf2f1: 30081\nf2f3: 31929\n\ntotal: 905214\nnps: 452607000"
+    },
+    {
+      "fen": "R7/2k5/3b4/p4p2/4p2p/R1r4B/3K1P1P/1r4N1 w - - 0 1",
+      "depth": 4,
+      "expected": 749775,
+      "got": "749773000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "a3a1: 31735\na3a5: 32759\na3c3: 3145\nd2e2: 31405\nd2c3: 17435\n\ntotal: 749773\nnps: 749773000"
+    },
+    {
+      "fen": "Rr6/2k1b3/5r2/p4p2/4p2p/R1P4B/5P1P/2N1K3 w - - 0 1",
+      "depth": 4,
+      "expected": 742352,
+      "got": "371175000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "a3a5: 34335\ne1d2: 30480\ne1e2: 31241\ne1d1: 30598\ne1f1: 30594\n\ntotal: 742350\nnps: 371175000"
+    },
+    {
+      "fen": "r4bnr/ppp2p1p/4k3/1B1q1b2/1n1pPpp1/3P1P2/P1PNQ1PP/R1B2KR1 w - - 0 1",
+      "depth": 4,
+      "expected": 1446904,
+      "got": "482300666",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2f2: 55500\ne2d1: 49934\ne2e1: 55126\nf1f2: 56715\nf1e1: 54822\n\ntotal: 1446902\nnps: 482300666"
+    },
+    {
+      "fen": "1n3bnr/7p/8/pppr2kb/3pP1Pq/1Q1P4/P1PK3B/RNR5 w - - 0 1",
+      "depth": 4,
+      "expected": 877889,
+      "got": "438944000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b3b2: 28492\nb3b5: 33633\nb3d5: 3515\nd2e2: 31053\nd2d1: 25965\n\ntotal: 877888\nnps: 438944000"
+    },
+    {
+      "fen": "1n4nr/3r1B1p/1p5b/p1p3kb/3pP1Pq/3P4/PQP1K2B/RNR5 w - - 0 1",
+      "depth": 4,
+      "expected": 1062213,
+      "got": "354062666",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2f3: 22662\ne2d2: 24866\ne2d1: 24135\ne2f1: 25443\ng4h5: 24544\n\ntotal: 1062188\nnps: 354062666"
+    },
+    {
+      "fen": "Rr6/2k1b3/7r/p4p2/4p2p/1RP5/4NP1P/4KB2 w - - 0 1",
+      "depth": 4,
+      "expected": 772182,
+      "got": "772181000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b3b2: 35772\nb3b1: 36439\nb3b8: 15097\ne1d2: 32825\ne1d1: 33011\n\ntotal: 772181\nnps: 772181000"
+    },
+    {
+      "fen": "2b1kb1r/rppqp2p/p1n5/5P1P/2Pp4/1N1P1KB1/PP2BnP1/R2Q2N1 b k - 0 1",
+      "depth": 4,
+      "expected": 619339,
+      "got": "309666500",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "d7e6: 28923\nd7d5: 2796\nd7f5: 892\ne8d8: 19972\ne8f7: 25095\n\ntotal: 619333\nnps: 309666500"
+    },
+    {
+      "fen": "1r4nr/2p1p3/7k/1pn1Pbq1/1b2B1pP/N2B2P1/P3pPK1/R5NR w - - 0 1",
+      "depth": 4,
+      "expected": 1973950,
+      "got": "657983000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "a1e1: 56097\na1f1: 68422\nh1h3: 64159\nh1h2: 62724\ng2h2: 61694\n\ntotal: 1973949\nnps: 657983000"
+    },
+    {
+      "fen": "4Bbnr/p1pr1p1p/1p4bq/4k3/1n1pPpp1/3PQPPP/P1P5/RNB2KR1 w - - 0 1",
+      "depth": 4,
+      "expected": 949095,
+      "got": "474530500",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e3f4: 1888\nf1e2: 40829\nf1f2: 38123\nf1g2: 38750\nf1e1: 38334\n\ntotal: 949061\nnps: 474530500"
+    },
+    {
+      "fen": "r2n3r/1bp3pp/1N1k2Pn/pP3p2/1b1ppq1P/BP3P1R/2PPPK2/1Q2RBN1 w - - 0 1",
+      "depth": 4,
+      "expected": 875724,
+      "got": "437860500",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "b1b2: 34616\nb1a1: 37381\nb1c1: 30433\nb1d1: 29091\nf2g2: 37044\n\ntotal: 875721\nnps: 437860500"
+    },
+    {
+      "fen": "1n2Bbnr/p2r1p1p/1p3kb1/2p5/3pPBPq/2QP1K1P/P1P5/RN4R1 w - - 0 1",
+      "depth": 4,
+      "expected": 1175640,
+      "got": "587807000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "c3e1: 36059\nc3c5: 38622\nc3d4: 5175\nf3e2: 40561\nf3g2: 35881\n\ntotal: 1175614\nnps: 587807000"
+    },
+    {
+      "fen": "4B1nr/pppr1p1p/4k1bq/2b5/1n1pPpp1/3P1PP1/P1PNQ2P/R1B2KR1 w - - 0 1",
+      "depth": 4,
+      "expected": 1008188,
+      "got": "504093000",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "e2d1: 35206\ne2e1: 36621\nf1f2: 40509\nf1g2: 40642\nf1e1: 40287\n\ntotal: 1008186\nnps: 504093000"
+    },
+    {
+      "fen": "2b3q1/p1r1n1p1/P1pp4/1PP2P1k/1B1P3p/1Q2R2P/1R2K3/1N6 b - - 0 1",
+      "depth": 4,
+      "expected": 1176222,
+      "got": "588110500",
+      "mode": "single-no-cache",
+      "kind": "wrong_count",
+      "captured_stdout_tail": "g8d5: 37981\ng8c4: 8256\ng8b3: 26522\nh5h6: 46836\nh5g5: 48411\n\ntotal: 1176221\nnps: 588110500"
+    }
+  ]
+}

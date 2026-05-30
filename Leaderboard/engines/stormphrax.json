@@ -1,0 +1,20 @@
+{
+  "name": "stormphrax",
+  "version": "7.0.108",
+  "owner": "Ciekce",
+  "repo": "https://github.com/Ciekce/Stormphrax",
+  "language": "C++",
+  "_note": "Stormphrax is a full UCI engine with lazy-SMP search + TT, but its perft command is a standalone (not `go perft`) and the perft path is pure recursive single-threaded with no TT lookup, so only single-no-cache is defined.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/stormphrax/stormphrax",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\nperft {depth}",
+      "end_re": "^\\d+$",
+      "quit":   "quit"
+    }
+  }
+}

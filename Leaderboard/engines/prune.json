@@ -1,0 +1,20 @@
+{
+  "name": "prune",
+  "version": "dev",
+  "owner": "tgirolami09",
+  "repo": "https://github.com/tgirolami09/Prune",
+  "language": "C++",
+  "_note": "Prune is a UCI engine with lazy-SMP search + TT; its perft is plain bulk recursive single-threaded with no TT, so only single-no-cache. We track the `dev` branch (latest commit speeds perft up).",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/prune/core/prune",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^Nodes searched: \\d+$",
+      "quit":   "quit"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "name": "plentychess",
+  "version": "7.0.66",
+  "owner": "Yoshie2000",
+  "repo": "https://github.com/Yoshie2000/PlentyChess",
+  "language": "C++",
+  "_note": "PlentyChess is a strong UCI engine. `go perft N` triggers a divide-style perft; the final line is `Perft: <nodes> nodes in <time>s => <nps>nps`. Only single-no-cache is defined.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/plentychess/plentychess",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^Perft: \\d+ nodes in .+nps$",
+      "quit":   "quit"
+    }
+  }
+}

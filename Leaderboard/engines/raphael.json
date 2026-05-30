@@ -1,0 +1,17 @@
+{
+  "name": "raphael",
+  "version": "4.2.0-dev-87999df",
+  "owner": "Orbital-Web",
+  "repo": "https://github.com/Orbital-Web/Raphael",
+  "language": "C++",
+  "_note": "Raphael is a full UCI engine. `go perft N` is bulk-counted (matches Stockfish-style perft); `go perft N nonbulk` is the unbulk variant. Per the owner, movegen has no special multithreading/cache, so only single-no-cache is defined. PEXT is enabled when built with ARCH=avx2_bmi2 / avx512 / avx512_vnni (see scripts/install-raphael.sh).",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/raphael/raphael",
+      "setup": [],
+      "case":   "position fen {fen}\ngo perft {depth}",
+      "end_re": "^depth \\d+ time \\d+ nodes \\d+ nps \\d+ fen .+$",
+      "quit":   "quit"
+    }
+  }
+}

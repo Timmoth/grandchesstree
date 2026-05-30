@@ -1,0 +1,20 @@
+{
+  "name": "xiphos",
+  "version": "0.6.1",
+  "owner": "milostatarevic",
+  "repo": "https://github.com/milostatarevic/xiphos",
+  "language": "C",
+  "_note": "Xiphos (Milos Tatarevic) is a UCI engine in C with a handcrafted eval. Perft is invoked via the top-level command `perft <depth>` (NOT `go perft`). Output is a single summary line: `perft(N)=NODES, time: Tms, nps: V (no hashing, bulk counting)`. Threads + Hash setoption supported, though the perft routine doesn't itself use the TT or extra threads. Bin name varies by build target — the install script symlinks the produced `xiphos-<flavour>` to bin/xiphos/xiphos.",
+  "modes": {
+    "single-no-cache": {
+      "launch": "bin/xiphos/xiphos",
+      "setup": [
+        "setoption name Threads value 1",
+        "setoption name Hash value 1"
+      ],
+      "case":   "position fen {fen}\nperft {depth}",
+      "end_re": "^perft\\(\\d+\\)=\\d+",
+      "quit":   "quit"
+    }
+  }
+}

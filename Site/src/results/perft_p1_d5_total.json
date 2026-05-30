@@ -1,0 +1,23 @@
+{
+  "position": 1,
+  "depth": 5,
+  "nodes": 193690690,
+  "captures": 35043416,
+  "enpassants": 73365,
+  "castles": 4993637,
+  "promotions": 8392,
+  "direct_checks": 3257196,
+  "single_discovered_check": 19883,
+  "direct_discovered_check": 2637,
+  "double_discovered_check": 0,
+  "total_checks": 3279716,
+  "direct_checkmate": 30163,
+  "single_discovered_checkmate": 0,
+  "direct_discoverd_checkmate": 8,
+  "double_discoverd_checkmate": 0,
+  "total_mates": 30171,
+  "total_tasks": 1,
+  "started_at": 1739522801,
+  "finished_at": 1739522802,
+  "contributors": []
+}

@@ -1,0 +1,244 @@
+{
+  "name": "jordanbray-chess",
+  "owner": "jordanbray",
+  "repo": "https://github.com/jordanbray/chess",
+  "versions": {
+    "3.2.0": {
+      "ran_at": "2026-05-24T13:51:18Z",
+      "host": {
+        "platform": "Linux-6.8.0-117-generic-x86_64-with-glibc2.39",
+        "system": "Linux",
+        "machine": "x86_64",
+        "python_version": "3.12.3",
+        "cpu_model": "AMD Ryzen 9 7950X 16-Core Processor",
+        "cpu_physical_cores": 16,
+        "cpu_logical_cores": 32,
+        "ram_total_bytes": 66585452544,
+        "mem_speed_mts": null
+      },
+      "disqualified": false,
+      "budget_sec": 60.0,
+      "modes": {
+        "single-no-cache": {
+          "positions": [
+            {
+              "name": "startpos",
+              "fen": "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 20,
+                  "elapsed_sec": 0.000228,
+                  "nps": 87616,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 1.2,
+                  "peak_rss_mb": 2.2
+                },
+                {
+                  "depth": 2,
+                  "nodes": 400,
+                  "elapsed_sec": 7.7e-05,
+                  "nps": 5194535,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.3,
+                  "peak_rss_mb": 2.4
+                },
+                {
+                  "depth": 3,
+                  "nodes": 8902,
+                  "elapsed_sec": 8.2e-05,
+                  "nps": 108755939,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.4,
+                  "peak_rss_mb": 2.5
+                },
+                {
+                  "depth": 4,
+                  "nodes": 197281,
+                  "elapsed_sec": 0.000815,
+                  "nps": 242177573,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.5,
+                  "peak_rss_mb": 2.6
+                },
+                {
+                  "depth": 5,
+                  "nodes": 4865609,
+                  "elapsed_sec": 0.018831,
+                  "nps": 258379159,
+                  "av_cpu_pct": 53.1,
+                  "av_rss_mb": 2.6,
+                  "peak_rss_mb": 2.7
+                },
+                {
+                  "depth": 6,
+                  "nodes": 119060324,
+                  "elapsed_sec": 0.458199,
+                  "nps": 259844356,
+                  "av_cpu_pct": 100.4,
+                  "av_rss_mb": 2.8,
+                  "peak_rss_mb": 2.9
+                },
+                {
+                  "depth": 7,
+                  "nodes": 3195901860,
+                  "elapsed_sec": 11.946142,
+                  "nps": 267525863,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                }
+              ],
+              "note": "timeout at d8",
+              "best_depth": 7,
+              "best_nodes": 3195901860,
+              "best_elapsed_sec": 11.946142,
+              "best_nps": 267525863,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 2.9,
+              "best_peak_rss_mb": 2.9
+            },
+            {
+              "name": "kiwipete",
+              "fen": "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq - 0 1",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 48,
+                  "elapsed_sec": 0.000647,
+                  "nps": 74217,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 1.9,
+                  "peak_rss_mb": 2.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2039,
+                  "elapsed_sec": 6.6e-05,
+                  "nps": 30724489,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.4,
+                  "peak_rss_mb": 2.5
+                },
+                {
+                  "depth": 3,
+                  "nodes": 97862,
+                  "elapsed_sec": 0.000376,
+                  "nps": 260241515,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.7,
+                  "peak_rss_mb": 2.9
+                },
+                {
+                  "depth": 4,
+                  "nodes": 4085603,
+                  "elapsed_sec": 0.015329,
+                  "nps": 266533343,
+                  "av_cpu_pct": 65.2,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                },
+                {
+                  "depth": 5,
+                  "nodes": 193690690,
+                  "elapsed_sec": 0.645215,
+                  "nps": 300195749,
+                  "av_cpu_pct": 100.7,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                },
+                {
+                  "depth": 6,
+                  "nodes": 8031647685,
+                  "elapsed_sec": 28.417991,
+                  "nps": 282625455,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                }
+              ],
+              "note": "timeout at d7",
+              "best_depth": 6,
+              "best_nodes": 8031647685,
+              "best_elapsed_sec": 28.417991,
+              "best_nps": 282625455,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 2.9,
+              "best_peak_rss_mb": 2.9
+            },
+            {
+              "name": "sje",
+              "fen": "r4rk1/1pp1qppp/p1np1n2/2b1p1B1/2B1P1b1/P1NP1N2/1PP1QPPP/R4RK1 w - - 0 10",
+              "depths": [
+                {
+                  "depth": 1,
+                  "nodes": 46,
+                  "elapsed_sec": 0.000291,
+                  "nps": 158138,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 0.8,
+                  "peak_rss_mb": 2.3
+                },
+                {
+                  "depth": 2,
+                  "nodes": 2079,
+                  "elapsed_sec": 8.3e-05,
+                  "nps": 25022567,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.4,
+                  "peak_rss_mb": 2.4
+                },
+                {
+                  "depth": 3,
+                  "nodes": 89890,
+                  "elapsed_sec": 0.000573,
+                  "nps": 156845707,
+                  "av_cpu_pct": 0.0,
+                  "av_rss_mb": 2.5,
+                  "peak_rss_mb": 2.6
+                },
+                {
+                  "depth": 4,
+                  "nodes": 3894594,
+                  "elapsed_sec": 0.012795,
+                  "nps": 304385055,
+                  "av_cpu_pct": 78.2,
+                  "av_rss_mb": 2.7,
+                  "peak_rss_mb": 2.8
+                },
+                {
+                  "depth": 5,
+                  "nodes": 164075551,
+                  "elapsed_sec": 0.535446,
+                  "nps": 306427735,
+                  "av_cpu_pct": 99.0,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                },
+                {
+                  "depth": 6,
+                  "nodes": 6923051137,
+                  "elapsed_sec": 22.731012,
+                  "nps": 304564143,
+                  "av_cpu_pct": 100.0,
+                  "av_rss_mb": 2.9,
+                  "peak_rss_mb": 2.9
+                }
+              ],
+              "note": "timeout at d7",
+              "best_depth": 6,
+              "best_nodes": 6923051137,
+              "best_elapsed_sec": 22.731012,
+              "best_nps": 304564143,
+              "best_av_cpu_pct": 100.0,
+              "best_av_rss_mb": 2.9,
+              "best_peak_rss_mb": 2.9
+            }
+          ],
+          "mean_nps": 284905153
+        }
+      }
+    }
+  },
+  "language": "Rust"
+}
