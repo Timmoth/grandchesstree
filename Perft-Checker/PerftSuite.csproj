@@ -8,6 +8,14 @@
     <AssemblyName>perftcheck</AssemblyName>
     <RootNamespace>PerftChecker</RootNamespace>
     <InvariantGlobalization>true</InvariantGlobalization>
+    <!--
+      Surfaced by 'perftcheck (version)'. Keep in lockstep with the
+      'version' default in .github/workflows/publish-perftcheck.yml and
+      the 'Version' field in Reporting/ReportModel.cs.
+    -->
+    <Version>0.3.0</Version>
+    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <FileVersion>0.3.0.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -220,12 +220,20 @@ def load_existing_results() -> dict[str, dict[int, int]]:
 def build_task_list(max_depth: int,
                     quality_filter: set[str],
                     limit: int,
-                    existing: dict[str, dict[int, int]]
+                    existing: dict[str, dict[int, int]],
+                    no_mate_skip: bool = False,
                     ) -> list[tuple[str, str, int]]:
     """Return (fen_key, fen, depth) tasks needing computation. Skips
     depths already present in either static_analysis (non-zero) or the
     perft_results sidecar. Folds those existing values into `existing`
-    so the final merge sees them."""
+    so the final merge sees them.
+
+    The default mate-skip optimisation looks at the static_analysis row
+    and skips d_n if d_{n-1} = 0 (because mate/stalemate at shallower
+    depth means d_n is also zero). Pass `no_mate_skip=True` to disable
+    that — useful for a fresh full regen where d_n fields have all been
+    reset to zero and the filter would incorrectly drop everything but
+    d=1."""
     tasks: list[tuple[str, str, int]] = []
     seen_fen_keys = 0
     with STATIC_ANALYSIS.open() as f:
@@ -251,12 +259,13 @@ def build_task_list(max_depth: int,
                     # Already populated in static_analysis itself.
                     existing.setdefault(key, {})[d] = int(v)
                     continue
-                # Skip mate/stalemate / unparseable positions: if d_{d-1}
-                # has already been computed and came out 0 there are no
-                # legal moves at any deeper depth either. Trying d_n is
-                # guaranteed-zero work.
-                if d > 1 and row.get(f"d{d-1}", 0) == 0:
-                    continue
+                if not no_mate_skip:
+                    # Skip mate/stalemate / unparseable positions: if d_{d-1}
+                    # has already been computed and came out 0 there are no
+                    # legal moves at any deeper depth either. Trying d_n is
+                    # guaranteed-zero work.
+                    if d > 1 and row.get(f"d{d-1}", 0) == 0:
+                        continue
                 tasks.append((key, fen, d))
             seen_fen_keys += 1
             if limit and seen_fen_keys >= limit:
@@ -385,6 +394,11 @@ def main() -> int:
                     help="cap on FENs considered this run (0 = no cap)")
     ap.add_argument("--no-merge", action="store_true",
                     help="skip the final merge into static_analysis.jsonl")
+    ap.add_argument("--no-mate-skip", action="store_true",
+                    help="don't skip d_n when d_{n-1}=0 in static_analysis. "
+                         "Use this on a fresh regen where d_n has been "
+                         "reset to zero across the board — otherwise the "
+                         "mate-detection filter would drop every depth >1.")
     args = ap.parse_args()
 
     if not STATIC_ANALYSIS.exists():
@@ -407,7 +421,8 @@ def main() -> int:
           f"{RESULTS_FILE.name}")
 
     tasks = build_task_list(args.max_depth, quality_filter,
-                            args.limit, existing)
+                            args.limit, existing,
+                            no_mate_skip=args.no_mate_skip)
     print(f"Tasks to compute: {len(tasks)} "
           f"(quality={args.quality}, max_depth={args.max_depth})")
     if not tasks:

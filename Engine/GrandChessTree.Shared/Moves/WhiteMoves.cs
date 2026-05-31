@@ -243,13 +243,13 @@ public partial struct Board
     {
         var potentialMoves = (AttackTables.PextBishopAttacks(White | Black, index) |
                              AttackTables.PextRookAttacks(White | Black, index)) & MoveMask & pinMask;
-        
+
         int toSquare;
         var captureMoves = potentialMoves & Black;
         while (captureMoves != 0)
         {
             toSquare = captureMoves.PopLSB();
-            moves[moveIndex++] = MoveExtensions.EncodeCaptureMove(Constants.Rook, index, toSquare);
+            moves[moveIndex++] = MoveExtensions.EncodeCaptureMove(Constants.Queen, index, toSquare);
         }
 
         var emptyMoves = potentialMoves & ~(White | Black);

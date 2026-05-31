@@ -11,6 +11,8 @@ namespace PerftChecker.Cli;
 
 public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
 {
+    const string EdgeCaseTag = "edge_case_engine_disagreement";
+
     public sealed class Settings : CommandSettings
     {
         [CommandOption("-e|--engine <PATH>")]
@@ -76,10 +78,18 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
 
         [CommandOption("--perft-command <CMD>")]
         [Description("UCI command sent before the depth number, default "
-                     + "'go perft'. Set to 'perft' for engines (e.g. Potential) "
-                     + "that accept the bare form.")]
+                     + "'go perft'. Set to 'perft' for engines (e.g. Potential, "
+                     + "Stormphrax) that accept the bare form.")]
         [DefaultValue("go perft")]
         public string PerftCommand { get; init; } = "go perft";
+
+        [CommandOption("--bare-number-total")]
+        [Description("Accept a bare integer on its own line as the perft "
+                     + "total (Stormphrax and a few others print just the "
+                     + "number with no `Nodes:` prefix). Off by default to "
+                     + "avoid matching unrelated numeric debug output from "
+                     + "chatty engines.")]
+        public bool BareNumberTotal { get; init; }
 
         [CommandOption("--drill-down")]
         [Description("On each mismatch, drive the test engine and the "
@@ -87,6 +97,16 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
                      + "until the exact leaf position is found where the "
                      + "engine's move-gen diverges. Requires --ref-engine.")]
         public bool DrillDown { get; init; }
+
+        [CommandOption("--include-edge-cases")]
+        [Description("Include positions tagged 'edge_case_engine_disagreement' — "
+                     + "FENs where production engines (StockDory, Stormphrax, "
+                     + "etc.) historically disagree with the Stockfish/TGCT "
+                     + "oracle. Off by default to keep clean runs clean; opt "
+                     + "in when stress-testing exotic move-gen paths "
+                     + "(EP-blocks-check, near-50-move-rule, pathological "
+                     + "piece counts).")]
+        public bool IncludeEdgeCases { get; init; }
 
         [CommandOption("--ref-engine <PATH>")]
         [Description("Path to a trusted reference engine (TGCT/GrandChessTree) "
@@ -164,6 +184,7 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
             TimeoutSeconds = s.Timeout,
             FailFast       = s.FailFast,
             PerftCommand   = s.PerftCommand,
+            AcceptBareNumberTotal = s.BareNumberTotal,
             Oracle         = oracle,
         };
 
@@ -180,6 +201,8 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
                 grid.AddRow("[grey]tag filter[/]",  string.Join(" AND ", s.Tag));
             grid.AddRow("[grey]depths[/]",          $"{s.DepthMin}–{s.DepthCap}");
             grid.AddRow("[grey]cases[/]",           cases.Count.ToString());
+            grid.AddRow("[grey]edge cases[/]",
+                s.IncludeEdgeCases ? "[yellow]included[/]" : "excluded (default)");
             grid.AddRow("[grey]timeout[/]",         $"{s.Timeout}s");
             grid.AddRow("[grey]report[/]",          s.Report);
             AnsiConsole.Write(new Panel(grid).Header(" perftcheck ").Border(BoxBorder.Rounded));
@@ -251,6 +274,7 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
                 Filter             = s.Filter,
                 Limit              = s.Limit,
                 FailFast           = s.FailFast,
+                IncludeEdgeCases   = s.IncludeEdgeCases,
             },
             Totals      = totals,
             Failures    = failures,
@@ -315,6 +339,15 @@ public sealed class RunCommand : AsyncCommand<RunCommand.Settings>
             var needed = new HashSet<string>(s.Tag, StringComparer.Ordinal);
             q = q.Where(c => c.Tags is not null
                              && needed.All(t => c.Tags.Contains(t)));
+        }
+
+        // Edge-case filter — off by default. The tag is set by the corpus
+        // pack pipeline (09_pack.py) for FENs where production engines
+        // historically diverge from the Stockfish/TGCT oracle.
+        if (!s.IncludeEdgeCases)
+        {
+            q = q.Where(c => c.Tags is null
+                             || !c.Tags.Contains(EdgeCaseTag));
         }
 
         if (s.Limit is int n) q = q.Take(n);

@@ -14,14 +14,40 @@ public sealed class UciEngineDriver : IAsyncDisposable
 {
     readonly string _enginePath;
     readonly string _perftCommand;
+    readonly bool   _acceptBareNumberTotal;
     Process?   _process;
     string     _idName = "unknown";
 
-    // Stockfish prints "Nodes searched: N"; other engines sometimes use
-    // "Total nodes: N" or just "Total: N". We accept all three.
+    // Engines print the perft total under several spellings:
+    //   "Nodes searched: N"   (Stockfish)
+    //   "Nodes searched: N,NNN"            (StockDory — comma thousands separators)
+    //   "Nodes searched: N in Tms (M nps)" (Pawnocchio — trailing timing info)
+    //   "Total nodes: N"
+    //   "Total: N"
+    //   "Nodes: N"            (Jet, others — Jet's UCI handler emits only
+    //                          this. Without it perftcheck would hang
+    //                          per-case until timeout.)
+    // The digit group accepts commas (StockDory) and the right-anchor is a
+    // word boundary so trailing text (Pawnocchio) doesn't break the match.
+    // The caller strips commas before parsing.
     static readonly Regex NodesRegex = new(
-        @"^\s*(?:nodes\s*searched|total(?:\s*nodes)?)\s*:\s*(\d+)\s*$",
+        @"^\s*(?:nodes(?:\s*searched)?|total(?:\s*nodes)?)\s*:\s*([\d,]+)\b",
         RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    // Viridithas-style summary: `info depth N nodes K time T nps M`.
+    // The total node count sits in the middle of the line rather than
+    // after a `Nodes:` prefix.
+    static readonly Regex InfoNodesRegex = new(
+        @"^\s*info\s+depth\s+\d+\s+nodes\s+(\d+)\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    // Stormphrax (and a few others) print *only* a bare integer for the
+    // perft total, with no `Nodes:` prefix. Opt-in via the driver's
+    // acceptBareNumberTotal switch so we don't accidentally match unrelated
+    // numeric debug spew from chatty engines.
+    static readonly Regex BareNumberTotalRegex = new(
+        @"^\s*(\d+)\s*$",
+        RegexOptions.Compiled);
 
     // UCI divide lines: "e2e4: 12345" (Stockfish) or "e2e4 12345" (TGCT,
     // Potential). Strict UCI move format (4-5 chars, optional promo).
@@ -31,10 +57,13 @@ public sealed class UciEngineDriver : IAsyncDisposable
 
     public string EngineId => _idName;
 
-    public UciEngineDriver(string enginePath, string perftCommand = "go perft")
+    public UciEngineDriver(string enginePath,
+                           string perftCommand = "go perft",
+                           bool acceptBareNumberTotal = false)
     {
-        _enginePath   = enginePath;
-        _perftCommand = perftCommand;
+        _enginePath             = enginePath;
+        _perftCommand           = perftCommand;
+        _acceptBareNumberTotal  = acceptBareNumberTotal;
     }
 
     public async Task StartAsync(int handshakeTimeoutMs, CancellationToken ct)
@@ -98,8 +127,25 @@ public sealed class UciEngineDriver : IAsyncDisposable
                 var m = NodesRegex.Match(line);
                 if (m.Success)
                 {
-                    nodes = ulong.Parse(m.Groups[1].Value);
+                    // StockDory writes the total with comma thousands
+                    // separators; strip before parsing.
+                    nodes = ulong.Parse(m.Groups[1].Value.Replace(",", ""));
                     break;
+                }
+                var im = InfoNodesRegex.Match(line);
+                if (im.Success)
+                {
+                    nodes = ulong.Parse(im.Groups[1].Value);
+                    break;
+                }
+                if (_acceptBareNumberTotal)
+                {
+                    var bn = BareNumberTotalRegex.Match(line);
+                    if (bn.Success)
+                    {
+                        nodes = ulong.Parse(bn.Groups[1].Value);
+                        break;
+                    }
                 }
             }
         }
@@ -148,11 +194,22 @@ public sealed class UciEngineDriver : IAsyncDisposable
                 if (capture.Length < 4096) { capture.Append(line); capture.Append('\n'); }
 
                 var nm = NodesRegex.Match(line);
-                if (nm.Success) { total = ulong.Parse(nm.Groups[1].Value); break; }
+                if (nm.Success) { total = ulong.Parse(nm.Groups[1].Value.Replace(",", "")); break; }
+
+                var im = InfoNodesRegex.Match(line);
+                if (im.Success) { total = ulong.Parse(im.Groups[1].Value); break; }
 
                 var dm = DivideLineRegex.Match(line);
                 if (dm.Success)
+                {
                     divide[dm.Groups[1].Value.ToLowerInvariant()] = ulong.Parse(dm.Groups[2].Value);
+                    continue;
+                }
+                if (_acceptBareNumberTotal)
+                {
+                    var bn = BareNumberTotalRegex.Match(line);
+                    if (bn.Success) { total = ulong.Parse(bn.Groups[1].Value); break; }
+                }
             }
         }
         catch (OperationCanceledException) when (caseCts.IsCancellationRequested && !ct.IsCancellationRequested)

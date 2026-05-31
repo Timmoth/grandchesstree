@@ -86,6 +86,30 @@ public sealed class DrillDownEngine
             // If at depth 1, the divide IS the move list — bottom out.
             if (currentDepth == 1)
             {
+                // Some engines (Jet, others) report Nodes: N at d=1 but
+                // skip the per-move breakdown. Without per-move data we
+                // can't enumerate which moves are wrong — but we *can*
+                // still draw a conclusion from the totals.
+                if (actual.Divide.Count == 0)
+                {
+                    ulong expectedTotal = 0;
+                    foreach (var v in expected.Values) expectedTotal += v;
+                    string note = actual.Total == expectedTotal
+                        ? "test engine d=1 total matches truth but emits no per-move divide lines at this depth; "
+                          + "can't pinpoint a leaf move-gen bug from here. The higher-depth mismatch "
+                          + "likely lives in make-move / unmake state."
+                        : $"test engine d=1 total ({actual.Total:N0}) disagrees with truth ({expectedTotal:N0}), "
+                          + "but the engine emits no per-move divide lines at d=1 — drill-down can't enumerate "
+                          + "which moves are missing or extra at this leaf.";
+                    return new DrillDownReport
+                    {
+                        BugDepth     = 1,
+                        MoveSequence = moveChain,
+                        LeafFen      = currentFen,
+                        Note         = note,
+                    };
+                }
+
                 return new DrillDownReport
                 {
                     BugDepth     = 1,

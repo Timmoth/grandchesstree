@@ -31,6 +31,7 @@ public sealed class RunOptions
     public string? Filter { get; set; }
     public int? Limit { get; set; }
     public bool FailFast { get; set; }
+    public bool IncludeEdgeCases { get; set; }
 }
 
 public sealed class Totals

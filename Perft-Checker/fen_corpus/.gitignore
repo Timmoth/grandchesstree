@@ -10,4 +10,5 @@ epd/
 snippets/
 descriptions/
 static_analysis.jsonl
+static_analysis.jsonl.bak-*
 perft_results.jsonl

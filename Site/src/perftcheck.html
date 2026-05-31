@@ -240,9 +240,11 @@
                 <tr><td class="px-4 py-3"><code>--report &lt;PATH&gt;</code></td><td class="px-4 py-3 text-slate-500">perft-report.json</td><td class="px-4 py-3 font-sans">Path to write the JSON report</td></tr>
                 <tr><td class="px-4 py-3"><code>--fail-fast</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Stop on the first non-pass</td></tr>
                 <tr><td class="px-4 py-3"><code>--quiet</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Suppress live console output (CI mode)</td></tr>
-                <tr><td class="px-4 py-3"><code>--perft-command &lt;CMD&gt;</code></td><td class="px-4 py-3 text-slate-500">go perft</td><td class="px-4 py-3 font-sans">UCI verb sent before the depth number. Set to <code>perft</code> for engines like Potential that accept the bare form.</td></tr>
+                <tr><td class="px-4 py-3"><code>--perft-command &lt;CMD&gt;</code></td><td class="px-4 py-3 text-slate-500">go perft</td><td class="px-4 py-3 font-sans">UCI verb sent before the depth number. Set to <code>perft</code> for engines (Potential, Stormphrax) that accept the bare form.</td></tr>
+                <tr><td class="px-4 py-3"><code>--bare-number-total</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Accept a bare integer on its own line as the perft total &mdash; needed by Stormphrax (and a few others) that print just the number with no <code>Nodes:</code> prefix. Off by default so numeric debug spew doesn't get mis-parsed.</td></tr>
                 <tr><td class="px-4 py-3"><code>--drill-down</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">On every mismatch, walk divides depth-by-depth until the leaf position where move-gen first diverges. Requires <code>--ref-engine</code>.</td></tr>
                 <tr><td class="px-4 py-3"><code>--ref-engine &lt;PATH&gt;</code></td><td class="px-4 py-3 text-slate-500">&mdash;</td><td class="px-4 py-3 font-sans">GrandChessTree.Engine binary used as the divide+apply oracle for <code>--drill-down</code>.</td></tr>
+                <tr><td class="px-4 py-3"><code>--include-edge-cases</code></td><td class="px-4 py-3 text-slate-500">off</td><td class="px-4 py-3 font-sans">Include 13 positions tagged <code>edge_case_engine_disagreement</code> &mdash; FENs where production engines historically diverge from the Stockfish/TGCT oracle (en-passant blocks check, near-50-move-rule, pathological piece counts). Off by default to keep clean runs clean.</td></tr>
               </tbody>
             </table>
           </div>
@@ -443,6 +445,19 @@
               <p class="mt-2 text-xs text-slate-500">Potential and a few others omit the <code class="font-mono text-[11px]">go</code> prefix.</p>
             </div>
             <div>
+              <h3 class="text-sm font-semibold text-slate-900">Stormphrax &mdash; bare total &amp; bare verb</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./stormphrax \
+    --perft-command perft \
+    --bare-number-total</pre>
+              <p class="mt-2 text-xs text-slate-500">Stormphrax prints the perft total as a lone integer.</p>
+            </div>
+            <div>
+              <h3 class="text-sm font-semibold text-slate-900">Stress-test exotic positions</h3>
+              <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./engine \
+    --include-edge-cases</pre>
+              <p class="mt-2 text-xs text-slate-500">Adds 13 positions where production engines historically diverge (EP-blocks-check, near-50-move-rule, pathological piece counts).</p>
+            </div>
+            <div>
               <h3 class="text-sm font-semibold text-slate-900">Diagnose every mismatch to a leaf</h3>
               <pre class="term mt-3"><span class="prompt">$</span> perftcheck -e ./buggy \
     --drill-down \
@@ -530,6 +545,52 @@
             <li>
               <strong class="text-slate-900">Komodo, Ethereal, Berserk, Lc0</strong>
               &mdash; UCI-standard, work out of the box.
+            </li>
+            <li>
+              <strong class="text-slate-900">Stormphrax</strong> &mdash;
+              needs both
+              <code class="font-mono text-xs">--perft-command perft</code>
+              and
+              <code class="font-mono text-xs">--bare-number-total</code>.
+              Total prints as a lone integer on its own line; the
+              <code class="font-mono text-xs">go perft</code>
+              verb isn't recognised. Has a small known-divergence pocket
+              (EP-blocks-check, pathological piece counts) covered by
+              <code class="font-mono text-xs">--include-edge-cases</code>.
+            </li>
+            <li>
+              <strong class="text-slate-900">StockDory</strong> &mdash;
+              works out of the box; total uses comma thousands
+              separators
+              (<code class="font-mono text-xs">Nodes searched: 1,234,567</code>)
+              and parses correctly.
+            </li>
+            <li>
+              <strong class="text-slate-900">Viridithas</strong> &mdash;
+              works out of the box; total is embedded inside a UCI info
+              line
+              (<code class="font-mono text-xs">info depth N nodes K time T nps M</code>)
+              and parses correctly. Strictly rejects
+              <code class="font-mono text-xs">fullmove=0</code>
+              and
+              <code class="font-mono text-xs">halfmove&ge;100</code>
+              &mdash; pass FENs through a normaliser before testing if
+              those quirks are in scope.
+            </li>
+            <li>
+              <strong class="text-slate-900">Pawnocchio</strong> &mdash;
+              works for most positions; total has trailing timing info
+              (<code class="font-mono text-xs">Nodes searched: N in Tms (M nps)</code>)
+              and parses correctly. Hangs on a small set of pathological
+              positions &mdash; raise
+              <code class="font-mono text-xs">--timeout</code>
+              if you see timeouts.
+            </li>
+            <li>
+              <strong class="text-slate-900">Jet</strong> &mdash; works
+              out of the box; total is the bare
+              <code class="font-mono text-xs">Nodes: N</code>
+              form.
             </li>
             <li>
               <strong class="text-slate-900">Potential</strong> &mdash; accepts

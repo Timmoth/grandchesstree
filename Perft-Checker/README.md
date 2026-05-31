@@ -73,8 +73,10 @@ works identically against either file.
 | `--fail-fast`                 | off                   | Stop on the first non-pass                                                    |
 | `--quiet`                     | off                   | Suppress live console output (CI mode)                                        |
 | `--perft-command <CMD>`       | `go perft`            | UCI verb sent before the depth number. Set to `perft` for engines like Potential that accept the bare form. |
+| `--bare-number-total`         | off                   | Accept a bare integer on its own line as the perft total. Needed by Stormphrax (and a few others) that print just the number with no `Nodes:` prefix. Off by default so chatty engines' numeric debug output doesn't get mis-parsed as the total. |
 | `--drill-down`                | off                   | On each mismatch, run divides depth-by-depth until the exact leaf position where move-gen first diverges is found. Requires `--ref-engine`. |
 | `--ref-engine <PATH>`         | —                     | TGCT/GrandChessTree.Engine binary used as the divide+apply oracle for `--drill-down`. Must support the extended `divide:<d>:<mb>:<fen>:<moves>` form. |
+| `--include-edge-cases`        | off                   | Include 13 positions tagged `edge_case_engine_disagreement` — FENs where production engines (StockDory, Stormphrax) historically diverge from the Stockfish/TGCT oracle. Categories: en-passant-blocks-check, near-50-move-rule, pathological piece counts (multi-queen, bishop-on-every-square). Off by default to keep clean runs clean; opt in when stress-testing exotic move-gen paths. |
 
 ## Failure-tag aggregation
 
@@ -173,7 +175,14 @@ Standard UCI:
 → quit
 ```
 
-`Total nodes: N` and `Total: N` are accepted as fallback formats.
+Several other spellings of the total line are accepted to support
+non-Stockfish engines:
+
+- `Total nodes: N` / `Total: N` / `Nodes: N` (Jet emits only the last form).
+- `Nodes searched: N,NNN` with comma thousands separators (StockDory).
+- `Nodes searched: N in Tms (M nps)` with trailing timing info (Pawnocchio).
+- `info depth N nodes K time T nps M` — embedded inside a UCI info line (Viridithas).
+- A bare integer on its own line — opt-in via `--bare-number-total` (Stormphrax).
 
 ## JSON report shape
 
@@ -244,6 +253,15 @@ perftcheck -e ./engine -s static_analysis.jsonl --fail-fast
 # Engine that uses bare `perft N` (Potential, some others)
 perftcheck -e ./potential -s static_analysis.jsonl --perft-command perft
 
+# Stormphrax: bare `perft N` *and* bare-integer total
+perftcheck -e ./stormphrax --perft-command perft --bare-number-total
+
+# Stress-test the engine on exotic positions (EP-blocks-check etc.)
+perftcheck -e ./engine --include-edge-cases
+
+# Run *only* the 13 edge-case positions (cross-engine disagreement set)
+perftcheck -e ./engine --include-edge-cases --tag edge_case_engine_disagreement
+
 # Diagnose each mismatch down to the leaf position
 perftcheck -e ./buggy -s static_analysis.jsonl \
            --drill-down --ref-engine ./GrandChessTree.Engine
@@ -271,6 +289,21 @@ Each produces a single self-contained executable in `dist/<rid>/perftcheck[.exe]
 - **Stockfish** — works out of the box. Uses `Nodes searched: N`; divide
   lines are `e2e4: 600`.
 - **Komodo, Ethereal, Berserk, Lc0** — UCI standard, work out of the box.
+- **Stormphrax** — needs `--perft-command perft --bare-number-total`. Total
+  is a bare integer on its own line; `go perft` isn't recognised. Known
+  divergence on EP-blocks-check, near-50-move-rule, and pathological
+  piece counts (filtered by default — see `--include-edge-cases`).
+- **StockDory** — works out of the box; total uses comma thousands
+  separators (`Nodes searched: 1,234,567`), parsed correctly. Known
+  divergence on 5 pathological positions (filtered by default).
+- **Viridithas** — works out of the box; total embedded in a UCI info
+  line (`info depth N nodes K time T nps M`), parsed correctly. Strict
+  FEN parsing — rejects `fullmove=0` and `halfmove≥100` (not filtered
+  here; those are FEN-format quirks, not move-gen bugs).
+- **Pawnocchio** — works for most positions; total has trailing timing
+  info (`Nodes searched: N in Tms (M nps)`), parsed correctly. Hangs on
+  some positions — raise `--timeout` if you see timeouts.
+- **Jet** — works out of the box; total is just `Nodes: N`.
 - **Potential** — accepts only the bare `perft N` form (no `go` prefix).
   Pass `--perft-command perft`. Divide lines are `e2e4 600` (space, no
   colon) — parsed correctly.

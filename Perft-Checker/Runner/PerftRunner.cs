@@ -10,6 +10,10 @@ public sealed class PerftRunner
     public required bool   FailFast { get; init; }
     public string PerftCommand { get; init; } = "go perft";
 
+    /// <summary>If true, the engine's perft total may be reported as just
+    /// a bare integer on its own line (Stormphrax, etc.).</summary>
+    public bool AcceptBareNumberTotal { get; init; }
+
     /// <summary>Optional TGCT oracle used to drill into mismatches.
     /// When null, mismatches are reported but not drilled.</summary>
     public TgctOracle? Oracle { get; init; }
@@ -107,7 +111,7 @@ public sealed class PerftRunner
     async Task EnsureDriverAsync(CancellationToken ct)
     {
         if (_driver is not null) return;
-        var d = new UciEngineDriver(EnginePath, PerftCommand);
+        var d = new UciEngineDriver(EnginePath, PerftCommand, AcceptBareNumberTotal);
         await d.StartAsync(handshakeTimeoutMs: 10_000, ct).ConfigureAwait(false);
         _driver = d;
         if (_engineId == "unknown")

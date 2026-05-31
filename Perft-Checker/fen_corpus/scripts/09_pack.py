@@ -130,7 +130,227 @@ def decode_move(packed: int) -> str:
 
 # ---------- pack ----------
 
-def collect_vocabularies(src: Path) -> tuple[list[str], list[str]]:
+def is_chess960_row(row: dict) -> bool:
+    """Chess960 positions use X-FEN castling (file-letter notation like
+    `Gge`). Most engines either don't support Chess960 at all or require
+    `setoption UCI_Chess960 value true` first — neither of which
+    perftcheck-driven checks can rely on out of the box. Skip them in
+    the packed corpus by default to keep the test surface engine-portable."""
+    if row.get("is_chess960"):
+        return True
+    return "chess960" in (row.get("tags") or ())
+
+
+# ---------- illegal-FEN filter ----------
+#
+# A FEN that survives 07_describe's basic structural checks can still be
+# unreachable by any sequence of legal moves. The most common case in the
+# wild is "side-not-to-move has their king in check" — that means the
+# previous mover either ignored an existing check or moved themselves
+# into one, both of which are illegal. Engines accept these FENs and
+# happily produce *some* perft count from them, but the counts vary
+# wildly between engines (Stockfish refuses; mperft and TGCT compute
+# different answers) so the corpus's reference numbers are meaningless.
+# Skip them.
+
+def _parse_board(board_str: str) -> list[list[str]] | None:
+    """Return 8×8 grid (row 0 = rank 8, row 7 = rank 1) or None if malformed.
+       Empty squares are '.'."""
+    rows = board_str.split("/")
+    if len(rows) != 8: return None
+    grid: list[list[str]] = []
+    for raw in rows:
+        row: list[str] = []
+        for ch in raw:
+            if ch.isdigit():
+                row.extend(["."] * int(ch))
+            elif ch in "PNBRQKpnbrqk":
+                row.append(ch)
+            else:
+                return None
+        if len(row) != 8: return None
+        grid.append(row)
+    return grid
+
+
+def _square_attacked(grid: list[list[str]], target: tuple[int, int],
+                     attacker_is_white: bool) -> bool:
+    """Is grid[target] attacked by any piece of the attacker side?"""
+    tr, tc = target
+    if attacker_is_white:
+        pawn, knight, bishop, rook, queen, king = "PNBRQK"
+    else:
+        pawn, knight, bishop, rook, queen, king = "pnbrqk"
+
+    # Pawn attacks. White pawns attack diagonally toward rank 8 (row → 0);
+    # black pawns toward rank 1 (row → 7).
+    pr = tr + 1 if attacker_is_white else tr - 1
+    if 0 <= pr < 8:
+        for dc in (-1, 1):
+            pc = tc + dc
+            if 0 <= pc < 8 and grid[pr][pc] == pawn:
+                return True
+
+    # Knight.
+    for dr, dc in ((-2,-1),(-2,1),(-1,-2),(-1,2),(1,-2),(1,2),(2,-1),(2,1)):
+        r, c = tr + dr, tc + dc
+        if 0 <= r < 8 and 0 <= c < 8 and grid[r][c] == knight:
+            return True
+
+    # King (so the two kings can't legally sit adjacent).
+    for dr in (-1, 0, 1):
+        for dc in (-1, 0, 1):
+            if dr == 0 and dc == 0: continue
+            r, c = tr + dr, tc + dc
+            if 0 <= r < 8 and 0 <= c < 8 and grid[r][c] == king:
+                return True
+
+    # Diagonals — bishop or queen, stopping at the first non-empty square.
+    for dr, dc in ((-1,-1),(-1,1),(1,-1),(1,1)):
+        r, c = tr + dr, tc + dc
+        while 0 <= r < 8 and 0 <= c < 8:
+            piece = grid[r][c]
+            if piece != ".":
+                if piece == bishop or piece == queen: return True
+                break
+            r += dr; c += dc
+
+    # Orthogonals — rook or queen.
+    for dr, dc in ((-1,0),(1,0),(0,-1),(0,1)):
+        r, c = tr + dr, tc + dc
+        while 0 <= r < 8 and 0 <= c < 8:
+            piece = grid[r][c]
+            if piece != ".":
+                if piece == rook or piece == queen: return True
+                break
+            r += dr; c += dc
+
+    return False
+
+
+def _castling_inconsistent(grid: list[list[str]], castling: str) -> bool:
+    """True if the castling field claims rights that aren't physically
+    backed up by the board (e.g. `K` without a white king on e1 + white
+    rook on h1). Different engines silently sanitize these differently
+    (Stockfish strips invalid rights; mperft and TGCT may not), so the
+    corpus's reference values can't be reconciled across engines — skip
+    them rather than ship unreliable totals.
+
+    Note: standard KQkq letters only. X-FEN file-letter castling (chess
+    960) is excluded by the chess960 filter before this runs.
+    """
+    if castling == "-": return False
+    # grid coordinates: row 0 = rank 8, row 7 = rank 1, col 0 = a-file.
+    white_king_e1 = grid[7][4] == "K"
+    black_king_e8 = grid[0][4] == "k"
+    white_rook_a1 = grid[7][0] == "R"
+    white_rook_h1 = grid[7][7] == "R"
+    black_rook_a8 = grid[0][0] == "r"
+    black_rook_h8 = grid[0][7] == "r"
+    for ch in castling:
+        if ch == "K" and not (white_king_e1 and white_rook_h1): return True
+        if ch == "Q" and not (white_king_e1 and white_rook_a1): return True
+        if ch == "k" and not (black_king_e8 and black_rook_h8): return True
+        if ch == "q" and not (black_king_e8 and black_rook_a8): return True
+    return False
+
+
+def _count_pieces(grid: list[list[str]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in grid:
+        for sq in row:
+            if sq != ".":
+                counts[sq] = counts.get(sq, 0) + 1
+    return counts
+
+
+def _ep_square_invalid(grid: list[list[str]], side: str, ep: str) -> bool:
+    """`ep` is the FEN's en-passant target. If set, it must reflect a
+    double-pawn-push the *previous* player just made:
+      - white to move → ep is on rank 6 (e.g. f6), the pushed black pawn
+        sits on rank 5 directly below the ep square, and rank 6 itself
+        is empty (the square the pawn passed through).
+      - black to move → ep is on rank 3, the pushed white pawn sits on
+        rank 4, rank 3 itself is empty.
+    Anything else (square not on rank 3/6, no matching pawn, occupied
+    target square) is a phantom EP — different engines interpret it
+    inconsistently, so skip the position.
+    """
+    if ep == "-" or not ep: return False
+    if len(ep) != 2: return True
+    file_ch, rank_ch = ep[0], ep[1]
+    if file_ch < "a" or file_ch > "h": return True
+    file_idx = ord(file_ch) - ord("a")
+    if side == "w" and rank_ch == "6":
+        ep_row = 2          # rank 6 = grid row 2
+        pawn_row = 3        # the black pawn that double-pushed sits on rank 5
+        pawn_char = "p"
+    elif side == "b" and rank_ch == "3":
+        ep_row = 5          # rank 3 = grid row 5
+        pawn_row = 4        # the white pawn that double-pushed sits on rank 4
+        pawn_char = "P"
+    else:
+        return True
+    if grid[ep_row][file_idx] != ".":              return True
+    if grid[pawn_row][file_idx] != pawn_char:      return True
+    # The square the pawn would have come from (rank 7 / rank 2) must be
+    # empty, otherwise the double-push couldn't have happened.
+    origin_row = 1 if side == "w" else 6
+    if grid[origin_row][file_idx] != ".":          return True
+    return False
+
+
+def is_illegal_row(row: dict) -> bool:
+    """True iff the FEN can't have arisen from legal play.
+
+    Checks:
+      1. Wrong king count (each side must have exactly one).
+      2. Side-not-to-move's king is in check (their last move would have
+         either left them in check or moved them into one).
+      3. KQkq castling rights inconsistent with piece placement.
+      4. En-passant target inconsistent with board (phantom ep).
+
+    Stricter rules (double-check arrangements that can't arise from a
+    single move, etc.) aren't checked — needs more state and matters
+    less in practice.
+    """
+    fen = row.get("fen")
+    if not isinstance(fen, str): return False
+    parts = fen.split()
+    if len(parts) < 4: return False
+    grid = _parse_board(parts[0])
+    if grid is None: return False
+    side = parts[1]
+    if side not in ("w", "b"): return False
+
+    # (1) Exactly one king of each colour.
+    counts = _count_pieces(grid)
+    if counts.get("K", 0) != 1: return True
+    if counts.get("k", 0) != 1: return True
+
+    # (3) Castling rights ↔ piece placement.
+    if _castling_inconsistent(grid, parts[2]): return True
+
+    # (4) En-passant target ↔ board state.
+    if _ep_square_invalid(grid, side, parts[3]): return True
+
+    # (2) Opposite king in check.
+    opponent_king = "k" if side == "w" else "K"
+    pos = None
+    for r in range(8):
+        for c in range(8):
+            if grid[r][c] == opponent_king:
+                pos = (r, c); break
+        if pos is not None: break
+    # (Won't be None here because of the king-count check above, but
+    # keep the guard for robustness against future filter reordering.)
+    if pos is None: return True
+    return _square_attacked(grid, pos, attacker_is_white=(side == "w"))
+
+
+def collect_vocabularies(src: Path, include_chess960: bool,
+                         include_illegal: bool
+                         ) -> tuple[list[str], list[str]]:
     """One pass over the JSONL to build URL + tag tables, ordered by
        descending frequency so the hottest entries get the smallest ids
        (cheaper varints). Each table is a list[str] indexed by id."""
@@ -141,6 +361,10 @@ def collect_vocabularies(src: Path) -> tuple[list[str], list[str]]:
             if not line.strip(): continue
             try: row = json.loads(line)
             except json.JSONDecodeError: continue
+            if not include_chess960 and is_chess960_row(row):
+                continue
+            if not include_illegal and is_illegal_row(row):
+                continue
             for u in row.get("source_urls") or ():
                 url_counts[u] += 1
             for t in row.get("tags") or ():
@@ -154,8 +378,10 @@ def collect_vocabularies(src: Path) -> tuple[list[str], list[str]]:
     return urls, tags
 
 
-def pack(src: Path, dst: Path) -> dict:
-    urls, tags = collect_vocabularies(src)
+def pack(src: Path, dst: Path,
+         include_chess960: bool = False,
+         include_illegal:  bool = False) -> dict:
+    urls, tags = collect_vocabularies(src, include_chess960, include_illegal)
     url_index = {u: i for i, u in enumerate(urls)}
     tag_index = {t: i for i, t in enumerate(tags)}
 
@@ -183,6 +409,8 @@ def pack(src: Path, dst: Path) -> dict:
         buf.write(encoded)
 
     n_positions = 0
+    n_skipped_chess960 = 0
+    n_skipped_illegal = 0
     n_div_entries = 0
     with src.open() as f:
         for line in f:
@@ -191,6 +419,12 @@ def pack(src: Path, dst: Path) -> dict:
             except json.JSONDecodeError: continue
             fen = row.get("fen")
             if not fen: continue
+            if not include_chess960 and is_chess960_row(row):
+                n_skipped_chess960 += 1
+                continue
+            if not include_illegal and is_illegal_row(row):
+                n_skipped_illegal += 1
+                continue
 
             fen_b = fen.encode("utf-8")
             write_varint(buf, len(fen_b))
@@ -232,12 +466,14 @@ def pack(src: Path, dst: Path) -> dict:
         gz.write(inner)
 
     return {
-        "positions":  n_positions,
-        "urls":       len(urls),
-        "tags":       len(tags),
-        "div_entries": n_div_entries,
-        "raw_bytes":  len(inner),
-        "gz_bytes":   dst.stat().st_size,
+        "positions":        n_positions,
+        "skipped_chess960": n_skipped_chess960,
+        "skipped_illegal":  n_skipped_illegal,
+        "urls":             len(urls),
+        "tags":             len(tags),
+        "div_entries":      n_div_entries,
+        "raw_bytes":        len(inner),
+        "gz_bytes":         dst.stat().st_size,
     }
 
 
@@ -308,6 +544,18 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--src", default=str(SRC_FILE))
     ap.add_argument("--dst", default=str(DST_FILE))
+    ap.add_argument("--include-chess960", action="store_true",
+                    help="include Chess960 positions in the packed binary. "
+                         "By default they're skipped because most engines "
+                         "either don't support Chess960 or require "
+                         "`setoption UCI_Chess960 value true` first, which "
+                         "perftcheck doesn't currently send.")
+    ap.add_argument("--include-illegal", action="store_true",
+                    help="include positions where the side-not-to-move is "
+                         "in check (illegal arrival). Skipped by default "
+                         "because different engines compute different "
+                         "perft counts on illegal FENs, so the reference "
+                         "values are unreliable.")
     ap.add_argument("--verify", action="store_true",
                     help="re-read the first N rows and diff against the JSONL")
     ap.add_argument("--verify-n", type=int, default=200)
@@ -319,11 +567,19 @@ def main() -> int:
     dst.parent.mkdir(parents=True, exist_ok=True)
 
     print(f"Packing {src.name} → {dst.name}")
-    stats = pack(src, dst)
+    stats = pack(src, dst,
+                 include_chess960=args.include_chess960,
+                 include_illegal=args.include_illegal)
     raw_mb = stats["raw_bytes"] / 1024**2
     gz_mb  = stats["gz_bytes"]  / 1024**2
     src_mb = src.stat().st_size / 1024**2
     print(f"  positions      {stats['positions']:,d}")
+    if stats['skipped_chess960']:
+        print(f"  skipped (960)  {stats['skipped_chess960']:,d}  "
+              f"(re-include with --include-chess960)")
+    if stats['skipped_illegal']:
+        print(f"  skipped (ill)  {stats['skipped_illegal']:,d}  "
+              f"(side-not-to-move in check; --include-illegal to keep)")
     print(f"  url vocab      {stats['urls']:,d}")
     print(f"  tag vocab      {stats['tags']:,d}")
     print(f"  divide entries {stats['div_entries']:,d}")
@@ -336,10 +592,18 @@ def main() -> int:
         print(f"\nVerifying first {args.verify_n} rows…")
         rows_bin = unpack_first_n(dst, args.verify_n)
         diffs = 0
+        # Walk the JSONL and the binary in lock-step, skipping rows on the
+        # JSONL side that the pack also skipped (chess960 by default).
         with src.open() as f:
-            for i, line in enumerate(f):
+            i = 0
+            for line in f:
                 if i >= args.verify_n: break
+                if not line.strip(): continue
                 jrow = json.loads(line)
+                if not args.include_chess960 and is_chess960_row(jrow):
+                    continue
+                if not args.include_illegal and is_illegal_row(jrow):
+                    continue
                 brow = rows_bin[i]
                 if jrow["fen"] != brow["fen"]:
                     print(f"  row {i}: fen mismatch"); diffs += 1; continue
@@ -362,6 +626,7 @@ def main() -> int:
                 jurls = jrow.get("source_urls") or ()
                 if list(jurls) != brow["source_urls"]:
                     print(f"  row {i} source_urls differ"); diffs += 1
+                i += 1
         if diffs == 0:
             print(f"  ok — {args.verify_n} rows roundtrip cleanly.")
         else:
